@@ -317,6 +317,7 @@ export default function CreateCourseClassForm() {
 
 
       <div className="mt-6 flow-root">
+
         <div className="inline-block min-w-full align-middle">
           <div className="rounded-lg bg-gray-50 p-4 md:pt-5">
             <div className="mb-4">
@@ -346,106 +347,109 @@ export default function CreateCourseClassForm() {
               </div>
             </div>
 
-            <table className="hidden min-w-full text-gray-900 md:table">
-              <tr className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
+            <div className="inline-block min-w-full align-middle  grid grid-cols-2">
+              <div className="hidden md:block ">
+                <div className="grid grid-cols-2 gap-6 text-sm mb-4">
 
-                <th>Horário de Início :</th>
-                <div className="relative">
-                  <td>
+                  {/* Horário de Início */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Horário de Início
+                    </label>
+                    <div className="flex gap-2">
+                      <MaskedNumberInput
+                        name="start_hour"
+                        id="start_hour"
+                        value={formData.course_class?.start_hour || ""}
+                        onChange={(val) =>
+                          setFormData(prev => ({
+                            ...prev,
+                            course_class: {
+                              ...prev.course_class,
+                              start_hour: val,
+                            },
+                          }))
+                        }
+                        min={0}
+                        max={23}
+                        mask="99"
+                        placeholder="HH"
+                        className="w-12"
+                      />
+                      <MaskedNumberInput
+                        name="start_minute"
+                        id="start_minute"
+                        value={formData.course_class?.start_minute || ""}
+                        onChange={(val) =>
+                          setFormData(prev => ({
+                            ...prev,
+                            course_class: {
+                              ...prev.course_class,
+                              start_minute: val,
+                            },
+                          }))
+                        }
+                        min={0}
+                        max={59}
+                        mask="99"
+                        placeholder="MM"
+                        className="w-12"
+                      />
+                    </div>
+                  </div>
 
+                  {/* Duração */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Duração
+                    </label>
+                    <div className="flex gap-2">
+                      <MaskedNumberInput
+                        name="duration_hour"
+                        id="duration_hour"
+                        value={formData.course_class?.duration_hour || ""}
+                        onChange={(val) =>
+                          setFormData(prev => ({
+                            ...prev,
+                            course_class: {
+                              ...prev.course_class,
+                              duration_hour: val,
+                            },
+                          }))
+                        }
+                        min={1}
+                        max={2}
+                        mask="99"
+                        placeholder="DH"
+                        className="w-12"
+                      />
+                      <MaskedNumberInput
+                        name="duration_minute"
+                        id="duration_minute"
+                        value={formData.course_class?.duration_minute || ""}
+                        onChange={(val) =>
+                          setFormData(prev => ({
+                            ...prev,
+                            course_class: {
+                              ...prev.course_class,
+                              duration_minute: val,
+                            },
+                          }))
+                        }
+                        min={0}
+                        max={59}
+                        mask="99"
+                        placeholder="DM"
+                        className="w-12"
+                      />
+                    </div>
+                  </div>
 
-                    <MaskedNumberInput
-                      name="start_hour"
-                      id="start_hour"
-                      value={formData.course_class?.start_hour || ""}
-                      onChange={(val) =>
-                        setFormData(prev => ({
-                          ...prev,
-                          course_class: {
-                            ...prev.course_class,
-                            start_hour: val,
-                          },
-                        }))
-                      }
-                      min={0}
-                      max={23}
-                      mask="99"
-                      placeholder="HH"
-                    />
-
-                  </td>
-                  <td>
-                    <MaskedNumberInput
-                      name="start_minute"
-                      id="start_minute"
-                      value={formData.course_class?.start_minute || ""}
-                      onChange={(val) =>
-                        setFormData(prev => ({
-                          ...prev,
-                          course_class: {
-                            ...prev.course_class,
-                            start_minute: val,
-                          },
-                        }))
-                      }
-                      min={0}
-                      max={59}
-                      mask="99"
-                      placeholder="MM"
-                    />
-                  </td>
                 </div>
-              </tr>
-              <tr className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
-
-                <th>Duração :</th>
-                <div className="relative">
-                  <td>
-
-                    <MaskedNumberInput
-                      name="duration_hour"
-                      id="duration_hour"
-                      value={formData.course_class?.duration_hour || ""}
-                      onChange={(val) =>
-                        setFormData(prev => ({
-                          ...prev,
-                          course_class: {
-                            ...prev.course_class,
-                            duration_hour: val,
-                          },
-                        }))
-                      }
-                      min={1}
-                      max={2}
-                      mask="99"
-                      placeholder="DH"
-                    />
-                  </td>
-                  <td>
-
-                    <MaskedNumberInput
-                      name="duration_minute"
-                      id="duration_minute"
-                      value={formData.course_class?.duration_minute || ""}
-                      onChange={(val) =>
-                        setFormData(prev => ({
-                          ...prev,
-                          course_class: {
-                            ...prev.course_class,
-                            duration_minute: val,
-                          },
-                        }))
-                      }
-                      min={0}
-                      max={59}
-                      mask="99"
-                      placeholder="DM"
-                    />
-                  </td>
-                </div>
-              </tr>
-            </table>
-            <div className="mt-6 flex justify-end gap-4">
+              </div>
+              <div className="hidden md:block w-1/2">
+              <div className="grid grid-cols-1 gap-6 text-sm mb-4">
+              <div className="mt-6 flex justify-end gap-4">
               <Button
                 type="submit"
                 name="action"
@@ -455,14 +459,16 @@ export default function CreateCourseClassForm() {
                 Buscar professor
               </Button>
             </div>
-
+              </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
 
 
-
+      
 
       <div className="md:hidden">
         <label className="block text-sm font-medium mb-1">
@@ -471,7 +477,6 @@ export default function CreateCourseClassForm() {
       </div>
 
 
-      {/* Desktop professor label (new addition) */}
       <div className="hidden md:block mb-1 mt-4">
         <label className="block text-sm font-medium">
           <strong>Professores:</strong>
@@ -483,16 +488,16 @@ export default function CreateCourseClassForm() {
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
           <div className="mt-2 flow-root">
 
-            {/** Lista de professores for mobile  **/}
             <div className="md:hidden">
               {teachers?.map((teacher) => (
+
                 <label
                   key={teacher.id}
                   className={`flex items-center p-4 mb-2 rounded-md border ${formData.course_class?.teacher_id === teacher.id
                     ? 'bg-blue-100 border-blue-400'
                     : 'bg-white border-gray-200 hover:bg-gray-100'
-                    } cursor-pointer transition`}
-                >
+                    } cursor-pointer transition`}>
+
                   <input
                     type="radio"
                     name="teacher_id"
@@ -516,85 +521,83 @@ export default function CreateCourseClassForm() {
                 </label>
               ))}
             </div>
+            
+              <table className="hidden min-w-full text-gray-900 md:table">
+                <thead className="rounded-lg text-left text-sm font-normal">
+                  <tr>
+                    <th scope="col" className="px-4 py-5 font-medium sm:pl-6">Nome</th>
+                    <th scope="col" className="px-3 py-5 font-medium">Telefone</th>
+                    <th scope="col" className="px-3 py-5 font-medium">email</th>
+                    <th scope="col" className="px-4 py-5 font-medium sm:pl-6">Dia</th>
+                    <th scope="col" className="px-3 py-5 font-medium">Hora início</th>
+                    <th scope="col" className="px-3 py-5 font-medium">Hora fim</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white">
+                  {teacherCalendars?.map((teacherCalendars) => {
+                    // Check if this teacher is selected
+                    const isSelected = formData.course_class?.teacher_id === teacherCalendars.teacher?.id;
 
-
-
-
-            {/* Teacher Selection Table */}
-            <table className="hidden min-w-full text-gray-900 md:table">
-              <thead className="rounded-lg text-left text-sm font-normal">
-                <tr>
-                  <th scope="col" className="px-4 py-5 font-medium sm:pl-6">Nome</th>
-                  <th scope="col" className="px-3 py-5 font-medium">Telefone</th>
-                  <th scope="col" className="px-3 py-5 font-medium">email</th>
-                  <th scope="col" className="px-4 py-5 font-medium sm:pl-6">Dia</th>
-                  <th scope="col" className="px-3 py-5 font-medium">Hora início</th>
-                  <th scope="col" className="px-3 py-5 font-medium">Hora fim</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white">
-                {teacherCalendars?.map((teacherCalendars) => {
-                  // Check if this teacher is selected
-                  const isSelected = formData.course_class?.teacher_id === teacherCalendars.teacher?.id;
-
-                  return (
-                    <tr
-                      key={teacherCalendars.teacher?.id}
-                      className={`w-full cursor-pointer border-b py-3 text-sm last-of-type:border-none
-            ${isSelected ? 'bg-blue-100' : 'hover:bg-gray-100'}
-            [&:first-child>td:first-child]:rounded-tl-lg
-            [&:first-child>td:last-child]:rounded-tr-lg
-            [&:last-child>td:first-child]:rounded-bl-lg
-            [&:last-child>td:last-child]:rounded-br-lg`}
-                      onClick={() => {
-                        if (teacherCalendars.teacher?.id) {
-                          // Update form data directly
-                          setFormData(prev => ({
-                            ...prev,
-                            teacher_id: teacherCalendars.teacher?.id
-                          }));
-                        }
-                      }}
-                    >
-                      <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                        <div className="flex items-center gap-3">
-                          <div className="relative flex h-4 w-4 items-center justify-center">
-                            <input
-                              type="radio"
-                              name="teacher-selection"
-                              checked={isSelected}
-                              onChange={() => { }} // Empty onChange to avoid React warnings
-                              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                            />
+                    return (
+                      <tr
+                        key={teacherCalendars.teacher?.id}
+                        className={`w-full cursor-pointer border-b py-3 text-sm last-of-type:border-none
+                                  ${isSelected ? 'bg-blue-100' : 'hover:bg-gray-100'}
+                                  [&:first-child>td:first-child]:rounded-tl-lg
+                                  [&:first-child>td:last-child]:rounded-tr-lg
+                                  [&:last-child>td:first-child]:rounded-bl-lg
+                                  [&:last-child>td:last-child]:rounded-br-lg`}
+                        onClick={() => {
+                          if (teacherCalendars.teacher?.id) {
+                            // Update form data directly
+                            setFormData(prev => ({
+                              ...prev,
+                              course_class: {
+                                teacher_id: teacherCalendars.teacher?.id
+                              }
+                            }));
+                          }
+                        }}
+                      >
+                        <td className="whitespace-nowrap py-3 pl-6 pr-3">
+                          <div className="flex items-center gap-3">
+                            <div className="relative flex h-4 w-4 items-center justify-center">
+                              <input
+                                type="radio"
+                                name="teacher-selection"
+                                checked={isSelected}
+                                onChange={() => { }} // Empty onChange to avoid React warnings
+                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                              />
+                            </div>
+                            <p>{teacherCalendars.teacher?.name}</p>
                           </div>
-                          <p>{teacherCalendars.teacher?.name}</p>
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-3">{teacherCalendars.teacher?.phone_number}</td>
-                      <td className="whitespace-nowrap px-3 py-3">{teacherCalendars.teacher?.email}</td>
-                      <td className="whitespace-nowrap px-3 py-3">{teacherCalendars.week_day?.week_day}</td>
-                      <td className="whitespace-nowrap px-6 py-3">
-                        <TimeDisplay
-                          hour={teacherCalendars.start_hour}
-                          minute={teacherCalendars.start_minute}
-                        />
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-3">
-                      <TimeDisplay
-                          hour={teacherCalendars.end_hour}
-                          minute={teacherCalendars.end_minute}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-3">{teacherCalendars.teacher?.phone_number}</td>
+                        <td className="whitespace-nowrap px-3 py-3">{teacherCalendars.teacher?.email}</td>
+                        <td className="whitespace-nowrap px-3 py-3">{teacherCalendars.week_day?.week_day}</td>
+                        <td className="whitespace-nowrap px-6 py-3">
+                          <TimeDisplay
+                            hour={teacherCalendars.start_hour}
+                            minute={teacherCalendars.start_minute}
+                          />
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-3">
+                          <TimeDisplay
+                            hour={teacherCalendars.end_hour}
+                            minute={teacherCalendars.end_minute}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            
           </div>
         </div>
       </div>
-
+    
 
       <div className="mt-6 flex justify-end gap-4">
         <Link

@@ -192,9 +192,12 @@ export default function CreateTeacherForm() {
 
     else {
 
+      console.log("Creating teacher ...");
+
       try {
 
 
+        /** 
        setCalendarRangeHourDayModels( teacherWeeDayAvailables.map((item): CalendarRangeHourDayModel => ({
           week_day: item.week_day,
           start_hour: item.start_hour,
@@ -203,7 +206,11 @@ export default function CreateTeacherForm() {
           end_minute: item.end_minute
         })));
 
+        console.log("CalendarRangeHourDayModel :: ");
+        console.log(calendarRangeHourDayModels);
+*/
 
+        /** 
         setTeacher({
           name: formData.name,
           phone_number: formData.phone_number,
@@ -219,10 +226,34 @@ export default function CreateTeacherForm() {
             end_hour: item.end_hour,
             end_minute: item.end_minute,
           })),
-        });
+        });*/
+
+        const newTeacher: TeacherModel = {
+          name: formData.name,
+          phone_number: formData.phone_number,
+          email: formData.email,
+          status: formData.status,
+          compensation: formData.compensation,
+          start_date: formData.start_date,
+          language_ids: formData.language_ids,
+          calendar_range_hour_days: teacherWeeDayAvailables.map((item): CalendarRangeHourDayModel => ({
+            week_day: item.week_day,
+            start_hour: item.start_hour,
+            start_minute: item.start_minute,
+            end_hour: item.end_hour,
+            end_minute: item.end_minute,
+          })),
+        };
+
+        
+        console.log("Teacher :: ");
+        console.log(newTeacher);
+
+        await createTeacher(newTeacher);
+        
 
 
-        await createTeacher(teacher!);
+        //await createTeacher(teacher!);
 
         setMessage("✅ Teacher created successfully!");
         setFormData({

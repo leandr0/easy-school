@@ -48,7 +48,7 @@ export default function MaskedNumberInput({
           type="text"
           name={name}
           id={id || name}
-          className={`peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 ${className}`}
+          className={`peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 ${className} `}
           placeholder={placeholder}
         />
       )}
