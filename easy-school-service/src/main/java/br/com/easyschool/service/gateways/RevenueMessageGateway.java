@@ -6,8 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/revenue/messages")
@@ -22,8 +20,8 @@ public class RevenueMessageGateway {
 
 
     @GetMapping
-    public List<RevenueMessage> getAll() {
-        return repository.findAll();
+    public RevenueMessage getAll() {
+        return repository.findAll().get(0);
     }
 
     @PostMapping
