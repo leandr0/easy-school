@@ -1,7 +1,7 @@
 import { CalendarWeekDayModel } from "../definitions/calendar_week_day_definitions";
 import { CalendarRangeHourDayModel } from "../definitions/calendat_range_hour_day_definitions";
 
-const API_URL = "http://localhost:8080/calendar/range-hour-day";
+const API_URL = "http://localhost:8080/calendar/range-hour-days";
 
 export async function fetchAvailabilityTeacher(
     calendar_week_day_ids: string[],
@@ -11,7 +11,8 @@ export async function fetchAvailabilityTeacher(
     end_hour: number,
     end_minute: number
   ): Promise<CalendarRangeHourDayModel[]> {
-  
+
+
     const params = new URLSearchParams();
     calendar_week_day_ids.forEach(id => params.append("calendar_week_day_ids", id));
     params.append("language_id", language_id.toString());

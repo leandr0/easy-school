@@ -1,9 +1,9 @@
-package br.com.easyschool.service.controllers;
+package br.com.easyschool.service.gateways;
 
 import br.com.easyschool.domain.entities.Course;
-import br.com.easyschool.domain.entities.Language;
 import br.com.easyschool.domain.repositories.CourseRepository;
-import br.com.easyschool.service.requests.CreateCourseRequest;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,12 +12,13 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/courses")
-public class CourseController {
+public class CourseGateway {
 
+    private final Log LOG = LogFactory.getLog(this.getClass());
     private final CourseRepository repository;
 
 
-    public CourseController(CourseRepository repository){
+    public CourseGateway(CourseRepository repository){
 
         this.repository = repository;
     }
@@ -40,19 +41,12 @@ public class CourseController {
     }
 
     @PostMapping
-    public Course create(@RequestBody CreateCourseRequest request) {
+    public Course create(@RequestBody Course request) {
 
-        Course course = new Course();
-        course.setStatus(true);
-        course.setName(request.getName());
+        if (request.getId() == null || request.getId() <= 0) {
+            request.setStatus(true);
+        }
 
-        Language language = new Language();
-        language.setId(request.getLanguageId());
-
-        course.setLanguage(language);
-
-        return repository.save(course);
+        return repository.save(request);
     }
-
-
 }

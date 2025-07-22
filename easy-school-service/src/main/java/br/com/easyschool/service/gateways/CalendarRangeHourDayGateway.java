@@ -1,7 +1,9 @@
-package br.com.easyschool.service.controllers;
+package br.com.easyschool.service.gateways;
 
 import br.com.easyschool.domain.entities.CalendarRangeHourDay;
 import br.com.easyschool.domain.repositories.CalendarRangeHourDayRepository;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -9,12 +11,13 @@ import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/calendar/range-hour-day")
-public class CalendarRangeHourDayController {
+@RequestMapping("/calendar/range-hour-days")
+public class CalendarRangeHourDayGateway {
 
+    private final Log LOG = LogFactory.getLog(this.getClass());
     private final CalendarRangeHourDayRepository repository;
 
-    public CalendarRangeHourDayController(CalendarRangeHourDayRepository repository) {
+    public CalendarRangeHourDayGateway(CalendarRangeHourDayRepository repository) {
         this.repository = repository;
 
     }

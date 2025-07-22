@@ -11,14 +11,15 @@ import SelectableStudentsTable, { SelectableStudentsTableRef } from '../students
 import { CreateCourseClassStudentModel } from '@/app/lib/definitions/course_class_students_definitions';
 import { createCourseClassStudent, deleteByStudentAndCourseClass } from '@/app/lib/actions/course_class_students_actions';
 import { StudentModel } from '@/app/lib/definitions/students_definitions';
-import { getStudentsInCourseClass } from '@/app/lib/actions/students_actions';
-import { DeleteStudantFromCourseClassList} from '../solicitacoes/buttons';
+import { getStudentsInCourseClass, getStudentsNotInCourseClass } from '@/app/lib/actions/students_actions';
+import { DeleteStudantFromCourseClassList } from '../buttons/ui_buttons';
 
 export default function AddStudentsCourseClassForm({ course_class_id }: { course_class_id: string }) {
   const router = useRouter();
 
   const [formData, setFormData] = useState<CourseClassAddStudentsForm>({ id: course_class_id });
   const [students, setStudents] = useState<StudentModel[]>([]);
+  const [availableStudents, setAvailableStudents] = useState<StudentModel[]>([]);
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -27,24 +28,56 @@ export default function AddStudentsCourseClassForm({ course_class_id }: { course
 
   const studentsTableRef = useRef<SelectableStudentsTableRef>(null);
 
-  useEffect(() => {
-    getCourseClassById(course_class_id)
-      .then(courseClass => {
-        setFormData(prev => ({
-          ...prev,
-          teacher: courseClass.teacher,
-          course: courseClass.course,
-          name: courseClass.name
-        }));
-      })
-      .catch(err => setError(err.message));
-  }, []);
+  const loadCourseClassData = async () => {
+    try {
+      const courseClass = await getCourseClassById(course_class_id);
+      setFormData(prev => ({
+        ...prev,
+        teacher: courseClass.teacher,
+        course: courseClass.course,
+        name: courseClass.name
+      }));
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      }
+    }
+  };
+
+  const loadStudentsInClass = async () => {
+    try {
+      const studentsInClass = await getStudentsInCourseClass(course_class_id);
+      setStudents(studentsInClass);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      }
+    }
+  };
+
+  const loadAvailableStudents = async () => {
+    try {
+      const studentsNotInClass = await getStudentsNotInCourseClass(course_class_id);
+      setAvailableStudents(studentsNotInClass);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      }
+    }
+  };
+
+  const refreshAllData = async () => {
+    await Promise.all([
+      loadStudentsInClass(),
+      loadAvailableStudents()
+    ]);
+    setSelectedStudentIds([]);
+  };
 
   useEffect(() => {
-    getStudentsInCourseClass(course_class_id)
-      .then(setStudents)
-      .catch(err => setError(err.message));
-  }, []);
+    loadCourseClassData();
+    refreshAllData();
+  }, [course_class_id]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -57,16 +90,27 @@ export default function AddStudentsCourseClassForm({ course_class_id }: { course
           student_ids: selectedStudentIds,
         };
 
-        await createCourseClassStudent(newCourseClassStudent);
+        
+        // Get the selected students from availableStudents
+        const selectedStudents = availableStudents.filter(student => 
+          selectedStudentIds.includes(student.id ?? '')
+        );
 
+        // Remove selected students from availableStudents
+        const updatedAvailableStudents = availableStudents.filter(student => 
+          !selectedStudentIds.includes(student.id ?? '')
+        );
+
+        // Add selected students to the students list
+        const updatedStudents = [...students, ...selectedStudents];
+
+        // Update the state
+        setAvailableStudents(updatedAvailableStudents);
+        setStudents(updatedStudents);
         setSelectedStudentIds([]);
 
-        if (studentsTableRef.current) {
-          await studentsTableRef.current.refreshStudents();
-        }
-
-        const updatedStudents = await getStudentsInCourseClass(course_class_id);
-        setStudents(updatedStudents);
+        //Uncomment this when you want to persist to database
+        await createCourseClassStudent(newCourseClassStudent);
 
         setMessage("✅ Students added successfully!");
       } catch (err: unknown) {
@@ -92,18 +136,12 @@ export default function AddStudentsCourseClassForm({ course_class_id }: { course
 
     if (actionType === 'remove_student_from_class') {
       try {
-      
-        await deleteByStudentAndCourseClass(formData.student?.id,formData.id);
-
-        setSelectedStudentIds([]);
-
-        if (studentsTableRef.current) {
-          await studentsTableRef.current.refreshStudents();
-        }
-
-        const updatedStudents = await getStudentsInCourseClass(course_class_id);
-        setStudents(updatedStudents);       
+        await deleteByStudentAndCourseClass(formData.student?.id, formData.id);
         
+        // Refresh data after removing student
+        await refreshAllData();
+        
+        setMessage("✅ Student removed successfully!");
       } catch (err: unknown) {
         if (err instanceof Error) {
           setMessage(`❌ ${err.message}`);
@@ -170,9 +208,6 @@ export default function AddStudentsCourseClassForm({ course_class_id }: { course
         </tbody>
       </table>
 
-      {/* Table of already added students */}
-
-
       {/* Desktop professor label (new addition) */}
       <div className="hidden md:block mb-1 mt-4">
         <label className="block text-sm font-medium">
@@ -181,7 +216,6 @@ export default function AddStudentsCourseClassForm({ course_class_id }: { course
       </div>
 
       <div className="inline-block min-w-full align-middle">
-
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
           <div className="mt-2 flow-root">
 
@@ -197,7 +231,6 @@ export default function AddStudentsCourseClassForm({ course_class_id }: { course
               </thead>
               <tbody className="bg-white">
                 {students?.map((student) => {
-
                   return (
                     <tr
                       key={student.id}
@@ -222,8 +255,6 @@ export default function AddStudentsCourseClassForm({ course_class_id }: { course
                               start_date: student.start_date,
                             }
                           }));
-                          
-
                         }
                       }}
                     >
@@ -240,24 +271,21 @@ export default function AddStudentsCourseClassForm({ course_class_id }: { course
                           <DeleteStudantFromCourseClassList id={student.id as string} disabled={true} setActionType={setActionType}/>
                         </div>
                       </td>
-
                     </tr>
-
                   );
                 })}
               </tbody>
             </table>
-
           </div>
         </div>
       </div>
-
 
       {/* Table of selectable students */}
       <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
         <SelectableStudentsTable
           ref={studentsTableRef}
-          course_class_id={course_class_id}
+          students={availableStudents}
+          selectedStudentIds={selectedStudentIds}
           onSelectionChange={setSelectedStudentIds}
         />
         <Button
@@ -273,12 +301,7 @@ export default function AddStudentsCourseClassForm({ course_class_id }: { course
 
       {/* Footer buttons */}
       <div className="mt-6 flex justify-end gap-4">
-        <Link
-          href="/dashboard/courses-class"
-          className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 hover:bg-gray-200"
-        >
-          Cancelar
-        </Link>
+      
         <Button
           className="hover:bg-purple-500"
           type="submit"
@@ -286,9 +309,22 @@ export default function AddStudentsCourseClassForm({ course_class_id }: { course
           onClick={() => setActionType('save_class')}
           value="save_class"
         >
-          Salvar Turma
+          Voltar
         </Button>
       </div>
+
+      {/* Display messages */}
+      {message && (
+        <div className="mt-4 p-4 rounded-md bg-gray-100">
+          {message}
+        </div>
+      )}
+
+      {error && (
+        <div className="mt-4 p-4 rounded-md bg-red-100 text-red-700">
+          Error: {error}
+        </div>
+      )}
 
     </form>
   );

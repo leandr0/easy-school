@@ -16,6 +16,7 @@ public class CourseClassCalendar implements EntityBase {
     @JsonProperty("course_class_id")
     private CourseClass courseClass;
 
+
     @ManyToOne
     @JoinColumn(name = "calendar_week_day_id")
     @JsonProperty("calendar_week_day_id")

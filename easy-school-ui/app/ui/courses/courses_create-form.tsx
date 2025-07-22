@@ -44,13 +44,23 @@ export default function CreateCourseForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => (
+      { ...prev, [name]: value }
+    ));
+  };
+
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => (
+      { ...prev, language :{ id: value } }
+    ));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
+
       await createCourse(formData);
 
       setMessage("✅ Course created successfully!");
@@ -76,43 +86,54 @@ export default function CreateCourseForm() {
 
     <form onSubmit={handleSubmit} >
 
-      <div className="mb-4">
-        <div className="relative">
-          <select
-            id="language_id"
-            name="language_id"
-            value={formData.language?.id}
-            onChange={handleChange}
-            className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-            aria-describedby="operadora-error"
-          >
-            {languages.map((language) => (
-              <option key={language.id} value={language.id}>
-                {language.name}
-              </option>
-            ))}
-          </select>
-          <GlobeAltIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+      <div className="mt-6 flow-root">
+
+        <div className="rounded-lg bg-gray-50 p-4 md:pt-5">
+
+          <div className="mb-4 grid grid-cols-2 gap-4 " >
+
+            <div className="relative grid grid-cols-4">
+
+              <div className="relative text-base mt-[10px] ml-[45px] ">Idioma:</div>
+              
+              <div className="relative col-span-3">
+                <select
+                  id="language_id"
+                  name="language_id"
+                  value={formData.language?.id}
+                  onChange={handleLanguageChange}
+                  className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                  aria-describedby="operadora-error"
+                >
+                  {languages.map((language) => (
+                    <option key={language.id} value={language.id}>
+                      {language.name}
+                    </option>
+                  ))}
+                </select>
+                <GlobeAltIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+              </div>
+            </div>
+            <div className="relative grid grid-cols-4">
+              <div className="relative text-base align-middle mt-[10px] ml-[45px]">Nome:</div>
+              <div className="relative col-span-3">
+
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  value={formData?.name}
+                  onChange={handleChange}
+                  className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                />
+              </div>
+            </div>
+          </div>
+
         </div>
+
       </div>
 
-
-      <table className="hidden min-w-full text-gray-900 md:table">
-
-        <tr className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
-          <th>Nome :</th>
-          <td>
-            <input
-              type="text"
-              name="name"
-              id="name"
-              value={formData?.name}
-              onChange={handleChange}
-              className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-            />
-          </td>
-        </tr>
-      </table>
 
       <div className="mt-6 flex justify-end gap-4">
         <Link

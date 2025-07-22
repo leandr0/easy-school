@@ -11,7 +11,6 @@ export async function getAllCourses(): Promise<CourseModel[]> {
   return response.json();
 }
 
-
 export async function getAllCoursesAvailable(): Promise<CourseModel[]> {
   const response = await fetch(API_URL+"/available");
   if (!response.ok) {
@@ -29,8 +28,9 @@ export async function findCourse(course_id:any): Promise<CourseModel> {
 }
 
 
-// Create a new student
-export async function createCourse(course: CourseModel): Promise<void> {
+
+export async function createCourse(course: CourseModel): Promise<CourseModel> {
+  console.log(course);
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {
@@ -42,4 +42,5 @@ export async function createCourse(course: CourseModel): Promise<void> {
   if (!response.ok) {
     throw new Error("Failed to create course");
   }
+  return response.json();
 }

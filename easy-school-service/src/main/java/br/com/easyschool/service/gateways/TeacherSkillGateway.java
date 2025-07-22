@@ -1,4 +1,4 @@
-package br.com.easyschool.service.controllers;
+package br.com.easyschool.service.gateways;
 
 import br.com.easyschool.domain.entities.Language;
 import br.com.easyschool.domain.entities.Teacher;
@@ -8,6 +8,8 @@ import br.com.easyschool.domain.repositories.TeacherRepository;
 import br.com.easyschool.domain.repositories.TeacherSkillRepository;
 import br.com.easyschool.service.requests.CreateLTeacherSkillListRequest;
 import br.com.easyschool.service.requests.CreateTeacherSkillRequest;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,9 +17,10 @@ import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/teacher-skills")
-public class TeacherSkillController {
+@RequestMapping("/teacher/skills")
+public class TeacherSkillGateway {
 
+    private final Log LOG = LogFactory.getLog(this.getClass());
 
     private final TeacherSkillRepository repository;
 
@@ -25,9 +28,9 @@ public class TeacherSkillController {
 
     private final TeacherRepository teacherRepository;
 
-    public TeacherSkillController(TeacherSkillRepository repository,
-                                  LanguageRepository languageRepository,
-                                  TeacherRepository teacherRepository){
+    public TeacherSkillGateway(TeacherSkillRepository repository,
+                               LanguageRepository languageRepository,
+                               TeacherRepository teacherRepository){
         this.repository = repository;
         this.languageRepository = languageRepository;
         this.teacherRepository = teacherRepository;

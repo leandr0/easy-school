@@ -11,3 +11,11 @@ export async function getAllWeekDays(): Promise<CalendarWeekDayModel[]> {
   return response.json();
 }
 
+export async function getWeekDaysByCourseClass(courseClassId: string): Promise<CalendarWeekDayModel[]> {
+
+  const response = await fetch(API_URL+"/"+courseClassId+"/course-class");
+  if (!response.ok) {
+    throw new Error("Failed to fetch courses");
+  }
+  return response.json();
+}

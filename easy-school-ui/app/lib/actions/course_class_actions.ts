@@ -1,7 +1,7 @@
-import { CourseClassCompleteModel, CourseClassModel, CourseClassTeacherModel } from "../definitions/course_class_definitions";
+import { CourseClassCompleteModel, CourseClassModel, CourseClassTeacherModel, CreateCourseClassModel } from "../definitions/course_class_definitions";
 
 
-const API_URL = "http://localhost:8080/course_classes";
+const API_URL = "http://localhost:8080/course/classes";
 
 // Fetch all students
 export async function getAllCourseClass(): Promise<CourseClassTeacherModel[]> {
@@ -22,9 +22,21 @@ export async function getCourseClassById(id:any): Promise<CourseClassCompleteMod
 }
 
 
+export async function createCourseClass(course: CreateCourseClassModel): Promise<void> {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(course),
+  });
 
-// Create a new student
-export async function createCourseClass(course: CourseClassModel): Promise<void> {
+  if (!response.ok) {
+    throw new Error("Failed to create course class");
+  }
+}
+
+export async function updateCourseClass(course: CourseClassModel): Promise<void> {
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {

@@ -1,4 +1,4 @@
-package br.com.easyschool.service.controllers;
+package br.com.easyschool.service.gateways;
 
 import br.com.easyschool.domain.entities.Revenue;
 import br.com.easyschool.domain.entities.Student;
@@ -6,6 +6,8 @@ import br.com.easyschool.domain.repositories.RevenueRepository;
 import br.com.easyschool.domain.repositories.StudentRepository;
 import br.com.easyschool.domain.types.RevenueType;
 import br.com.easyschool.service.requests.CreateRevenueRequest;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,13 +15,14 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/revenues")
-public class RevenueController {
+public class RevenueGateway {
 
+    private final Log LOG = LogFactory.getLog(this.getClass());
     private final RevenueRepository repository;
 
     private final StudentRepository studentRepository;
 
-    public RevenueController(RevenueRepository repository, StudentRepository studentRepository)
+    public RevenueGateway(RevenueRepository repository, StudentRepository studentRepository)
     {
         this.repository = repository;
         this.studentRepository = studentRepository;

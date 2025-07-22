@@ -39,18 +39,16 @@ public class CourseClass implements EntityBase {
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
-/**
-    @ManyToMany
-    @JoinTable(
-            name = "course_class_students",
-            joinColumns = @JoinColumn(name = "course_class_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id"))
-    private Set<Student> students;
-**/
     @ManyToOne
     @JoinColumn(name = "teacher_id")
     private Teacher teacher;
 
+
+    /**
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_class_id")
+    private List<CourseClassCalendar> courseClassCalendars;
+**/
     @Override
     public Integer getId() {
         return id;
@@ -124,4 +122,14 @@ public class CourseClass implements EntityBase {
     public void setTeacher(Teacher teacher) {
         this.teacher = teacher;
     }
+
+
+    /**
+    public List<CourseClassCalendar> getCourseClassCalendars() {
+        return courseClassCalendars;
+    }
+
+    public void setCourseClassCalendars(List<CourseClassCalendar> courseClassCalendars) {
+        this.courseClassCalendars = courseClassCalendars;
+    }**/
 }

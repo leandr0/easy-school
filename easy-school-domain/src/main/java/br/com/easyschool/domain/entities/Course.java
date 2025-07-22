@@ -1,6 +1,7 @@
 package br.com.easyschool.domain.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -17,6 +18,7 @@ public class Course implements EntityBase {
 
     @ManyToOne
     @JoinColumn(name = "language_id", nullable = false)
+    @JsonProperty("language")
     private Language language;
 
     @Override

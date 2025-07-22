@@ -1,9 +1,9 @@
 "use client"
 
-import {AddStudents, DeleteSolicitacao, UpdateCourseClass, UpdateSolicitacao } from '../buttons/ui_buttons';
+import { AddStudents, UpdateCourseClass } from '../buttons/ui_buttons';
 import CourseStatus from './course_classes_status';
 import React, { useEffect, useState } from "react";
-import { CourseClassModel, CourseClassTeacherModel } from '@/app/lib/definitions/course_class_definitions';
+import { CourseClassTeacherModel } from '@/app/lib/definitions/course_class_definitions';
 import { getAllCourseClass } from '@/app/lib/actions/course_class_actions';
 
 export default async function CoursesClassTable({
@@ -26,8 +26,11 @@ export default async function CoursesClassTable({
 
   return (
     <div className="mt-6 flow-root">
+
       <div className="inline-block min-w-full align-middle">
+
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
+
           <div className="md:hidden">
             {course_classes?.map((course_class) => (
 
@@ -39,62 +42,69 @@ export default async function CoursesClassTable({
                       <p>{course_class.name}</p>
                     </div>
                   </div>
-                  <CourseStatus status={course_class.status ? "Ativo" : "Inativo"} />  
+                  <CourseStatus status={course_class.status ? "Ativo" : "Inativo"} />
                 </div>
                 <div>
-                    <div className="mb-2 flex items-center">
-                      <p>{course_class.teacher?.name}</p>
-                    </div>
+                  <div className="mb-2 flex items-center">
+                    <p>{course_class.teacher?.name}</p>
                   </div>
+                </div>
               </div>
             ))}
           </div>
-          <table className="hidden min-w-full text-gray-900 md:table">
-            <thead className="rounded-lg text-left text-sm font-normal">
-              <tr>
-                <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-                  Nome
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Status
-                </th>
-                <th scope="col" className="px-3 py-5 font-medium">
-                  Professor
-                </th>
-                <th scope="col" className="relative py-3 pl-6 pr-3">
-                  <span className="sr-only">Edit</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white">
+
+
+          {/* Desktop View */}
+          <div className="hidden md:block">
+            {/* Table Header */}
+            <div className="grid text-center grid-cols-6 text-left text-sm font-normal rounded-lg bg-gray-50 text-center">
+              <div className="px-4 py-3 font-medium sm:pl-6 border-b col-span-2">
+                Nome
+              </div>
+              <div className="px-3 py-3 font-medium border-b col-span-1">
+                Status
+              </div>
+              <div className="px-3 py-3 font-medium border-b col-span-2">
+                Professor
+              </div>
+              <div className="px-3 py-3 font-medium border-b col-span-1">
+                <span className="sr-only">Edit</span>
+              </div>
+            </div>
+
+            {/* Table Body */}
+            <div className="bg-white text-center">
               {course_classes?.map((course_class) => (
-                <tr
+                <div
                   key={course_class.id}
-                  className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
+                  className="grid grid-cols-6 w-full border-b text-sm last-of-type:border-none">
+
+                  <div className="py-3 pl-6 pr-3 col-span-2">
                     <div className="flex items-center gap-3">
-                      <p>{course_class.name}</p>
+                      <p className="truncate text-sm">{course_class.name}</p>
                     </div>
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-3">
-                  <CourseStatus status={course_class.status ? "Ativo" : "Inativo" } />                    
-                  </td>
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex items-center gap-3">
-                      <p>{course_class.teacher?.name}</p>
-                    </div>
-                  </td>
-                  <td className="whitespace-nowrap py-3 pl-6 pr-3">
-                    <div className="flex justify-end gap-3">
+                  </div>
+
+                  <div className="px-3 py-3 col-span-1">
+                    <CourseStatus status={course_class.status ? "Ativo" : "Inativo"} />
+                  </div>
+
+                  <div className="px-3 py-3 col-span-2 ">
+                    <p className="truncate text-xs md:text-sm">{course_class.teacher?.name}</p>
+                  </div>
+
+                  <div className="py-3 pr-3 col-span-1 flex justify-center">
+                    <div className="flex justify-center">
                       <AddStudents id_course_class={course_class.id as string} disabled={!!!course_class.status} />
                       <UpdateCourseClass id={course_class.id as string} disabled={false} />
-                      <DeleteSolicitacao id={course_class.id as string} disabled={false} />
                     </div>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </div>
+
+
         </div>
       </div>
     </div>

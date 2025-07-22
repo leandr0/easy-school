@@ -1,10 +1,13 @@
-package br.com.easyschool.service.controllers;
+package br.com.easyschool.service.gateways;
 
 import br.com.easyschool.domain.entities.*;
+import br.com.easyschool.domain.repositories.CourseClassCalendarRepository;
 import br.com.easyschool.domain.repositories.CourseClassRepository;
 import br.com.easyschool.domain.repositories.CourseRepository;
 import br.com.easyschool.domain.repositories.TeacherRepository;
 import br.com.easyschool.service.requests.CreateCourseClassRequest;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,19 +15,23 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/course_classes")
-public class CourseClassController {
+@RequestMapping("/course/classes")
+public class CourseClassGateway {
 
+    private final Log LOG = LogFactory.getLog(this.getClass());
     private final CourseClassRepository repository;
 
     private final CourseRepository courseRepository;
 
     private final TeacherRepository teacherRepository;
 
-    public CourseClassController(CourseClassRepository repository, CourseRepository courseRepository,TeacherRepository teacherRepository){
+    private final CourseClassCalendarRepository courseClassCalendarRepository;
+
+    public CourseClassGateway(CourseClassRepository repository, CourseRepository courseRepository, TeacherRepository teacherRepository, CourseClassCalendarRepository courseClassCalendarRepository){
         this.repository = repository;
         this.courseRepository = courseRepository;
         this.teacherRepository = teacherRepository;
+        this.courseClassCalendarRepository = courseClassCalendarRepository;
     }
 
     @GetMapping
@@ -63,8 +70,29 @@ public class CourseClassController {
         entity.setCourse(course);
         entity.setName(request.getName());
         entity.setTeacher(teacher);
+        entity.setDurationHour(request.getDurationHour());
+        entity.setDurationMinute(request.getDurationMinute());
+        entity.setStartHour(request.getStartHour());
+        entity.setStartMinute(request.getStartMinute());
 
-        return repository.save(entity);
+
+        entity = repository.save(entity);
+
+
+        for(int weekDayId : request.getWeekDays()){
+
+            CalendarWeekDay calendarWeekDay = new CalendarWeekDay();
+            calendarWeekDay.setId(weekDayId);
+
+            CourseClassCalendar courseClassCalendar = new CourseClassCalendar();
+
+            courseClassCalendar.setCourseClass(entity);
+            courseClassCalendar.setCalendarWeekDay(calendarWeekDay);
+
+            courseClassCalendarRepository.save(courseClassCalendar);
+        }
+
+        return entity;
     }
 
     @PostMapping("/{id}/teacher/{teacherId}")

@@ -1,9 +1,8 @@
 "use client"
-import Image from 'next/image';
-import { AddPropriedade, DeleteSolicitacao, UpdateSolicitacao } from '../buttons/ui_buttons';
+
+import { UpdateBase } from '../buttons/ui_buttons';
 import CourseStatus from './classes_status';
-import { formatDateToLocal, formatCurrency } from '@/app/lib/utils';
-import { fetchFilteredSolicitacoes } from '@/app/lib/data/solicitacao';
+
 import React, { useEffect, useState } from "react";
 
 import { getAllCourses } from '@/app/lib/actions/course_actions';
@@ -76,9 +75,7 @@ export default async function CoursesTable({
                   </td>
                   <td className="whitespace-nowrap py-3 pl-6 pr-3">
                     <div className="flex justify-end gap-3">
-                      <AddPropriedade idSolicitacao={course.id as string} disabled={false} />
-                      <UpdateSolicitacao id={course.id as string} disabled={false} />
-                      <DeleteSolicitacao id={course.id as string} disabled={false} />
+                      <UpdateBase id={course.id as string} link='/dashboard/courses/${id}/edit' disabled={false} />
                     </div>
                   </td>
                 </tr>

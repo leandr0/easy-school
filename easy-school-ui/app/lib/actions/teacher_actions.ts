@@ -1,52 +1,37 @@
 import { TeacherModel } from "../definitions/teacher_definitions";
 
+import { apiClient } from "@/app/config/api";
 
-const API_URL = "http://localhost:8080/teachers";
+
+
+const clientApi = apiClient.resource('/teachers');
 
 // Fetch all students
 export async function getAllTeachers(): Promise<TeacherModel[]> {
-  const response = await fetch(API_URL);
-  if (!response.ok) {
-    throw new Error("Failed to fetch teachers");
-  }
-  return response.json();
+  return clientApi.get<TeacherModel[]>();
 }
 
 export async function getAllTeachersAvailable(): Promise<TeacherModel[]> {
-  const response = await fetch(API_URL+"/available");
-  if (!response.ok) {
-    throw new Error("Failed to fetch teachers");
-  }
-  return response.json();
+  return clientApi.get<TeacherModel[]>("/available");
 }
 
-export async function getAllTeachersAvailableByLanguage(language_id:any): Promise<TeacherModel[]> {
-  const response = await fetch(API_URL+"/available?language="+language_id);
-  if (!response.ok) {
-    throw new Error("Failed to fetch teachers by language");
-  }
-  return response.json();
+export async function getAllTeachersAvailableByLanguage(language_id: any): Promise<TeacherModel[]> {
+
+  const params = new URLSearchParams();
+  params.append("language", language_id.toString());
+
+  return clientApi.get<TeacherModel[]>('/available?' + params.toString());
 }
 
-export async function getAllTeachersAvailableByLanguageFromCourseClass(course_class_id:any): Promise<TeacherModel[]> {
-  const response = await fetch(API_URL+"/available?course_class="+course_class_id);
-  if (!response.ok) {
-    throw new Error("Failed to fetch teachers by language");
-  }
-  return response.json();
+export async function getAllTeachersAvailableByLanguageFromCourseClass(course_class_id: any): Promise<TeacherModel[]> {
+
+  const params = new URLSearchParams();
+  params.append("course_class", course_class_id.toString());
+
+  return clientApi.get<TeacherModel[]>('/available?' + params.toString());
 }
 
 // Create a new student
 export async function createTeacher(teacher: TeacherModel): Promise<void> {
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(teacher),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to create teacher");
-  }
+  return clientApi.post<void>(teacher);
 }

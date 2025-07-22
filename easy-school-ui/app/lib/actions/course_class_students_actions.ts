@@ -8,6 +8,9 @@ const API_URL = "http://localhost:8080/course_class_students";
 
 // Create a new student
 export async function createCourseClassStudent(model: CreateCourseClassStudentModel): Promise<void> {
+  console.log("createCourseClassStudent");
+  console.log(JSON.stringify(model));
+  
   const response = await fetch(API_URL+"/student-list", {
     method: "POST",
     headers: {

@@ -9,6 +9,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { StudentModel } from '@/app/lib/definitions/students_definitions';
 import { createStudent } from '@/app/lib/actions/students_actions';
+import DateInput from '../components/DateInput';
 
 export default function CreateStudentForm() {
 
@@ -65,60 +66,84 @@ export default function CreateStudentForm() {
 
     <form onSubmit={handleSubmit} >
 
-      <table className="hidden min-w-full text-gray-900 md:table">
 
-        <tr className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
-          <th>Nome :</th>
-          <td>
-            <input
-              type="text"
-              name="name"
-              id="name"
-              value={formData?.name}
-              onChange={handleChange}
-              className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-            />
-          </td>
-        </tr>
-        <tr className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
-          <th>Telefone:</th>
-          <td>
-            <input type="text" name="phone_number" id="phone_number"
-              value={formData?.phone_number}
-              onChange={handleChange}
-              className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500" />
-          </td>
-        </tr>
-        <tr className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
-          <th>email:</th>
-          <td>
-            <input type="text" name="email" id="email"
-              value={formData?.email}
-              onChange={handleChange}
-              className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500" />
-          </td>
-        </tr>
+      <div className="mt-6 flow-root">
+        <div className="inline-block min-w-full align-middle">
+          <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
 
+            <h2 className="text-base font-bold text-left mb-4 p-3 text-gray-800">Informações do Professor</h2>
 
-        <tr className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
-          <th>Dia de vencimento</th>
-          <td>
-            <input type="text" name="due_date" id="due_date"
-              value={formData?.due_date}
-              onChange={handleChange}
-              className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500" />
-          </td>
-        </tr>
-        <tr className="w-full border-b py-3 text-sm last-of-type:border-none [&:first-child>td:first-child]:rounded-tl-lg [&:first-child>td:last-child]:rounded-tr-lg [&:last-child>td:first-child]:rounded-bl-lg [&:last-child>td:last-child]:rounded-br-lg">
-          <th>Date de início</th>
-          <td>
-            <input type="text" name="start_date" id="start_date"
-              value={formData?.start_date}
-              onChange={handleChange}
-              className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500" />
-          </td>
-        </tr>
-      </table>
+            <div className="space-y-4">
+              {/* Nome - Full width */}
+              <div className="flex items-center justify-center">
+                <div className="w-full flex items-center">
+                  <label className="w-24 text-sm text-right mr-3">Nome:</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData?.name || ""}
+                    onChange={handleChange}
+                    className="flex-1 rounded-md border border-gray-300 py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              {/* Telefone and Email on same line */}
+              <div className="flex items-center justify-center">
+                <div className="w-full flex items-center">
+                  <label className="w-24 text-sm text-right mr-3">Telefone:</label>
+                  <input
+                    type="text"
+                    name="phone_number"
+                    value={formData.phone_number || ""}
+                    onChange={handleChange}
+                    className="flex-1 rounded-md border border-gray-300 py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mr-4"
+                  />
+                  <label className="w-24 text-sm text-right mr-3">Email:</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email || ""}
+                    onChange={handleChange}
+                    className="flex-1 rounded-md border border-gray-300 py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              {/* Salário and Data de início on same line */}
+              <div className="flex">
+                <div className="w-1/2 flex items-center">
+                  <label className="w-24 text-sm text-right mr-3">Vencimento:</label>
+                  <input
+                    type="number"
+                    name="due_date"
+                    id="due_date"
+                    min={5}
+                    max={20}
+                    step={5}
+                    value={formData?.due_date}
+                    onChange={(e) => {
+                      const allowed = [5, 10, 15, 20];
+                      const val = Number(e.target.value);
+                      if (allowed.includes(val) || e.target.value === "") {
+                        handleChange(e);
+                      }
+                    }}
+                    className="text-center peer block w-15 rounded-md border border-gray-200 py-[9px] text-sm outline-2 placeholder:text-gray-500"
+                  />
+                  <label className="w-34 text-sm text-right mr-3 pl-[115px]" >Início:</label>
+                  <DateInput
+                    name="start_date"
+                    value={formData.start_date || ""}
+                    onChange={handleChange}
+                    className="text-center rounded-md border border-gray-300 py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="mt-6 flex justify-end gap-4">
         <Link

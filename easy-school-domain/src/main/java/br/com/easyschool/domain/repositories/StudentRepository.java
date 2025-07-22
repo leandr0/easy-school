@@ -36,4 +36,5 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
             WHERE cs.id = :course_class_id
             """)
     List<Student> findStudentsInCourseClass(@Param("course_class_id") Integer courseClassId);
+
 }

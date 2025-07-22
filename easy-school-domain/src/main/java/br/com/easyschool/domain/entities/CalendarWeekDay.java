@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "calendar_week_day",
-        uniqueConstraints = {@UniqueConstraint( columnNames = {"week_day"})})
+@Table(name = "calendar_week_day")
 public class CalendarWeekDay implements EntityBase{
 
     @Id
@@ -16,6 +15,11 @@ public class CalendarWeekDay implements EntityBase{
     @JsonProperty("week_day")
     private String weekDay;
 
+
+    /**
+    @OneToMany(mappedBy = "calendarWeekDay", fetch = FetchType.LAZY)
+    private List<CourseClassCalendar> courseClassCalendars;
+**/
     @Override
     public Integer getId() {
         return id;
