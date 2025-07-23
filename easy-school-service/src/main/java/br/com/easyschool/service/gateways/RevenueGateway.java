@@ -1,5 +1,6 @@
 package br.com.easyschool.service.gateways;
 
+import br.com.easyschool.domain.dto.CollectionFormDTO;
 import br.com.easyschool.domain.entities.Revenue;
 import br.com.easyschool.domain.entities.Student;
 import br.com.easyschool.domain.repositories.RevenueRepository;
@@ -8,9 +9,15 @@ import br.com.easyschool.domain.types.RevenueType;
 import br.com.easyschool.service.requests.CreateRevenueRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -22,8 +29,7 @@ public class RevenueGateway {
 
     private final StudentRepository studentRepository;
 
-    public RevenueGateway(RevenueRepository repository, StudentRepository studentRepository)
-    {
+    public RevenueGateway(RevenueRepository repository, StudentRepository studentRepository) {
         this.repository = repository;
         this.studentRepository = studentRepository;
     }
@@ -36,9 +42,61 @@ public class RevenueGateway {
 
 
     @GetMapping("/student/{id}")
-    public List<Revenue> findByStudent(@PathVariable  Integer id) {
+    public List<Revenue> findByStudent(@PathVariable Integer id) {
         return repository.findByStudentId(id);
     }
+
+    @GetMapping("/collection-form")
+    public List<CollectionFormDTO> fetchCollectionForm() {
+        return repository.fetchCollectionForms();
+    }
+
+    @GetMapping("/collection-form/student/{id}")
+    public List<CollectionFormDTO> fetchCollectionFormByStudent(@PathVariable Integer id) {
+        return repository.fetchCollectionFormByStudent(id);
+    }
+
+    @PostMapping("/collection-form")
+    @Transactional
+    public List<Revenue> createRevenuesFromCollectionForm(@RequestBody List<CollectionFormDTO> request) {
+
+        Map<Integer, Float> students = new LinkedHashMap<>();
+
+        LocalDate now = LocalDate.now();
+        Integer year = now.getYear();
+        Month month = now.getMonth();
+        Integer monthNumber = now.getMonthValue();
+
+        request.forEach(collectionForm ->
+                students.merge(
+                        collectionForm.getStudentId(),
+                        collectionForm.getCoursePrice(),
+                        Float::sum
+                )
+        );
+
+        List<Revenue> revenues = students.entrySet().stream()
+                .map(entry -> {
+                    Student student = new Student();
+                    student.setId(entry.getKey());
+
+                    Revenue revenue = new Revenue();
+                    revenue.setAmount(entry.getValue().doubleValue());
+                    revenue.setYear(year);
+                    revenue.setMonth(monthNumber);
+                    revenue.setStatus(RevenueType.OPEN);
+                    revenue.setPaid(false);
+                    revenue.setReminderMessageSent(false);
+                    revenue.setPaymentMessageSent(false);
+                    revenue.setStudent(student);
+
+                    return revenue;
+                })
+                .collect(Collectors.toList());
+
+        return repository.saveAll(revenues);
+    }
+
 
     @PostMapping
     public Revenue create(@RequestBody CreateRevenueRequest request) {

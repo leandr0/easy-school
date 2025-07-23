@@ -1,7 +1,7 @@
 import {
   UserGroupIcon,
   HomeIcon,
-  DocumentDuplicateIcon,
+  CurrencyDollarIcon,
   AcademicCapIcon,
   BookOpenIcon,
   ShoppingBagIcon
@@ -32,6 +32,12 @@ const links = [
     name: 'Professores',
     href: '/dashboard/teachers',
     icon: AcademicCapIcon,
+  }
+  ,
+  {
+    name: 'Financeiro',
+    href: '/dashboard/financial',
+    icon: CurrencyDollarIcon,
   }
   
 ];
