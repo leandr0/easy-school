@@ -21,7 +21,7 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.config.baseURL}${endpoint}`;
-    
+
     const defaultOptions: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -45,7 +45,18 @@ class ApiClient {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      return response.json();
+      // --- MODIFIED SECTION START ---
+      // Conditionally parse response based on Content-Type header
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        return response.json() as Promise<T>;
+      } else {
+        // If content-type is not JSON, or not present, assume text
+        // This is crucial for handling plain text responses like URLs
+        return response.text() as Promise<T>;
+      }
+      // --- MODIFIED SECTION END ---
+
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof Error) {
@@ -98,12 +109,12 @@ class ResourceClient {
     if (!endpoint) {
       return this.basePath;
     }
-    
+
     // If endpoint starts with '?', it's a query string - append directly
     if (endpoint.startsWith('?')) {
       return `${this.basePath}${endpoint}`;
     }
-    
+
     // Otherwise, ensure it starts with '/' for path segments
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
     return `${this.basePath}${cleanEndpoint}`;

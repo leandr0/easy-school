@@ -118,3 +118,9 @@ CREATE TABLE IF NOT EXISTS calendar_range_hour_day(
     UNIQUE(calendar_week_day_id,end_hour,end_minute,teacher_id)
 );
 
+CREATE TABLE IF NOT EXISTS technical_config(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code INTEGER NOT NULL,
+    param TEXT NOT NULL,
+    UNIQUE(code)
+);

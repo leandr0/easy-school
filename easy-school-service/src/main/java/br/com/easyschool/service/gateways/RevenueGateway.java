@@ -56,6 +56,28 @@ public class RevenueGateway {
         return repository.fetchCollectionFormByStudent(id);
     }
 
+    @PutMapping("/{id}/reminder-message")
+    public void sendReminderMessage(@PathVariable("id") final Integer revenueId) {
+        repository.setReminderSentAsTrue(revenueId);
+    }
+
+    @PutMapping("/{id}/payment-message")
+    public void sendPaymentMessage(@PathVariable("id") final Integer revenueId) {
+        repository.setPaymentSentAsTrue(revenueId);
+    }
+
+    @PutMapping("/{id}/payment-status")
+    public void updatePaymentStatus(@PathVariable("id") final Integer revenueId, @RequestBody Map<String, String> body) {
+
+        String status = body.get("status");
+        RevenueType revenueTypeStatus = RevenueType.valueOf(status);
+
+        if (revenueTypeStatus == RevenueType.OPEN)
+            status = RevenueType.OK.name();
+
+        repository.setPaidAsOK(revenueId, status);
+    }
+
     @PostMapping("/collection-form")
     @Transactional
     public List<Revenue> createRevenuesFromCollectionForm(@RequestBody List<CollectionFormDTO> request) {
@@ -96,7 +118,6 @@ public class RevenueGateway {
 
         return repository.saveAll(revenues);
     }
-
 
     @PostMapping
     public Revenue create(@RequestBody CreateRevenueRequest request) {

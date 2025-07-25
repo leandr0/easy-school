@@ -1,0 +1,1 @@
+export type ActionType = 'payment_confirmation' | 'send_payment_message' | 'send_reminder_message';

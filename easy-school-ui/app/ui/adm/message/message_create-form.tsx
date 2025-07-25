@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 
 import { MessageModel } from '@/app/lib/definitions/messages_definitions';
 import FormActions from '../../components/create_class/FormActions';
-import { getAllMessages, saveMessages } from '@/app/lib/actions/revenue_messages';
+import { getAllMessages, saveMessages } from '@/app/services/revenueMessageService';
 
 // Import the new components
 
