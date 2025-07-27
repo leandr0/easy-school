@@ -1,5 +1,4 @@
 import { MessageModel } from "../lib/definitions/messages_definitions";
-import { TeacherModel } from "../lib/definitions/teacher_definitions";
 
 import { apiClient } from "@/app/config/api";
 import { URLPathParam } from "../lib/url_path_param";

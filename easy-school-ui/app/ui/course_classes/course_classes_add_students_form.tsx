@@ -9,7 +9,7 @@ import { getCourseClassById } from '@/app/lib/actions/course_class_actions';
 import { BookOpenIcon } from '@heroicons/react/24/outline';
 import SelectableStudentsTable, { SelectableStudentsTableRef } from '../students/students_selectable_table';
 import { CreateCourseClassStudentModel } from '@/app/lib/definitions/course_class_students_definitions';
-import { createCourseClassStudent, deleteByStudentAndCourseClass } from '@/app/lib/actions/course_class_students_actions';
+import { createCourseClassStudent, deleteByStudentAndCourseClass } from '@/app/services/courseClassStudentService';
 import { StudentModel } from '@/app/lib/definitions/students_definitions';
 import { getStudentsInCourseClass, getStudentsNotInCourseClass } from '@/app/lib/actions/students_actions';
 import { DeleteStudantFromCourseClassList } from '../buttons/ui_buttons';

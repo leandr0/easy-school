@@ -90,4 +90,12 @@ public class CourseClassStudentGateway {
         repository.deleteByStudentIdAndCourseClassId(studentId,courseClassId);
     }
 
+    @GetMapping("/{student_id}/student")
+    public List<CourseClassStudent> fetchCourseClassByStudentId(@PathVariable("student_id") Integer studentId){
+        return repository.fetchCourseClassByStudentId(studentId);
+    }
+
+
+
+
 }

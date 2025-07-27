@@ -10,7 +10,7 @@ import { getCourseClassById } from '@/app/lib/actions/course_class_actions';
 import { BookOpenIcon } from '@heroicons/react/24/outline';
 import SelectableStudentsTable from '../students/students_selectable_table';
 import { CreateCourseClassStudentModel } from '@/app/lib/definitions/course_class_students_definitions';
-import { createCourseClassStudent } from '@/app/lib/actions/course_class_students_actions';
+import { createCourseClassStudent } from '@/app/services/courseClassStudentService';
 import { StudentModel } from '@/app/lib/definitions/students_definitions';
 import { getStudentsInCourseClass } from '@/app/lib/actions/students_actions';
 

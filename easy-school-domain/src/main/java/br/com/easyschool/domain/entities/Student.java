@@ -37,7 +37,8 @@ public class Student implements EntityBase {
             name = "course_class_students",
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "course_class_id"))
-    private Set<CourseClass> courseClasses;
+    @JsonProperty("course_class")
+    private Set<CourseClass> courseClasses; 
 
     /**
 
