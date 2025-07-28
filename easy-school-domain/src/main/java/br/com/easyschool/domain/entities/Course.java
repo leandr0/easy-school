@@ -12,8 +12,10 @@ public class Course implements EntityBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private Boolean status;
 
     @ManyToOne
@@ -21,6 +23,8 @@ public class Course implements EntityBase {
     @JsonProperty("language")
     private Language language;
 
+    @Column(nullable = false)
+    private Double price;
     @Override
     public Integer getId() {
         return id;
@@ -53,5 +57,13 @@ public class Course implements EntityBase {
 
     public void setLanguage(Language language) {
         this.language = language;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 }

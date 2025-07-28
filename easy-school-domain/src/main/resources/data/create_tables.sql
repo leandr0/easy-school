@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS course (
     name TEXT NOT NULL,
     status BOOL NOT NULL,
     language_id INTEGER NOT NULL,
+    price REAL NOT NULL,
     FOREIGN KEY (language_id) REFERENCES language (id),
     UNIQUE(name)
 );

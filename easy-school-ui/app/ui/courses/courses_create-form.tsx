@@ -10,6 +10,7 @@ import { createCourse } from '@/app/lib/actions/course_actions';
 import { BookOpenIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
 import { LanguageModel } from '@/app/lib/definitions/language_definitions';
 import { getAllLanguages } from '@/app/lib/actions/language_actions';
+import BRLCurrency from '../components/currency';
 
 export default function CreateCourseForm() {
 
@@ -52,7 +53,7 @@ export default function CreateCourseForm() {
   const handleLanguageChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => (
-      { ...prev, language :{ id: value } }
+      { ...prev, language: { id: value } }
     ));
   };
 
@@ -79,7 +80,19 @@ export default function CreateCourseForm() {
       }
     }
   };
+  
+const handlePriceChange = (value: number | string) => {
+    let numericValue: number | undefined;
 
+    if (typeof value === 'string') {
+      const parsed = parseFloat(value.replace(/[^\d.-]/g, '')); // Remove non-numeric chars
+      numericValue = isNaN(parsed) ? undefined : parsed;
+    } else {
+      numericValue = value;
+    }
+
+    setFormData((prev) => ({ ...prev, price: numericValue }));
+  };
 
 
   return (
@@ -95,7 +108,7 @@ export default function CreateCourseForm() {
             <div className="relative grid grid-cols-4">
 
               <div className="relative text-base mt-[10px] ml-[45px] ">Idioma:</div>
-              
+
               <div className="relative col-span-3">
                 <select
                   id="language_id"
@@ -129,8 +142,24 @@ export default function CreateCourseForm() {
               </div>
             </div>
           </div>
+          <div className="mb-4 grid grid-cols-2 gap-4 " >
+            <div className="relative grid grid-cols-4">
+              <div className="relative text-base align-middle mt-[10px] ml-[45px]">Valor:</div>
+              <div className="relative col-span-3">
+                <BRLCurrency
+                  value={formData.price}
+                  asInput={true}
+                  onChange={handlePriceChange}
+                  className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+                />
+              </div>
+            </div>
+          </div>
+
 
         </div>
+
+
 
       </div>
 
