@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 import React, { useEffect, useRef, useState } from "react";
 import { CourseClassAddStudentsForm} from '@/app/lib/definitions/course_class_definitions';
-import { getCourseClassById } from '@/app/lib/actions/course_class_actions';
+import { getCourseClassById } from '@/app/services/courseClassService';
 import { BookOpenIcon } from '@heroicons/react/24/outline';
 import SelectableStudentsTable, { SelectableStudentsTableRef } from '../students/students_selectable_table';
 import { CreateCourseClassStudentModel } from '@/app/lib/definitions/course_class_students_definitions';
 import { createCourseClassStudent, deleteByStudentAndCourseClass } from '@/app/services/courseClassStudentService';
 import { StudentModel } from '@/app/lib/definitions/students_definitions';
-import { getStudentsInCourseClass, getStudentsNotInCourseClass } from '@/app/lib/actions/students_actions';
+import { getStudentsInCourseClass, getStudentsNotInCourseClass } from '@/app/services/studentService';
 import { DeleteStudantFromCourseClassList } from '../buttons/ui_buttons';
 
 export default function AddStudentsCourseClassForm({ course_class_id }: { course_class_id: string }) {

@@ -9,8 +9,9 @@ export type StudentModel = {
   };
 
   export type CoursePriceModel = {
+    id?: string;
     name?: string;
-    course_price?: string;    
+    course_price?: number;    
   };
 
   export type StudentCoursePriceModel =  StudentModel & {

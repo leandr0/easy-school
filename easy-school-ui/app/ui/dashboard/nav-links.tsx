@@ -6,6 +6,7 @@ import {
   BookOpenIcon,
   ShoppingBagIcon
 } from '@heroicons/react/24/outline';
+import { Clock10Icon } from 'lucide-react';
 
 
 // Map of links to display in the side navigation.
@@ -22,6 +23,11 @@ const links = [
     name: 'Turmas',
     href: '/dashboard/courses-class',
     icon: ShoppingBagIcon,
+  },
+  {
+    name: 'Controle de Aulas',
+    href: '/dashboard/class-control',
+    icon: Clock10Icon,
   },
   {
     name: 'Alunos',

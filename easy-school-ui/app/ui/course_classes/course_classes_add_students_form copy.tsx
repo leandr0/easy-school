@@ -6,13 +6,13 @@ import { Button } from '@/app/ui/button';
 
 import React, { useEffect, useState } from "react";
 import { CourseClassCompleteModel} from '@/app/lib/definitions/course_class_definitions';
-import { getCourseClassById } from '@/app/lib/actions/course_class_actions';
+import { getCourseClassById } from '@/app/services/courseClassService';
 import { BookOpenIcon } from '@heroicons/react/24/outline';
 import SelectableStudentsTable from '../students/students_selectable_table';
 import { CreateCourseClassStudentModel } from '@/app/lib/definitions/course_class_students_definitions';
 import { createCourseClassStudent } from '@/app/services/courseClassStudentService';
 import { StudentModel } from '@/app/lib/definitions/students_definitions';
-import { getStudentsInCourseClass } from '@/app/lib/actions/students_actions';
+import { getStudentsInCourseClass } from '@/app/services/studentService';
 
 
 export default function AddStudentsCourseClassForm({ course_class_id }: { course_class_id: string }) {

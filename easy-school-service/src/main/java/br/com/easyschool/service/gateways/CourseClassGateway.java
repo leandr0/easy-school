@@ -39,6 +39,11 @@ public class CourseClassGateway {
         return repository.findAll();
     }
 
+    @GetMapping("/available")
+    public List<CourseClass> getAllAvailable(){
+        return repository.findAllCourseClassesAvailable();
+    }
+
 
     @GetMapping("/{id}")
     public Optional<CourseClass> getCourseClassById(@PathVariable final Integer id){
@@ -108,6 +113,12 @@ public class CourseClassGateway {
 
 
         return repository.save(entity);
+    }
+
+    @PutMapping
+    public CourseClass updateCourseClass(@RequestBody CourseClass request){
+
+        return repository.save(request);
     }
 
 }

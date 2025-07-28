@@ -5,7 +5,7 @@ import StudentStatus from './students_status';
 import { formatDateToLocal } from '@/app/lib/utils';
 import React, { useEffect, useState } from "react";
 
-import { getAllStudents } from '@/app/lib/actions/students_actions';
+import { getAllStudents } from '@/app/services/studentService';
 import { StudentModel } from '@/app/lib/definitions/students_definitions';
 
 export default function StudentsTable({

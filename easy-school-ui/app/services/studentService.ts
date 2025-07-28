@@ -1,4 +1,4 @@
-import { StudentCoursePriceModel, StudentModel } from "../definitions/students_definitions";
+import { StudentCoursePriceModel, StudentModel } from "../lib/definitions/students_definitions";
 import { apiClient } from "@/app/config/api";
 import { URLPathParam } from "@/app/lib/url_path_param"
 
@@ -40,4 +40,8 @@ export async function getStudentsInCourseClass(course_class_id:any): Promise<Stu
 
 export async function createStudent(student: StudentModel): Promise<void> {
   return clientApi.post<void>(student);
+}
+
+export async function updateStudentAndCoursePrice(student: StudentModel): Promise<void> {
+  return clientApi.put("/course-price",student);
 }

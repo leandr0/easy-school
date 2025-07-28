@@ -1,4 +1,4 @@
-import { getCourseClassById } from '@/app/lib/actions/course_class_actions';
+import { getCourseClassById } from '@/app/services/courseClassService';
 import { CourseClassModel } from '@/app/lib/definitions/course_class_definitions';
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import React, { useEffect, useState } from "react";

@@ -11,7 +11,7 @@ import java.util.List;
 public interface CourseClassRepository extends JpaRepository<CourseClass, Integer> {
 
     @Query(value = """
-            SELECT cc.name,ccs.course_price
+            SELECT ccs.id, cc.name,ccs.course_price
             FROM student s
             INNER JOIN course_class_students ccs
             on s.id = student_id
@@ -21,4 +21,7 @@ public interface CourseClassRepository extends JpaRepository<CourseClass, Intege
             AND s.id = :student_id;
             """, nativeQuery = true)
     List<CoursePriceDTO> findStudentsCourseClassPrice(@Param("student_id") Integer studentId);
+
+    @Query("SELECT cc FROM CourseClass cc WHERE cc.status = true")
+    List<CourseClass> findAllCourseClassesAvailable();
 }

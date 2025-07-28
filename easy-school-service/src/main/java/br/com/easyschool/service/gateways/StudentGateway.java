@@ -1,8 +1,10 @@
 package br.com.easyschool.service.gateways;
 
+import br.com.easyschool.domain.dto.CoursePriceDTO;
 import br.com.easyschool.domain.dto.StudentDTO;
 import br.com.easyschool.domain.entities.Student;
 import br.com.easyschool.domain.repositories.CourseClassRepository;
+import br.com.easyschool.domain.repositories.CourseClassStudentRepository;
 import br.com.easyschool.domain.repositories.StudentRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,11 +27,14 @@ public class StudentGateway {
 
     private final CourseClassRepository courseClassRepository;
 
+    private final CourseClassStudentRepository courseClassStudentRepository;
 
-   public StudentGateway(StudentRepository repository, CourseClassRepository courseClassRepository){
+
+   public StudentGateway(StudentRepository repository, CourseClassRepository courseClassRepository, CourseClassStudentRepository courseClassStudentRepository){
 
        this.repository = repository;
        this.courseClassRepository = courseClassRepository;
+       this.courseClassStudentRepository = courseClassStudentRepository;
     }
 
 
@@ -60,6 +65,32 @@ public class StudentGateway {
 
         return ResponseEntity.ok(student);
     }
+
+    @PutMapping("/course-price")
+    public ResponseEntity<Student> updateStudentCoursePrice(@RequestBody StudentDTO request) {
+
+        if (request == null || request.getId() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+       Student entity = repository.findById(request.getId()).orElseThrow(() -> new RuntimeException("Student not found"));;
+
+        entity.setName(request.getName());
+        entity.setStatus(request.getStatus());
+        entity.setEmail(request.getEmail());
+        entity.setPhoneNumber(request.getPhoneNumber());
+        entity.setDueDate(request.getDueDate());
+        entity.setStartDate(request.getStartDate());
+
+        repository.save(entity);
+
+        for (CoursePriceDTO coursePrice :  request.getCoursePrice()){
+            courseClassStudentRepository.updateCoursePriceById(coursePrice.getId(),coursePrice.getCoursePrice().doubleValue());
+        }
+
+        return ResponseEntity.ok(entity);
+    }
+
 
     @GetMapping("/{id}")
     public Optional<Student> findCourse(@PathVariable("id") final Integer studentId) {

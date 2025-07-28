@@ -6,7 +6,7 @@ import { Button } from '@/app/ui/button';
 
 import React, { useEffect, useState } from "react";
 import { CourseClassCompleteModel, CourseClassEditForm, CourseClassModel, CourseClassTeacherModel } from '@/app/lib/definitions/course_class_definitions';
-import { createCourseClass, getCourseClassById } from '@/app/lib/actions/course_class_actions';
+import { createCourseClass, getCourseClassById, updateCourseClass } from '@/app/services/courseClassService';
 import { TeacherModel } from '@/app/lib/definitions/teacher_definitions';
 import { getAllTeachersAvailable, getAllTeachersAvailableByLanguage } from '@/app/lib/actions/teacher_actions';
 import { findCourse, getAllCoursesAvailable } from '@/app/lib/actions/course_actions';
@@ -17,7 +17,7 @@ import WeekDaySelector from '../components/create_class/WeekDaySelector';
 import TimeSelector from '../components/create_class/TimeSelector';
 import { CalendarWeekDayModel } from '@/app/lib/definitions/calendar_week_day_definitions';
 import { getAllWeekDays, getWeekDaysByCourseClass } from '@/app/lib/actions/calendar_week_day_actions';
-import { fetchAvailabilityTeacher } from '@/app/lib/actions/calendar_range_hour_day_actions';
+import { fetchAvailabilityTeacher } from '@/app/services/calendarRangeHourDayService';
 import { CalendarRangeHourDayModel } from '@/app/lib/definitions/calendat_range_hour_day_definitions';
 import { LanguageModel } from '@/app/lib/definitions/language_definitions';
 
@@ -83,34 +83,37 @@ export default function EditCourseClassForm({ course_class_id }: { course_class_
       .catch((err) => setError(err.message));
   }, []);
 
-// Extract the functionality into a standalone function
-async function fetchAndSetWeekDays(
-  course_class_id: string, 
-  setFormData: React.Dispatch<React.SetStateAction<CourseClassEditForm>>,
-  setError: React.Dispatch<React.SetStateAction<string | null>>
-) {
-  try {
-    const weekDays = await getWeekDaysByCourseClass(course_class_id);
-    
-    const ids = weekDays
-      .map((wd) => wd?.id?.toString())
-      .filter((id): id is string => typeof id === 'string');
-    
-    setFormData((prev) => ({
-      ...prev,
-      week_day_ids: ids,
-    }));
-    
-    console.log("Computed week_day_ids:", ids);
-  } catch (err) {
-    setError(err instanceof Error ? err.message : String(err));
-  }
-}
+  
+  async function fetchAndSetWeekDays(
+    course_class_id: string,
+    setFormData: React.Dispatch<React.SetStateAction<CourseClassEditForm>>,
+    setError: React.Dispatch<React.SetStateAction<string | null>>
+  ) {
+    try {
+      const weekDays = await getWeekDaysByCourseClass(course_class_id);
 
-// Then in your component:
-useEffect(() => {
-  fetchAndSetWeekDays(course_class_id, setFormData, setError);
-}, []);
+      const ids = weekDays
+        .map((wd) => wd?.id?.toString())
+        .filter((id): id is string => typeof id === 'string');
+
+      setFormData((prev) => ({
+        ...prev,
+        week_day_ids: ids,
+      }));
+
+      console.log("Computed week_day_ids:", ids);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  } 
+
+  
+  // Then in your component:
+  useEffect(() => {
+    fetchAndSetWeekDays(course_class_id, setFormData, setError);
+  }, []);
+
+  
 
   useEffect(() => {
     getCourseClassById(course_class_id)
@@ -140,6 +143,7 @@ useEffect(() => {
         setFormData((prev) => ({
           ...prev,
           course_class: {
+            id: course_class_id,
             teacher: courseClass.teacher,
             course: courseClass.course,
             status: courseClass.status,
@@ -158,58 +162,76 @@ useEffect(() => {
       .catch((err) => setError(err.message));
   }, []);
 
-  /**
-  useEffect(() => {
-    getAllTeachersAvailableByLanguageFromCourseClass(course_class_id)
-      .then(setTeachers)
-      .catch((err) => setError(err.message));
-  }, []);
- */
-
 
   const handleChange = async (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const target = e.target as HTMLInputElement | HTMLSelectElement;
+    const { name, value } = target;
+
+    const isCheckbox = target.type === "checkbox";
+    const checked = isCheckbox ? (target as HTMLInputElement).checked : undefined;
 
     if (name === "course_id") {
-      // Update formData state
       setFormData((prev) => ({
         ...prev,
         course_id: value,
         teacher_id: "",
       }));
 
-      // Fetch selected course details
       if (value) {
         try {
-
           const selectedCourse: CourseModel = await findCourse(value);
 
           if (selectedCourse.language?.id) {
-            // Fetch teachers by language
             const teachersByLanguage = await getAllTeachersAvailableByLanguage(selectedCourse.language.id);
             setTeachers(teachersByLanguage);
           } else {
-            // No language found, fallback to all teachers
             const allTeachers = await getAllTeachersAvailable();
             setTeachers(allTeachers);
           }
         } catch (error) {
-          console.error("Error fetching course or teachers:", error);
           setError((error as Error).message);
         }
       } else {
-        // Empty selection, fallback to all teachers
         const allTeachers = await getAllTeachersAvailable();
         setTeachers(allTeachers);
       }
+    } else if (
+      ["name", "status", "start_hour", "start_minute", "duration_hour", "duration_minute"].includes(name)
+    ) {
+
+      /** 
+      setFormData((prev) => {
+        const course_class = prev.course_class ?? {
+          id: '',
+          name: '',
+          course: {} as CourseModel,
+          teacher: {} as TeacherModel,
+          language: {} as LanguageModel,
+          status: false,
+          start_hour: '',
+          start_minute: '',
+          duration_hour: '',
+          duration_minute: '',
+        };
+
+        return {
+          ...prev,
+          course_class: {
+            ...course_class,
+            [name]: isCheckbox ? checked : value,
+          },
+        };
+      });*/
     } else {
-      // Handle normal text inputs (course name, etc.)
       setFormData((prev) => ({
         ...prev,
         [name]: value,
       }));
     }
   };
+
+
+
 
   function setWeekDayIds(form: CourseClassEditForm): CourseClassEditForm {
     // Create a copy of the form to avoid mutating the original
@@ -229,9 +251,7 @@ useEffect(() => {
     return updatedForm;
   }
 
-  /**
- * Fixed version of fetchTeacherAvailability function with proper type checking
- */
+ 
   const fetchTeacherAvailability = async () => {
     setTeacherCalendars([]);
 
@@ -293,13 +313,15 @@ useEffect(() => {
     }
 
 
-    if (actionType === 'bla-bla') {
+    if (actionType === 'save_course_class') {
 
       try {
 
+
+        console.log(`Course Class ID : ${course_class_id}`);
         console.log(formData);
 
-        await createCourseClass(formData?.course_class!);
+        await updateCourseClass(formData?.course_class!);
 
         setMessage("✅ Course Class created successfully!");
         setFormData({
@@ -430,6 +452,7 @@ useEffect(() => {
                 onChange={handleChange}
                 className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
               />
+
             </td>
           </tr>
         </tbody>
@@ -439,14 +462,29 @@ useEffect(() => {
         <Switch
           checked={Boolean(formData.course_class?.status)}
           onChange={(checked) => {
-            setFormData(prev => ({
-              ...prev,
-              status: checked,
-            }));
+            setFormData((prev) => {
+              const existing = prev.course_class;
+
+              if (!existing || !existing.course) {
+                // fallback seguro que respeita os tipos
+                return prev;
+              }
+
+              return {
+                ...prev,
+                course_class: {
+                  ...existing,
+                  status: checked,
+                },
+              };
+            });
           }}
           label={formData.course_class?.status ? 'Ativo' : 'Inativo'}
           color="green"
         />
+
+
+
       </div>
 
 
@@ -568,8 +606,8 @@ useEffect(() => {
           Cancelar
         </Link>
         <Button
-          onClick={() => setActionType('save_couse_class')}
-          value="save_couse_class"
+          onClick={() => setActionType('save_course_class')}
+          value="save_course_class"
           className='hover:bg-purple-500' type="submit">Atualizar Turma</Button>
       </div>
 

@@ -4,7 +4,7 @@ import { AddStudents, UpdateCourseClass } from '../buttons/ui_buttons';
 import CourseStatus from './course_classes_status';
 import React, { useEffect, useState } from "react";
 import { CourseClassTeacherModel } from '@/app/lib/definitions/course_class_definitions';
-import { getAllCourseClass } from '@/app/lib/actions/course_class_actions';
+import { getAllCourseClass } from '@/app/services/courseClassService';
 
 export default async function CoursesClassTable({
   query,

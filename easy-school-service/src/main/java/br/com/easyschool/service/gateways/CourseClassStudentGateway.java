@@ -75,9 +75,10 @@ public class CourseClassStudentGateway {
         for (Student student :students) {
 
             CourseClassStudent entity = new CourseClassStudent();
+            //TODO: get value from course
+            entity.setCoursePrice(Double.parseDouble("500.001"));
             entity.setCourseClass(courseClass);
             entity.setStudent(student);
-
             result.add(repository.save(entity));
         }
 

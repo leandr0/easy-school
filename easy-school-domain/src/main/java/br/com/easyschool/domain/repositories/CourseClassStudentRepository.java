@@ -27,4 +27,14 @@ public interface CourseClassStudentRepository extends JpaRepository<CourseClassS
             AND cs.status = true
             """)
     public List<CourseClassStudent> fetchCourseClassByStudentId(@Param("student_id") Integer studentId);
+
+
+    @Modifying
+    @Transactional
+    @Query(value = """
+            UPDATE course_class_students
+            SET course_price = :course_price
+            WHERE id = :id
+            """, nativeQuery = true)
+    public void updateCoursePriceById(@Param("id") Integer id,@Param("course_price") Double coursePrice);
 }

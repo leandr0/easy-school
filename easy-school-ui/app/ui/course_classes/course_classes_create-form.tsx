@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 import React, { useEffect, useState } from "react";
 import { CourseClassCreateForm } from '@/app/lib/definitions/course_class_definitions';
-import { createCourseClass } from '@/app/lib/actions/course_class_actions';
+import { createCourseClass } from '@/app/services/courseClassService';
 import { BookOpenIcon } from '@heroicons/react/24/outline';
 
 import { findCourse, getAllCoursesAvailable } from '@/app/lib/actions/course_actions';
@@ -15,7 +15,7 @@ import { getAllTeachersAvailable, getAllTeachersAvailableByLanguage } from '@/ap
 import { CalendarWeekDayModel } from '@/app/lib/definitions/calendar_week_day_definitions';
 import { getAllWeekDays } from '@/app/lib/actions/calendar_week_day_actions';
 
-import { fetchAvailabilityTeacher } from '@/app/lib/actions/calendar_range_hour_day_actions';
+import { fetchAvailabilityTeacher } from '@/app/services/calendarRangeHourDayService';
 import { CalendarRangeHourDayModel } from '@/app/lib/definitions/calendat_range_hour_day_definitions';
 
 // Import the new components

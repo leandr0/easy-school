@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { getStudentsNotInCourseClass } from '@/app/lib/actions/students_actions';
+import { getStudentsNotInCourseClass } from '@/app/services/studentService';
 import { StudentModel } from '@/app/lib/definitions/students_definitions';
 import { Button } from "../button";
 

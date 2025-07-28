@@ -8,7 +8,7 @@ import React, { useState } from "react";
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { StudentModel } from '@/app/lib/definitions/students_definitions';
-import { createStudent } from '@/app/lib/actions/students_actions';
+import { createStudent } from '@/app/services/studentService';
 import DateInput from '../components/DateInput';
 
 export default function CreateStudentForm() {

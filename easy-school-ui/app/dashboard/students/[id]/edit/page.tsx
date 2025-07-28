@@ -1,9 +1,7 @@
-import { getCourseClassById } from '@/app/lib/actions/course_class_actions';
-import { CourseClassModel } from '@/app/lib/definitions/course_class_definitions';
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
+import StudentEditForm from '@/app/ui/students/StudentEditForm';
 import React, { useEffect, useState } from "react";
-import EditCourseClassForm from '@/app/ui/course_classes/course_classes_edit_form';
-import EditStudentForm from '@/app/ui/students/students_edit_form';
+
 
 
 export default async function Page({ params }: { params: { id: string } }) {
@@ -22,7 +20,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           },
         ]}
       />
-      <EditStudentForm student_id={id}/>
+      <StudentEditForm student_id={id}/>
     </main>
   );
 }
