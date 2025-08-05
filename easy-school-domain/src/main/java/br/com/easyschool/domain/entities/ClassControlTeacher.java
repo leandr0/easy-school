@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "class_control_teacher",
         uniqueConstraints = {@UniqueConstraint( columnNames = {"class_control_id","teacher_id"})})
-public class CouseControlTeacher implements EntityBase {
+public class ClassControlTeacher implements EntityBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -8,7 +8,7 @@ export async function getAllCourseClass(): Promise<CourseClassTeacherModel[]> {
   return clientApi.get();
 }
 
-export async function getAllCourseClassAvailable(): Promise<CourseClassTeacherModel[]> {
+export async function getAllCourseClassAvailable(): Promise<CourseClassCompleteModel[]> {
   return clientApi.get("/available");
 }
 

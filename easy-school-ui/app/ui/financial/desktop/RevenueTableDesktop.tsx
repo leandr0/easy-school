@@ -142,7 +142,7 @@ export default function RevenuesTableDesktop({
                   <div className="grid gap-2">
                     {expandedRows[revenue.id!].map((entry, index) => (
                       <div key={index} className="grid grid-cols-12 text-gray-700">
-                        <div className="col-span-3 whitespace-nowrap"><strong>Turma:</strong> {entry.course_class?.name ?? "N/A"}</div>
+                        <div className="col-span-5 whitespace-nowrap"><strong>Turma:</strong> {entry.course_class?.name ?? "N/A"}</div>
                         <div className="col-span-3 whitespace-nowrap"><strong>Preço:</strong> <BRLCurrency value={entry.course_price ?? 0} /></div>
                       </div>
                     ))}

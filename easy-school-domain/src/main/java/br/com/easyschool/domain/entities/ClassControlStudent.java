@@ -1,14 +1,11 @@
-package br.com.easyschool.domain.dto;
+package br.com.easyschool.domain.entities;
 
-import br.com.easyschool.domain.entities.ClassControl;
-import br.com.easyschool.domain.entities.EntityBase;
-import br.com.easyschool.domain.entities.Student;
 import jakarta.persistence.*;
 
-/**
+
 @Entity
 @Table(name = "class_control_student",
-        uniqueConstraints = {@UniqueConstraint( columnNames = {"class_control_id","student_id"})})*/
+        uniqueConstraints = {@UniqueConstraint( columnNames = {"class_control_id","student_id"})})
 public class ClassControlStudent implements EntityBase {
 
 

@@ -33,6 +33,11 @@ public class Teacher implements EntityBase{
     @JsonProperty("start_date")
     private LocalDateTime startDate;
 
+    public Teacher(){}
+
+    public Teacher(Integer id){
+        this.id = id;
+    }
     @Override
     public Integer getId() {
         return id;

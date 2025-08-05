@@ -125,3 +125,39 @@ CREATE TABLE IF NOT EXISTS technical_config(
     param TEXT NOT NULL,
     UNIQUE(code)
 );
+
+CREATE TABLE IF NOT EXISTS class_control(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    day INTEGER NOT NULL,
+    month INTEGER NOT NULL,
+    year INTEGER NOT NULL,
+    replacement BOOL NOT NULL,
+    content TEXT NOT NULL,
+    course_class_id NOT NULL,
+    FOREIGN KEY (course_class_id) REFERENCES course_class (id),
+    UNIQUE(day,month,year,course_class_id)
+);
+
+CREATE TABLE IF NOT EXISTS class_control_teacher(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    class_control_id INTEGER NOT NULL,
+    teacher_id NOT NULL,
+    FOREIGN KEY (class_control_id) REFERENCES class_control (id),
+    FOREIGN KEY (teacher_id) REFERENCES teacher (id),
+    UNIQUE(teacher_id,class_control_id)
+);
+
+CREATE TABLE IF NOT EXISTS class_control_student(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    class_control_id INTEGER NOT NULL,
+    student_id NOT NULL,
+    FOREIGN KEY (class_control_id) REFERENCES class_control (id),
+    FOREIGN KEY (student_id) REFERENCES student (id),
+    UNIQUE(student_id,class_control_id)
+);
+
+
+
+
+
+

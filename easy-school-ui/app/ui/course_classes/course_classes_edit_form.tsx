@@ -419,7 +419,7 @@ export default function EditCourseClassForm({ course_class_id }: { course_class_
             id="course_id"
             name="course_id"
             value={formData.course_class?.course.id}
-            className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+             className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
             aria-describedby="operadora-error"
           >
             {couses.map((course) => (

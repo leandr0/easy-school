@@ -46,6 +46,12 @@ public class Student implements EntityBase {
     @JoinColumn(name = "student_id")
     private Set<Revenue> revenues;
 **/
+
+    public Student(){}
+
+    public Student(Integer id){
+        this.id = id;
+    }
     @Override
     public void setId(Integer id) {
         this.id = id;

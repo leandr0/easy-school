@@ -1,9 +1,11 @@
-package br.com.easyschool.domain.dto;
+package br.com.easyschool.domain.entities;
 
-import br.com.easyschool.domain.entities.EntityBase;
 import jakarta.persistence.*;
 
 
+@Entity
+@Table(name = "class_control",
+        uniqueConstraints = {@UniqueConstraint( columnNames = {"day","month","year","course_class_id"})})
 public class ClassControl implements EntityBase {
 
     @Id
@@ -24,11 +26,10 @@ public class ClassControl implements EntityBase {
     @Column(name = "content",nullable = false)
     private String content;
 
-    /**
+
     @ManyToOne
     @JoinColumn(name = "course_class_id", nullable = false)
     private CourseClass courseClass;
-*/
     @Override
     public Integer getId() {
         return id;
@@ -77,5 +78,13 @@ public class ClassControl implements EntityBase {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public CourseClass getCourseClass() {
+        return courseClass;
+    }
+
+    public void setCourseClass(CourseClass courseClass) {
+        this.courseClass = courseClass;
     }
 }
