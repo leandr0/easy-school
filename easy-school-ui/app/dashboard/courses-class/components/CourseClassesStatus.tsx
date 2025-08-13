@@ -1,4 +1,4 @@
-import { CheckIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { CheckIcon} from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 
 export default function CourseClassStatus({ status }: { status: string }) {

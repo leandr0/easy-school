@@ -7,8 +7,8 @@ import { CreateTeacherFormModel, TeacherModel, TeacherWeekDayAvailableModel } fr
 import { LanguageModel } from '@/app/lib/definitions/language_definitions';
 import { CalendarWeekDayModel } from '@/app/lib/definitions/calendar_week_day_definitions';
 import { CalendarRangeHourDayModel } from '@/app/lib/definitions/calendat_range_hour_day_definitions';
-import { createTeacher } from '@/app/lib/actions/teacher_actions';
-import { getAllLanguages } from '@/app/lib/actions/language_actions';
+import { createTeacher } from '@/app/services/teacherService';
+import { getAllLanguages } from '@/app/services/languageService';
 import { getAllWeekDays } from '@/app/lib/actions/calendar_week_day_actions';
 
 export const useTeacherForm = () => {

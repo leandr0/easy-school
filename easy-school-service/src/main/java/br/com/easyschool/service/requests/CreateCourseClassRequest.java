@@ -17,11 +17,11 @@ public class CreateCourseClassRequest {
     @JsonProperty("week_day_ids")
     private int[] weekDays;
 
-    @JsonProperty("duration_hour")
-    private Integer durationHour;
+    @JsonProperty("end_hour")
+    private Integer endHour;
 
-    @JsonProperty("duration_minute")
-    private Integer durationMinute;
+    @JsonProperty("end_minute")
+    private Integer endMinute;
 
     @JsonProperty("start_hour")
     private Integer startHour;
@@ -73,20 +73,20 @@ public class CreateCourseClassRequest {
         this.weekDays = weekDays;
     }
 
-    public Integer getDurationHour() {
-        return durationHour;
+    public Integer getEndHour() {
+        return endHour;
     }
 
-    public void setDurationHour(Integer durationHour) {
-        this.durationHour = durationHour;
+    public void setEndHour(Integer endHour) {
+        this.endHour = endHour;
     }
 
-    public Integer getDurationMinute() {
-        return durationMinute;
+    public Integer getEndMinute() {
+        return endMinute;
     }
 
-    public void setDurationMinute(Integer durationMinute) {
-        this.durationMinute = durationMinute;
+    public void setEndMinute(Integer endMinute) {
+        this.endMinute = endMinute;
     }
 
     public Integer getStartHour() {

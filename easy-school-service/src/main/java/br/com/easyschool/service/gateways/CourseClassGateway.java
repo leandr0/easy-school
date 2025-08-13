@@ -1,5 +1,6 @@
 package br.com.easyschool.service.gateways;
 
+import br.com.easyschool.domain.dto.CourseClassTeacherDTO;
 import br.com.easyschool.domain.entities.*;
 import br.com.easyschool.domain.repositories.CourseClassCalendarRepository;
 import br.com.easyschool.domain.repositories.CourseClassRepository;
@@ -8,6 +9,8 @@ import br.com.easyschool.domain.repositories.TeacherRepository;
 import br.com.easyschool.service.requests.CreateCourseClassRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,6 +54,20 @@ public class CourseClassGateway {
     }
 
 
+    @GetMapping("/teacher/{id}")
+    public ResponseEntity<List<CourseClassTeacherDTO>> getCourseClassByTeacherId(@PathVariable("id") Integer teacherId){
+
+        List<CourseClassTeacherDTO> result = null;
+
+        try {
+           result =  repository.fetchCourseClassByTeacher(teacherId);
+        }catch (Throwable t){
+            LOG.info(t.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return ResponseEntity.ok(result);
+    }
 
     @PostMapping
     public CourseClass create(@RequestBody CreateCourseClassRequest request){
@@ -70,19 +87,15 @@ public class CourseClassGateway {
             entity.setStatus(true);
         }
 
-
-
         entity.setCourse(course);
         entity.setName(request.getName());
         entity.setTeacher(teacher);
-        entity.setDurationHour(request.getDurationHour());
-        entity.setDurationMinute(request.getDurationMinute());
+        entity.setEndHour(request.getEndHour());
+        entity.setEndMinute(request.getEndMinute());
         entity.setStartHour(request.getStartHour());
         entity.setStartMinute(request.getStartMinute());
 
-
         entity = repository.save(entity);
-
 
         for(int weekDayId : request.getWeekDays()){
 

@@ -9,7 +9,7 @@ export function TeacherAvailabilityInputComponent({ formData, handleInputChange 
       <div className="hidden md:block">
         <div className="space-y-4 mb-4">
           <div className="grid grid-cols-3 gap-4 items-center">
-            <div className="font-medium">Horário de Início:</div>
+            <div className="font-medium">Início:</div>
             <div>
               <input
                 type="number"
@@ -35,7 +35,7 @@ export function TeacherAvailabilityInputComponent({ formData, handleInputChange 
           </div>
           
           <div className="grid grid-cols-3 gap-4 items-center">
-            <div className="font-medium">Horário final:</div>
+            <div className="font-medium">Término:</div>
             <div>
               <input
                 type="number"

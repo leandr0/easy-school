@@ -1,3 +1,16 @@
+// Custom Error class to preserve HTTP status
+class HttpError extends Error {
+  public status: number;
+  public response: Response;
+
+  constructor(response: Response, message?: string) {
+    super(message || `HTTP ${response.status}: ${response.statusText}`);
+    this.name = 'HttpError';
+    this.status = response.status;
+    this.response = response;
+  }
+}
+
 // Approach 1: Resource-specific API client
 interface ApiConfig {
   baseURL: string;
@@ -41,27 +54,29 @@ class ApiClient {
 
       clearTimeout(timeoutId);
 
+      // FIXED: Throw HttpError with status information preserved
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        throw new HttpError(response);
       }
 
-      // --- MODIFIED SECTION START ---
       // Conditionally parse response based on Content-Type header
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
         return response.json() as Promise<T>;
       } else {
         // If content-type is not JSON, or not present, assume text
-        // This is crucial for handling plain text responses like URLs
         return response.text() as Promise<T>;
       }
-      // --- MODIFIED SECTION END ---
 
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
           throw new Error('Request timeout');
+        }
+        // FIXED: If it's already an HttpError, re-throw it as-is
+        if (error instanceof HttpError) {
+          throw error;
         }
         throw new Error(`API request failed: ${error.message}`);
       }
@@ -91,7 +106,7 @@ class ApiClient {
     return this.request<T>(endpoint, { method: 'DELETE' });
   }
 
-  // NEW: Create resource-specific client
+  // Create resource-specific client
   resource(basePath: string) {
     return new ResourceClient(this, basePath);
   }
@@ -105,17 +120,14 @@ class ResourceClient {
   ) {}
 
   private buildEndpoint(endpoint: string = ''): string {
-    // If endpoint is empty, just return basePath
     if (!endpoint) {
       return this.basePath;
     }
 
-    // If endpoint starts with '?', it's a query string - append directly
     if (endpoint.startsWith('?')) {
       return `${this.basePath}${endpoint}`;
     }
 
-    // Otherwise, ensure it starts with '/' for path segments
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
     return `${this.basePath}${cleanEndpoint}`;
   }
@@ -127,22 +139,18 @@ class ResourceClient {
   post<T>(data?: any): Promise<T>;
   post<T>(endpoint: string, data?: any): Promise<T>;
   post<T>(endpointOrData?: string | any, data?: any): Promise<T> {
-    // If first argument is not a string, it's the data
     if (typeof endpointOrData !== 'string') {
       return this.apiClient.post<T>(this.buildEndpoint(''), endpointOrData);
     }
-    // Otherwise, first argument is endpoint, second is data
     return this.apiClient.post<T>(this.buildEndpoint(endpointOrData), data);
   }
 
   put<T>(data?: any): Promise<T>;
   put<T>(endpoint: string, data?: any): Promise<T>;
   put<T>(endpointOrData?: string | any, data?: any): Promise<T> {
-    // If first argument is not a string, it's the data
     if (typeof endpointOrData !== 'string') {
       return this.apiClient.put<T>(this.buildEndpoint(''), endpointOrData);
     }
-    // Otherwise, first argument is endpoint, second is data
     return this.apiClient.put<T>(this.buildEndpoint(endpointOrData), data);
   }
 
@@ -152,3 +160,4 @@ class ResourceClient {
 }
 
 export const apiClient = new ApiClient();
+export { HttpError };

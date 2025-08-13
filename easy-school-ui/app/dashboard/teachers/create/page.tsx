@@ -1,9 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { CustomerField } from '@/app/lib/definitions';  // Ensure this path is correct
-import CreateStudentForm from "@/app/ui/students/students_create-form";
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
-import CreateTeacherForm from "@/app/ui/teachers/teacher_create-form";
+import CreateTeacherForm from "@/app/dashboard/teachers/components/TeacherCreateForm";
 
 
 export default function Page() {

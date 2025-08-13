@@ -1,4 +1,4 @@
-import { TeacherModel } from "../definitions/teacher_definitions";
+import { TeacherModel, TeacherUpdateModel } from "../lib/definitions/teacher_definitions";
 
 import { apiClient } from "@/app/config/api";
 
@@ -9,6 +9,10 @@ const clientApi = apiClient.resource('/teachers');
 // Fetch all students
 export async function getAllTeachers(): Promise<TeacherModel[]> {
   return clientApi.get<TeacherModel[]>();
+}
+
+export async function getTeacherById(teacher_id: any): Promise<TeacherModel> {
+  return clientApi.get<TeacherModel>(teacher_id);
 }
 
 export async function getAllTeachersAvailable(): Promise<TeacherModel[]> {
@@ -34,4 +38,8 @@ export async function getAllTeachersAvailableByLanguageFromCourseClass(course_cl
 // Create a new student
 export async function createTeacher(teacher: TeacherModel): Promise<void> {
   return clientApi.post<void>(teacher);
+}
+
+export async function updateTeacher(teacher: TeacherModel): Promise<TeacherModel> {
+  return clientApi.put(teacher);
 }

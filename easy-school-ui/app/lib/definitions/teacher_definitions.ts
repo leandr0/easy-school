@@ -1,5 +1,6 @@
 import { CalendarWeekDayModel } from "./calendar_week_day_definitions";
 import { CalendarRangeHourDayModel } from "./calendat_range_hour_day_definitions";
+import { LanguageModel } from "./language_definitions";
 
 export type TeacherModel = {
     id?: string;
@@ -9,6 +10,20 @@ export type TeacherModel = {
     status?: boolean;
     compensation?: string;
     start_date?: string;
+    languages?:LanguageModel[];
+    language_ids?:string[];
+    calendar_range_hour_days?:CalendarRangeHourDayModel[];
+  };
+
+export type TeacherUpdateModel = {
+    id?: string;
+    name?: string;
+    phone_number?: string;
+    email?: string;
+    status?: boolean;
+    compensation?: string;
+    start_date?: string;
+    languages:LanguageModel[];
     language_ids:string[];
     calendar_range_hour_days:CalendarRangeHourDayModel[];
   };
@@ -30,6 +45,7 @@ export type TeacherModel = {
   };
 
   export type TeacherWeekDayAvailableModel = {
+    id?:string;
     uddi?:string;
     week_day?:CalendarWeekDayModel;
     start_hour?: string;

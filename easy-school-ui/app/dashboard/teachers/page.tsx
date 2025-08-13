@@ -8,7 +8,7 @@ import { fetchInvoicesPages } from '@/app/lib/data';
 import StudentsTable from '@/app/ui/students/students_table'; 
 
 import { Metadata } from 'next';
-import TeacherTable from '@/app/ui/teachers/teacher_table';
+import TeacherTable from '@/app/dashboard/teachers/components/TeacherTable';
  
 export const metadata: Metadata = {
   title: 'Students',

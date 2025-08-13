@@ -128,6 +128,17 @@ export function UpdateSolicitacao({ id, disabled }: { id: string, disabled: bool
   );
 }
 
+export function UpdateTeacher({ id, disabled }: { id: string, disabled: boolean }) {
+  return (
+    <Link
+      href={disabled ? '' : `/dashboard/teachers/${id}/edit`}
+      className={disabled ?  'rounded-md border p-2 hover:bg-gray-100 read-only-select' : " rounded-md border p-2 hover:bg-gray-100"}
+    >
+      <PencilIcon className="w-5" color={disabled ? '' : 'blue'} />
+    </Link>
+  );
+}
+
 export function UpdateCourseClass({ id, disabled }: { id: string, disabled: boolean }) {
   return (
     <Link
@@ -189,18 +200,18 @@ export function DeleteSolicitacao({ id, disabled }: { id: string, disabled: bool
 }
 
 
-export function DeleteStudantFromCourseClassList({ id, disabled, setActionType }: { id: string, disabled: boolean, setActionType: (action: string) => void; }) {
-
+// inside DeleteStudantFromCourseClassList
+export default function DeleteStudantFromCourseClassList({id, disabled, onClick,}: { id: string; disabled?: boolean; onClick?: () => void }) {
   return (
-
     <button
-      type="submit"
-      name="action"
-      onClick={() => setActionType('remove_student_from_class')}
-      value="remove_student_from_class"
-      className={disabled ? " rounded-md border p-2 hover:bg-gray-100" : 'rounded-md border p-2 hover:bg-gray-100 read-only-select'} >
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      className={disabled ?  'rounded-md border p-2 hover:bg-gray-100 read-only-select' : " rounded-md border p-2 hover:bg-gray-100"  } 
+      
+    >
       <span className="sr-only">Delete</span>
-      <TrashIcon className="w-4" color={disabled ? 'red' : ''} />
+      <TrashIcon className="w-4" color={disabled ?  '' : 'red'} />
     </button>
   );
 }

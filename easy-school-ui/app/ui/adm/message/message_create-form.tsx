@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from "react";
 
 import { MessageModel } from '@/app/lib/definitions/messages_definitions';
-import FormActions from '../../components/create_class/FormActions';
+import FormActions from '../../../dashboard/courses-class/components/FormActions';
 import { getAllMessages, saveMessages } from '@/app/services/revenueMessageService';
 
 // Import the new components

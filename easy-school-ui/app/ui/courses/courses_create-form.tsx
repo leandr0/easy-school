@@ -9,7 +9,7 @@ import { CourseModel } from '@/app/lib/definitions/courses_definitions';
 import { createCourse } from '@/app/lib/actions/course_actions';
 import { BookOpenIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
 import { LanguageModel } from '@/app/lib/definitions/language_definitions';
-import { getAllLanguages } from '@/app/lib/actions/language_actions';
+import { getAllLanguages } from '@/app/services/languageService';
 import BRLCurrency from '../components/currency';
 
 export default function CreateCourseForm() {

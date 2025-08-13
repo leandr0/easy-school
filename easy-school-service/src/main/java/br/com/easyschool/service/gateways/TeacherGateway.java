@@ -7,6 +7,7 @@ import br.com.easyschool.service.requests.CreateTeacherRequest;
 import br.com.easyschool.service.response.TeacherResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
@@ -27,9 +28,9 @@ public class TeacherGateway {
 
     public TeacherGateway(TeacherRepository repository,
                           TeacherSkillGateway teacherSkillGateway,
-                          CalendarRangeHourDayGateway calendarRangeHourDayGateway){
+                          CalendarRangeHourDayGateway calendarRangeHourDayGateway) {
         this.repository = repository;
-      //  this.teacherController = teacherController;
+        //  this.teacherController = teacherController;
         this.teacherSkillGateway = teacherSkillGateway;
         this.calendarRangeHourDayGateway = calendarRangeHourDayGateway;
     }
@@ -46,13 +47,32 @@ public class TeacherGateway {
                                                          @RequestParam(value = "course_class", required = false) String courseClassId) {
 
         if (languageId != null && !languageId.isEmpty()) {
-            return this.createListTeacherResponseFromListTeacher( repository.findAllTeachersAvailableByLanguage(Integer.valueOf(languageId)));
+            return this.createListTeacherResponseFromListTeacher(repository.findAllTeachersAvailableByLanguage(Integer.valueOf(languageId)));
         } else if (courseClassId != null && !courseClassId.isEmpty()) {
             return this.createListTeacherResponseFromListTeacher(repository.findAllTeachersAvailableByLanguageFromCourseClass(Integer.valueOf(courseClassId)));
         } else {
-            return this.createListTeacherResponseFromListTeacher( repository.findAllTeachersAvailable());
+            return this.createListTeacherResponseFromListTeacher(repository.findAllTeachersAvailable());
         }
 
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Teacher> findTeacherById(@PathVariable("id") final Integer teacherId) {
+
+        Teacher teacher = null;
+
+        try {
+
+            teacher = repository.findById(teacherId).orElseThrow(() -> new RuntimeException("Teacher not found"));
+            ;
+
+        } catch (Throwable t) {
+            return ResponseEntity.notFound().build();
+        }
+
+
+        return ResponseEntity.ok(teacher);
     }
 
     @PostMapping
@@ -74,21 +94,34 @@ public class TeacherGateway {
         });
 
         teacherSkillGateway.createAll(CreateLTeacherSkillListRequest.build().
-                                                addLanguageIds(request.getLanguagesId()).
-                                                    addTeacherId(teacher.getId())
-                                            );
+                addLanguageIds(request.getLanguagesId()).
+                addTeacherId(teacher.getId())
+        );
 
         calendarRangeHourDayGateway.createAll(request.getCalendarRangeHourDays());
 
         return teacher;
     }
 
+    @PutMapping
+    public ResponseEntity<Teacher> update(@RequestBody Teacher teacher) {
 
-    private List<TeacherResponse> createListTeacherResponseFromListTeacher(final List<Teacher> teachers){
+        try {
+            teacher = repository.save(teacher);
+
+        } catch (Throwable t) {
+            return ResponseEntity.notFound().build();
+        }
+
+
+        return ResponseEntity.ok(teacher);
+    }
+
+    private List<TeacherResponse> createListTeacherResponseFromListTeacher(final List<Teacher> teachers) {
         //TODO: usar lambda
         List<TeacherResponse> response = new LinkedList<TeacherResponse>();
 
-        for (Teacher teacher  :teachers) {
+        for (Teacher teacher : teachers) {
             response.add(new TeacherResponse(teacher));
         }
         return response;

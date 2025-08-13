@@ -7,7 +7,7 @@ import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { fetchInvoicesPages } from '@/app/lib/data';
 
 import { Metadata } from 'next';
-import CoursesClassTable from '@/app/ui/course_classes/course_classes_table';
+import CoursesClassTable from './components/courseClassesTable';
  
 export const metadata: Metadata = {
   title: 'Turmas',

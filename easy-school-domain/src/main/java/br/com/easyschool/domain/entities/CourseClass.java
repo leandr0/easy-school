@@ -27,13 +27,13 @@ public class CourseClass implements EntityBase {
     @JsonProperty("start_minute")
     private Integer startMinute;
 
-    @Column(name = "duration_hour")
-    @JsonProperty("duration_hour")
-    private Integer durationHour;
+    @Column(name = "end_hour")
+    @JsonProperty("end_hour")
+    private Integer endHour;
 
-    @Column(name = "duration_minute")
-    @JsonProperty("duration_minute")
-    private Integer durationMinute;
+    @Column(name = "end_minute")
+    @JsonProperty("end_minute")
+    private Integer endMinute;
 
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
@@ -75,20 +75,20 @@ public class CourseClass implements EntityBase {
         this.startMinute = startMinute;
     }
 
-    public Integer getDurationHour() {
-        return durationHour;
+    public Integer getEndHour() {
+        return endHour;
     }
 
-    public void setDurationHour(Integer durationHour) {
-        this.durationHour = durationHour;
+    public void setEndHour(Integer endHour) {
+        this.endHour = endHour;
     }
 
-    public Integer getDurationMinute() {
-        return durationMinute;
+    public Integer getEndMinute() {
+        return endMinute;
     }
 
-    public void setDurationMinute(Integer durationMinute) {
-        this.durationMinute = durationMinute;
+    public void setEndMinute(Integer endMinute) {
+        this.endMinute = endMinute;
     }
 
     public Course getCourse() {
@@ -123,13 +123,4 @@ public class CourseClass implements EntityBase {
         this.teacher = teacher;
     }
 
-
-    /**
-    public List<CourseClassCalendar> getCourseClassCalendars() {
-        return courseClassCalendars;
-    }
-
-    public void setCourseClassCalendars(List<CourseClassCalendar> courseClassCalendars) {
-        this.courseClassCalendars = courseClassCalendars;
-    }**/
 }

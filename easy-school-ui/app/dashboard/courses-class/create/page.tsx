@@ -1,8 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
-import CreateCourseClassForm from "@/app/ui/course_classes/course_classes_create-form";
-
+import CreateCourseClassForm from "../components/CourseClassesCreateForm";
 
 export default function Page() {
   

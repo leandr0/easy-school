@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "teacher",
@@ -32,6 +33,14 @@ public class Teacher implements EntityBase{
     @Column(name = "start_date")
     @JsonProperty("start_date")
     private LocalDateTime startDate;
+
+    @ManyToMany
+    @JoinTable(
+            name = "teacher_skill",
+            joinColumns = @JoinColumn(name = "teacher_id"),
+            inverseJoinColumns = @JoinColumn(name = "language_id")
+    )
+    private List<Language> languages;
 
     public Teacher(){}
 
@@ -94,5 +103,13 @@ public class Teacher implements EntityBase{
 
     public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
+    }
+
+    public List<Language> getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(List<Language> languages) {
+        this.languages = languages;
     }
 }

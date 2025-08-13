@@ -25,8 +25,8 @@ export type CreateCourseClassModel = {
     status?:boolean,
     start_hour?: string;
     start_minute?: string;
-    duration_hour?: string;
-    duration_minute?: string;
+    end_hour?: string;
+    end_minute?: string;
     language?: LanguageModel;
     week_day_ids?: string[];
   };
@@ -48,8 +48,8 @@ export type CreateCourseClassModel = {
     status?:boolean,
     start_hour?: string;
     start_minute?: string;
-    duration_hour?: string;
-    duration_minute?: string;
+    end_hour?: string;
+    end_minute?: string;
     language: LanguageModel;
 
   }
@@ -79,3 +79,17 @@ export type CreateCourseClassModel = {
     status?:boolean,
     student?:StudentModel,
   };
+
+
+  export type CourseClassTeacher = {
+    course_class_id?: number;
+    course_class_name?: string;
+    teacher_id?: number;
+    start_hour?: number;
+    start_minute?: number;
+    end_hour?: number;
+    end_minute?: number;
+    calendar_week_day_id?: number;
+    week_day?: string;
+
+  }

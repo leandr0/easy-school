@@ -57,8 +57,8 @@ CREATE TABLE IF NOT EXISTS course_class (
     teacher_id INTEGER NOT NULL,
     start_hour INTEGER NOT NULL,
     start_minute INTEGER NOT NULL,
-    duration_hour INTEGER NOT NULL,
-    duration_minute INTEGER NOT NULL,
+    end_hour INTEGER NOT NULL,
+    end_minute INTEGER NOT NULL,
     FOREIGN KEY (course_id) REFERENCES course (id),
     FOREIGN KEY (teacher_id) REFERENCES teacher (id)
 );

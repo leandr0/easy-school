@@ -4,11 +4,12 @@ import br.com.easyschool.domain.entities.CalendarRangeHourDay;
 import br.com.easyschool.domain.repositories.CalendarRangeHourDayRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.List;
-
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/calendar/range-hour-days")
@@ -32,8 +33,7 @@ public class CalendarRangeHourDayGateway {
                                                                @RequestParam(value = "end_minute", required = true) Integer endMinute) {
 
 
-
-        return repository.findAllTeachersAvailableByClassCalendar(calendarWeekDayIds,
+        return repository.findTeachersAvailableByClassCalendarNotInCourseClass(calendarWeekDayIds,
                 languageId,
                 startHour,
                 startMinute,
@@ -42,12 +42,54 @@ public class CalendarRangeHourDayGateway {
     }
 
 
+    @GetMapping("/{id}/teacher")
+    public ResponseEntity<List<CalendarRangeHourDay>> fetchByTeacherId(@PathVariable(value = "id", required = true) Integer teacherId) {
+
+        List<CalendarRangeHourDay> result = null;
+
+        try {
+            result = repository.findCalendarRangeHourDayByTeacherId(teacherId);
+
+            if(result.isEmpty())
+                return ResponseEntity.notFound().build();
+
+        }catch (Throwable t){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(result);
+    }
+
+
+    @DeleteMapping("resources")
+    public ResponseEntity delete(@RequestParam(value = "id", required = true) List<Integer> ids) {
+
+        try {
+            repository.deleteAllById(ids);
+        }catch (Throwable t){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
     @PostMapping
     public CalendarRangeHourDay create(@RequestBody CalendarRangeHourDay request) {
 
         return repository.save(request);
     }
 
+
+    @PostMapping("/{id}/teacher")
+    public ResponseEntity<List<CalendarRangeHourDay>> createByTeacher(@RequestBody List<CalendarRangeHourDay> request) {
+
+        List<CalendarRangeHourDay> result = null;
+
+        try {
+            result = repository.saveAll(request);
+        }catch (Throwable t){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
     @PostMapping("/list")
     public Collection<CalendarRangeHourDay> createAll(@RequestBody Collection<CalendarRangeHourDay> request) {
         return repository.saveAll(request);

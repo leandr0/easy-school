@@ -1,9 +1,6 @@
-import { getCourseClassById } from '@/app/services/courseClassService';
-import { CourseClassModel } from '@/app/lib/definitions/course_class_definitions';
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import React, { useEffect, useState } from "react";
-import EditCourseClassForm from '@/app/ui/course_classes/course_classes_edit_form';
-import AddStudentsCourseClassForm from '@/app/ui/course_classes/course_classes_add_students_form';
+import AddStudentsCourseClassForm from '../../components/CourseClassesAddStudentsForm';
 
 
 export default async function Page({ params }: { params: { id: string } }) {
