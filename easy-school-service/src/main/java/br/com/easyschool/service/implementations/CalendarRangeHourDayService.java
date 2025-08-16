@@ -1,4 +1,4 @@
-package br.com.easyschool.service;
+package br.com.easyschool.service.implementations;
 
 import br.com.easyschool.domain.entities.CalendarRangeHourDay;
 import br.com.easyschool.domain.repositories.CalendarRangeHourDayRepository;

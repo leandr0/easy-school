@@ -2,141 +2,141 @@ package br.com.easyschool.service.gateways;
 
 import br.com.easyschool.domain.dto.CollectionFormDTO;
 import br.com.easyschool.domain.entities.Revenue;
-import br.com.easyschool.domain.entities.Student;
-import br.com.easyschool.domain.repositories.RevenueRepository;
-import br.com.easyschool.domain.repositories.StudentRepository;
-import br.com.easyschool.domain.types.RevenueType;
+import br.com.easyschool.service.implementations.RevenueService;
 import br.com.easyschool.service.requests.CreateRevenueRequest;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.transaction.annotation.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/revenues")
+@RequiredArgsConstructor
+@Slf4j
 public class RevenueGateway {
 
-    private final Log LOG = LogFactory.getLog(this.getClass());
-    private final RevenueRepository repository;
-
-    private final StudentRepository studentRepository;
-
-    public RevenueGateway(RevenueRepository repository, StudentRepository studentRepository) {
-        this.repository = repository;
-        this.studentRepository = studentRepository;
-    }
+    private final RevenueService service;
 
 
     @GetMapping
-    public List<Revenue> getAll() {
-        return repository.findAll();
+    public ResponseEntity<List<Revenue>> getAll() {
+
+        try {
+            return ResponseEntity.ok(service.getAll());
+        }catch (Throwable t){
+            log.error("Find revenues {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 
     @GetMapping("/student/{id}")
-    public List<Revenue> findByStudent(@PathVariable Integer id) {
-        return repository.findByStudentId(id);
+    public ResponseEntity<List<Revenue>> findByStudent(@PathVariable Integer id) {
+
+        try {
+
+            return ResponseEntity.ok(service.findByStudent(id));
+
+        }catch (Throwable t){
+            log.error("Find revenues by student {}",t.getMessage());
+            return  ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/collection-form")
-    public List<CollectionFormDTO> fetchCollectionForm() {
-        return repository.fetchCollectionForms();
+    public ResponseEntity<List<CollectionFormDTO>> fetchCollectionForm() {
+        try {
+
+            return ResponseEntity.ok(service.fetchCollectionForm());
+
+        }catch (Throwable t){
+            log.error("Fetch collection form {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/collection-form/student/{id}")
-    public List<CollectionFormDTO> fetchCollectionFormByStudent(@PathVariable Integer id) {
-        return repository.fetchCollectionFormByStudent(id);
+    public ResponseEntity<List<CollectionFormDTO>> fetchCollectionFormByStudent(@PathVariable Integer id) {
+        try {
+
+            return ResponseEntity.ok(service.fetchCollectionFormByStudent(id));
+
+        }catch (Throwable t){
+            log.error("Fetch collection by student {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PutMapping("/{id}/reminder-message")
-    public void sendReminderMessage(@PathVariable("id") final Integer revenueId) {
-        repository.setReminderSentAsTrue(revenueId);
+    public ResponseEntity<?> sendReminderMessage(@PathVariable("id") final Integer revenueId) {
+        try {
+
+            service.sendReminderMessage(revenueId);
+
+            return ResponseEntity.ok().build();
+
+        }catch (Throwable t){
+            log.error("Send reminder message by ID {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PutMapping("/{id}/payment-message")
-    public void sendPaymentMessage(@PathVariable("id") final Integer revenueId) {
-        repository.setPaymentSentAsTrue(revenueId);
+    public ResponseEntity<?> sendPaymentMessage(@PathVariable("id") final Integer revenueId) {
+        try {
+
+            service.sendPaymentMessage(revenueId);
+
+            return ResponseEntity.ok().build();
+
+        }catch (Throwable t){
+            log.error("Send payment message by ID {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PutMapping("/{id}/payment-status")
-    public void updatePaymentStatus(@PathVariable("id") final Integer revenueId, @RequestBody Map<String, String> body) {
+    public ResponseEntity<?> updatePaymentStatus(@PathVariable("id") final Integer revenueId, @RequestBody Map<String, String> body) {
 
-        String status = body.get("status");
-        RevenueType revenueTypeStatus = RevenueType.valueOf(status);
+        try {
 
-        if (revenueTypeStatus == RevenueType.OPEN)
-            status = RevenueType.OK.name();
+            service.updatePaymentStatus(revenueId, body);
 
-        repository.setPaidAsOK(revenueId, status);
+            return ResponseEntity.ok().build();
+
+        } catch (Throwable t) {
+            log.error("Update payment status by ID {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping("/collection-form")
-    @Transactional
-    public List<Revenue> createRevenuesFromCollectionForm(@RequestBody List<CollectionFormDTO> request) {
+    public ResponseEntity<List<Revenue>> createRevenuesFromCollectionForm(@RequestBody @NonNull List<CollectionFormDTO> request) {
 
-        Map<Integer, Float> students = new LinkedHashMap<>();
+        try {
 
-        LocalDate now = LocalDate.now();
-        Integer year = now.getYear();
-        Month month = now.getMonth();
-        Integer monthNumber = now.getMonthValue();
+            return ResponseEntity.ok(service.createRevenuesFromCollectionForm(request));
 
-        request.forEach(collectionForm ->
-                students.merge(
-                        collectionForm.getStudentId(),
-                        collectionForm.getCoursePrice(),
-                        Float::sum
-                )
-        );
-
-        List<Revenue> revenues = students.entrySet().stream()
-                .map(entry -> {
-                    Student student = new Student();
-                    student.setId(entry.getKey());
-
-                    Revenue revenue = new Revenue();
-                    revenue.setAmount(entry.getValue().doubleValue());
-                    revenue.setYear(year);
-                    revenue.setMonth(monthNumber);
-                    revenue.setStatus(RevenueType.OPEN);
-                    revenue.setPaid(false);
-                    revenue.setReminderMessageSent(false);
-                    revenue.setPaymentMessageSent(false);
-                    revenue.setStudent(student);
-
-                    return revenue;
-                })
-                .collect(Collectors.toList());
-
-        return repository.saveAll(revenues);
+        } catch (Throwable t) {
+            log.error("Create revenues from collection form {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping
-    public Revenue create(@RequestBody CreateRevenueRequest request) {
+    public ResponseEntity<Revenue> create(@RequestBody CreateRevenueRequest request) {
 
-        Student student = studentRepository.findById(request.getStudentId())
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+        try {
+            return ResponseEntity.ok(service.create(request));
 
-
-        Revenue revenue = new Revenue();
-
-        revenue.setPaid(false);
-        revenue.setStudent(student);
-        revenue.setStatus(RevenueType.OPEN);
-        revenue.setPaymentMessageSent(false);
-        revenue.setReminderMessageSent(false);
-        revenue.setMonth(request.getMonth());
-        revenue.setYear(request.getYear());
-        //revenue.setAmount(student);
-
-        return repository.save(revenue);
+        }catch (Throwable t){
+            log.error("Create revenues from collection form {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

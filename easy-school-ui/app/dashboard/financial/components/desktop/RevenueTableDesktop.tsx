@@ -4,10 +4,10 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { RevenueModel } from '@/app/lib/definitions/revenue_definitions';
-import { Switch } from '../../components/switch';
+import { Switch } from '@/app/ui/components/switch';
 import RevenueStatus from '../RevenueStatus';
-import BRLCurrency from '../../components/currency';
-import { MonthYearFormatter } from '../../components/month_year_formatter';
+import BRLCurrency from '@/app/ui/components/currency';
+import { MonthYearFormatter } from '@/app/ui/components/month_year_formatter';
 import { ActionType } from '@/app/lib/types/revenue';
 import { CourseClassStudentModel } from '@/app/lib/definitions/course_class_students_definitions';
 
@@ -114,14 +114,14 @@ export default function RevenuesTableDesktop({
                 <div className="py-3 pr-3 col-span-2 flex items-center gap-2">
                   <p className="truncate text-sm">{revenue.student?.name}</p>
                 </div>
-                <div className="px-3 py-1 col-span-1 text-center">
+                <div className="py-1 col-span-1 text-center">
                   <MonthYearFormatter month={revenue.month} year={revenue.year} locale="pt-BR" />
                 </div>
                 <div className="text-center py-3 col-span-2">
                   <BRLCurrency value={revenue.amount ?? 0} />
                 </div>
                 <div className="px-3 py-3 col-span-1 text-center">
-                  <p className="truncate text-xs md:text-sm">{revenue.student?.due_date}</p>
+                  <p className="truncate text-xs md:text-sm">{revenue.due_date}</p>
                 </div>
                 <div className="text-center py-3 col-span-2">
                   <RevenueStatus status={revenue.status || ''} />
@@ -130,10 +130,10 @@ export default function RevenuesTableDesktop({
                   <Switch checked={Boolean(revenue.paid)} onChange={() => handleIdentifyPayment(revenue.student?.id!, revenue)} color="green" disabled={revenue.paid} />
                 </div>
                 <div className="px-3 py-3 col-span-1 text-center">
-                  <Switch checked={Boolean(revenue.reminderMessageSent)} onChange={() => handleSendReminder(revenue.student?.id!, revenue)} color="green" disabled={revenue.paid} />
+                  <Switch checked={Boolean(revenue.reminder_message_sent)} onChange={() => handleSendReminder(revenue.student?.id!, revenue)} color="green" disabled={revenue.paid} />
                 </div>
                 <div className="px-3 py-3 col-span-1 text-center">
-                  <Switch checked={Boolean(revenue.paymentMessageSent)} onChange={() => handleSendPaymentRequest(revenue.student?.id!, revenue)} color="green" disabled={revenue.paid} />
+                  <Switch checked={Boolean(revenue.payment_message_sent)} onChange={() => handleSendPaymentRequest(revenue.student?.id!, revenue)} color="green" disabled={revenue.paid} />
                 </div>
               </div>
 

@@ -4,10 +4,11 @@ export type RevenueModel = {
     id?: string;
     paid?: boolean;
     status?: string;
-    reminderMessageSent?: boolean;
-    paymentMessageSent?: boolean;
+    reminder_message_sent?: boolean;
+    payment_message_sent?: boolean;
     year?: number;
     month?: number;
     amount?: number;
     student?: StudentModel;
+    due_date?: number;
   };

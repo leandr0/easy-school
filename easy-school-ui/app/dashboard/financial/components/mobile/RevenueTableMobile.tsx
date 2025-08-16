@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { RevenueModel } from '@/app/lib/definitions/revenue_definitions';
 import { CourseClassStudentModel } from '@/app/lib/definitions/course_class_students_definitions';
-import { Switch } from "../../components/switch";
+import { Switch } from '@/app/ui/components/switch';
 import RevenueStatus from "../RevenueStatus";
-import BRLCurrency from "../../components/currency";
-import { MonthYearFormatter } from "../../components/month_year_formatter";
+import BRLCurrency from '@/app/ui/components/currency';
+import { MonthYearFormatter } from '@/app/ui/components/month_year_formatter';
 import { ActionType } from '@/app/lib/types/revenue';
 
 interface RevenuesTableMobileProps {
@@ -97,7 +97,7 @@ export default function RevenuesTableMobile({
             <div className="flex justify-between">
               <div>
                 <p className="text-gray-500">Vencimento</p>
-                <p>{revenue.student?.due_date}</p>
+                <p>{revenue.due_date}</p>
               </div>
               <div className="text-right">
                 <p className="text-gray-500">Status</p>
@@ -121,7 +121,7 @@ export default function RevenuesTableMobile({
                 <div className="flex items-center justify-between">
                   <span className="text-xs">Lembrete</span>
                   <Switch
-                    checked={Boolean(revenue.reminderMessageSent)}
+                    checked={Boolean(revenue.reminder_message_sent)}
                     onChange={() => handleSendReminder(revenue.student?.id!, revenue)}
                     color="green"
                     disabled={revenue.paid}
@@ -130,7 +130,7 @@ export default function RevenuesTableMobile({
                 <div className="flex items-center justify-between">
                   <span className="text-xs">Cobrança</span>
                   <Switch
-                    checked={Boolean(revenue.paymentMessageSent)}
+                    checked={Boolean(revenue.payment_message_sent)}
                     onChange={() => handleSendPaymentRequest(revenue.student?.id!, revenue)}
                     color="green"
                     disabled={revenue.paid}

@@ -2,6 +2,7 @@ package br.com.easyschool.domain.entities;
 
 
 import br.com.easyschool.domain.types.RevenueType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -23,9 +24,11 @@ public class Revenue implements EntityBase{
     @Enumerated(EnumType.STRING)
     private RevenueType status = RevenueType.OPEN;
 
+    @JsonProperty("reminder_message_sent")
     @Column(name = "reminder_sent")
     private Boolean reminderMessageSent;
 
+    @JsonProperty("payment_message_sent")
     @Column(name = "payment_sent")
     private Boolean paymentMessageSent;
 
@@ -38,6 +41,9 @@ public class Revenue implements EntityBase{
     @Column(name = "amount",nullable = false)
     private Double amount;
 
+    @JsonProperty("due_date")
+    @Column(name = "due_date",nullable = false)
+    private Integer dueDate;
     @Override
     public Integer getId() {
         return id;
@@ -110,5 +116,13 @@ public class Revenue implements EntityBase{
 
     public void setAmount(Double amount) {
         this.amount = amount;
+    }
+
+    public Integer getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Integer dueDate) {
+        this.dueDate = dueDate;
     }
 }

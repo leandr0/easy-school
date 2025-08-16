@@ -35,9 +35,9 @@ CREATE TABLE IF NOT EXISTS teacher (
     email TEXT NOT NULL,
     status BOOL NOT NULL,
     compensation REAL NOT NULL,
-    start_date NUMERIC NOT NULL
-   -- UNIQUE(phone_number),
-   -- UNIQUE(email)
+    start_date NUMERIC NOT NULL,
+    UNIQUE(phone_number),
+    UNIQUE(email)
 );
 
 CREATE TABLE IF NOT EXISTS teacher_skill (
@@ -84,6 +84,7 @@ CREATE TABLE IF NOT EXISTS revenue (
     reminder_sent BOOL,
     status TEXT NOT NULL,
     amount REAL NOT NULL,
+    due_date INTEGER NOT NULL,
     FOREIGN KEY (student_id) REFERENCES student (id),
     UNIQUE(student_id,month,year)
 );
@@ -158,6 +159,67 @@ CREATE TABLE IF NOT EXISTS class_control_student(
 
 
 
+-- V1__init.sql (SQLite)
+--DROP TRIGGER IF EXISTS trg_scheduled_job_touch_updated_at;
+-- Core table
+CREATE TABLE scheduled_job (
+  id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  name               TEXT    NOT NULL UNIQUE,
+  type               TEXT    NOT NULL CHECK (type IN ('CRON','FIXED_DELAY','FIXED_RATE')),
+  cron_expression    TEXT,             -- required if type=CRON
+  interval_ms        INTEGER,          -- required if FIXED_*
+  initial_delay_ms   INTEGER DEFAULT 0,
+  active             INTEGER NOT NULL DEFAULT 1,  -- 1=true, 0=false
+  last_run_at_ms     INTEGER,             -- store as ISO-8601 text (e.g., '2025-08-13T22:05:00Z')
+  last_status        TEXT,             -- e.g., SUCCESS | FAILED
+  payload_json       TEXT,             -- JSON as TEXT in SQLite
+  updated_at_ms         TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+
+  -- Ensure required fields depending on type
+  CHECK (
+    (type = 'CRON' AND cron_expression IS NOT NULL)
+    OR
+    (type IN ('FIXED_DELAY','FIXED_RATE') AND interval_ms IS NOT NULL)
+  )
+);
+
+-- Helpful index
+CREATE INDEX idx_scheduled_job_active ON scheduled_job(active);
+
+-- Keep updated_at fresh on UPDATE
+--DROP TRIGGER IF EXISTS trg_scheduled_job_touch_updated_at;
+
+CREATE TRIGGER trg_scheduled_job_touch_updated_at
+AFTER UPDATE ON scheduled_job
+FOR EACH ROW
+WHEN NEW.updated_at_ms = OLD.updated_at_ms  -- prevent recursion
+BEGIN
+  UPDATE scheduled_job
+  SET updated_at_ms = CAST(strftime('%s','now') AS INTEGER) * 1000
+  WHERE id = NEW.id;
+END;
 
 
+PRAGMA foreign_keys=off;
 
+CREATE TABLE holiday (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  date         TEXT    NOT NULL,                 -- 'YYYY-MM-DD'
+  name         TEXT    NOT NULL,
+  scope        TEXT    NOT NULL CHECK (scope IN ('national','state','city')),
+  region_code  TEXT,
+  type         TEXT    NOT NULL,
+  source       TEXT,
+  notes        TEXT,
+  created_at   TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+  updated_at   TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+  CONSTRAINT uq_holiday_date_scope_region UNIQUE (date, scope, region_code)
+);  
+
+DROP TRIGGER IF EXISTS trg_holiday_touch_updated_at;
+CREATE TRIGGER trg_holiday_touch_updated_at
+AFTER UPDATE ON holiday
+FOR EACH ROW WHEN NEW.updated_at = OLD.updated_at
+BEGIN
+  UPDATE holiday SET updated_at = strftime('%Y-%m-%d %H:%M:%f','now') WHERE id = NEW.id;
+END;

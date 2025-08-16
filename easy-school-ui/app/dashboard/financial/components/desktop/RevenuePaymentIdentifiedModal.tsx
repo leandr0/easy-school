@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { RevenueModel } from '@/app/lib/definitions/revenue_definitions'; // Assuming this path is correct
-import BRLCurrency from '../../components/currency';
+import BRLCurrency from '@/app/ui/components/currency';
 
 interface RevenuePaymentIdentifiedModalProps {
   show: boolean;

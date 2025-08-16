@@ -1,7 +1,7 @@
 import { lusitana } from '@/app/ui/fonts';
 
 import { Metadata } from 'next';
-import RevenuesTable from '@/app/ui/financial/RevenueTable';
+import RevenuesTable from './components/RevenueTable';
  
 export const metadata: Metadata = {
   title: 'Financial',

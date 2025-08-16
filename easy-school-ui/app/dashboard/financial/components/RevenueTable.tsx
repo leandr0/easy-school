@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { RevenueModel } from '@/app/lib/definitions/revenue_definitions';
-import { getAll, sendPaymentMessage, sendReminderMessage, updatePaymentStatus } from '@/app/services/revenueService';
+import { getAllRevenues, sendPaymentMessage, sendReminderMessage, updatePaymentStatus } from '@/app/services/revenueService';
 
 import RevenuesTableDesktop from "./desktop/RevenueTableDesktop";
 import RevenuesTableMobile from './mobile/RevenueTableMobile';
@@ -35,7 +35,7 @@ export default function RevenuesTable() {
     try {
       setLoading(true);
       setError(null);
-      const data = await getAll();
+      const data = await getAllRevenues();
       setRevenues(data);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';

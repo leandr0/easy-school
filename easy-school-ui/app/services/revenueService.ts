@@ -8,7 +8,7 @@ import { URLPathParam } from "../lib/url_path_param";
 
 const clientApi = apiClient.resource('/revenues');
 
-export async function getAll(): Promise<RevenueModel[]> {
+export async function getAllRevenues(): Promise<RevenueModel[]> {
   return clientApi.get<RevenueModel[]>();
 }
 
