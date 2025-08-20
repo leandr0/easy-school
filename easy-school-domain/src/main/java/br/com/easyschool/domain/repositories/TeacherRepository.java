@@ -36,4 +36,12 @@ public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
             """)
     List<Teacher> findAllTeachersAvailableByLanguageFromCourseClass(@Param("course_class_id") Integer courseClassId);
 
+
+    @Query(value = """
+               SELECT count(*)
+               FROM teacher
+               WHERE status = true
+            """,nativeQuery = true)
+    Integer totalTeacherAvailable();
+
 }

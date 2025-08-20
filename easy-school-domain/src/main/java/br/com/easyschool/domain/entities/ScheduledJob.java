@@ -36,7 +36,8 @@ public class ScheduledJob {
     @Column(name = "updated_at_ms")
     private Instant updatedAt;
     private String lastStatus;
-    @Lob
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "payload_json", columnDefinition = "jsonb")
     private String payloadJson;
 
     @PrePersist

@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from 'next/navigation';
-import { getAllCoursesAvailable, findCourse } from '@/app/lib/actions/course_actions';
-import { getAllWeekDays } from '@/app/lib/actions/calendar_week_day_actions';
+import { getAllCoursesAvailable, findCourse } from '@/app/services/courseService';
+import { getAllWeekDays } from '@/app/services/calendarWeekDayService';
 import { fetchAvailabilityTeacher } from '@/app/services/calendarRangeHourDayService';
 import { createCourseClass } from '@/app/services/courseClassService';
 

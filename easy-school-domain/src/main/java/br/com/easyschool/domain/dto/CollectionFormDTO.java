@@ -26,7 +26,7 @@ public class CollectionFormDTO {
 
     @JsonProperty("course_price")
     @Getter @Setter
-    private Float coursePrice;
+    private Double coursePrice;
 
     @JsonProperty("due_date")
     @Getter @Setter

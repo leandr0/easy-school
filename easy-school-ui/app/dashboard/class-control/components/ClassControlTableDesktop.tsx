@@ -3,7 +3,8 @@
 import { format, addDays, addWeeks } from "date-fns";
 import { CourseClassCompleteModel } from "@/app/lib/definitions/course_class_definitions";
 import { ClassControlModel } from "@/app/lib/definitions/class_control_definitions";
-import { Switch } from "@/app/ui/components/switch";
+import { Switch } from "@/app/dashboard/components/switch";
+import { Button, CancelButton } from "@/app/ui/button";
 
 interface ClassControlTableDesktopProps {
   classes: CourseClassCompleteModel[];
@@ -24,6 +25,7 @@ interface ClassControlTableDesktopProps {
       [date: string]: boolean;
     };
   };
+  onCancel: () => void;
   classContent: string;
   setClassContent: (value: string) => void;
   replacement: boolean;
@@ -43,6 +45,7 @@ export default function ClassControlTableDesktop({
   onNextWeek,
   onToggleAttendance,
   onSaveAttendance,
+  onCancel,
   attendance,
   classContent,
   setClassContent,
@@ -69,20 +72,20 @@ export default function ClassControlTableDesktop({
   return (
     <div className="space-y-6">
       <div className="mb-4">
-      <div className="relative">
-      <select
-        value={selectedClassId}
-        onChange={(e) => onClassChange(e.target.value)}
-        className="peer block cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-        disabled={loading}
-      >
-        {classes.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
-      </select>
-      </div>
+        <div className="relative">
+          <select
+            value={selectedClassId}
+            onChange={(e) => onClassChange(e.target.value)}
+            className="peer block cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+            disabled={loading}
+          >
+            {classes.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {loading && (
@@ -113,9 +116,8 @@ export default function ClassControlTableDesktop({
             <button
               onClick={onNextWeek}
               disabled={isNextWeekDisabled || loading}
-              className={`text-blue-600 flex items-center gap-1 hover:underline ${
-                (isNextWeekDisabled || loading) ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`text-blue-600 flex items-center gap-1 hover:underline ${(isNextWeekDisabled || loading) ? "opacity-50 cursor-not-allowed" : ""
+                }`}
             >
               Próxima semana
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -132,7 +134,7 @@ export default function ClassControlTableDesktop({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span className="text-blue-800">
-                  Esta semana já possui {existingRecords.length} registro(s) de presença salvos. 
+                  Esta semana já possui {existingRecords.length} registro(s) de presença salvos.
                   Dias com registros não podem ser editados.
                 </span>
               </div>
@@ -149,8 +151,8 @@ export default function ClassControlTableDesktop({
                     const dateStr = format(date, "yyyy-MM-dd");
                     const disabled = isDateDisabled(dateStr);
                     return (
-                      <th 
-                        key={`${date.toISOString()}-${index}`} 
+                      <th
+                        key={`${date.toISOString()}-${index}`}
                         className={`border p-2 min-w-[100px] ${disabled ? 'bg-gray-200' : ''}`}
                         title={disabled ? "Dia com registros existentes" : ""}
                       >
@@ -178,26 +180,24 @@ export default function ClassControlTableDesktop({
                         const dateStr = format(date, "yyyy-MM-dd");
                         const present = attendance[participantKey]?.[dateStr] || false;
                         const disabled = isDateDisabled(dateStr);
-                        
+
                         return (
-                          <td 
-                            key={`${dateStr}-${index}`} 
+                          <td
+                            key={`${dateStr}-${index}`}
                             className={`border p-2 text-center ${disabled ? 'bg-gray-100' : ''}`}
                           >
                             <button
                               onClick={() => onToggleAttendance(participantKey, dateStr)}
                               title={getDateTooltip(dateStr)}
                               disabled={disabled}
-                              className={`w-6 h-6 flex items-center justify-center mx-auto ${
-                                disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
-                              }`}
+                              className={`w-6 h-6 flex items-center justify-center mx-auto ${disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+                                }`}
                             >
                               {present ? (
-                                <div className={`w-6 h-6 flex items-center justify-center rounded-full text-white transition-all duration-300 ${
-                                  disabled 
-                                    ? 'bg-green-400' 
+                                <div className={`w-6 h-6 flex items-center justify-center rounded-full text-white transition-all duration-300 ${disabled
+                                    ? 'bg-green-400'
                                     : 'bg-green-500 transform hover:scale-110 animate-fadeIn'
-                                }`}>
+                                  }`}>
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     className="w-4 h-4"
@@ -210,11 +210,10 @@ export default function ClassControlTableDesktop({
                                   </svg>
                                 </div>
                               ) : (
-                                <div className={`w-6 h-6 flex items-center justify-center rounded-full text-gray-600 transition-all duration-300 ${
-                                  disabled 
-                                    ? 'bg-red-300' 
+                                <div className={`w-6 h-6 flex items-center justify-center rounded-full text-gray-600 transition-all duration-300 ${disabled
+                                    ? 'bg-red-300'
                                     : 'bg-gray-300 transform hover:scale-110 animate-fadeIn'
-                                }`}>
+                                  }`}>
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     className="w-4 h-4"
@@ -262,15 +261,24 @@ export default function ClassControlTableDesktop({
             />
           </div>
 
-          <div className="mt-4 text-right">
-            <button
+          <div className="mt-6 flex justify-end gap-4">
+
+            <CancelButton
+              type="button"
+              onClick={onCancel}
+            >
+              Voltar
+            </CancelButton>
+            <Button
+              className='hover:bg-purple-500'
+              type="submit"
               onClick={onSaveAttendance}
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               {loading ? "Carregando..." : "Salvar Presença"}
-            </button>
+            </Button>
           </div>
+    
         </>
       )}
     </div>

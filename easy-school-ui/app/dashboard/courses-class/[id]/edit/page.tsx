@@ -1,4 +1,4 @@
-import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
+import Breadcrumbs from '@/app/dashboard/components/breadcrumbs';
 import React, { useEffect, useState } from "react";
 import EditCourseClassForm from '../../components/CourseClassesEditForm'; 
 
@@ -19,7 +19,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           },
         ]}
       />
-      <EditCourseClassForm course_class_id={id}/>
+      <EditCourseClassForm />
     </main>
   );
 }

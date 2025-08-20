@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { CustomerField } from '@/app/lib/definitions';  // Ensure this path is correct
-import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
+import Breadcrumbs from '@/app/dashboard/components/breadcrumbs';
 import CreateTeacherForm from "@/app/dashboard/teachers/components/TeacherCreateForm";
 
 

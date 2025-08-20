@@ -11,14 +11,14 @@ import { LanguageSelectListComponent } from './LanguageSelectListComponent';
 import { TeacherWeekDayAvailabilityComponent } from './TeacherWeekDayAvailabilityComponent';
 import { CalendarWeekDaySelectComponent } from './CalendarWeekDaySelectComponent';
 import { TeacherAvailabilityInputComponent } from './TeacherAvailabilityInputComponent';
-import { CancelAndRedirect } from '../../../ui/buttons/ui_buttons';
+import { CancelAndRedirect } from '../../components/ui_buttons';
 import { createTeacher } from '@/app/services/teacherService';
 import { CalendarRangeHourDayModel } from '@/app/lib/definitions/calendat_range_hour_day_definitions';
 import { CreateTeacherFormModel, TeacherModel, TeacherWeekDayAvailableModel } from '@/app/lib/definitions/teacher_definitions';
 import { LanguageModel } from '@/app/lib/definitions/language_definitions';
 import { CalendarWeekDayModel } from '@/app/lib/definitions/calendar_week_day_definitions';
 import { getAllLanguages } from '@/app/services/languageService';
-import { getAllWeekDays } from '@/app/lib/actions/calendar_week_day_actions';
+import { getAllWeekDays } from '@/app/services/calendarWeekDayService';
 
 // --- NEW: Mobile wrapper component import (file below)
 import { CreateTeacherFormMobile } from './CreateTeacherFormMobile';

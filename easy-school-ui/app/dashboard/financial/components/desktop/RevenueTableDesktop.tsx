@@ -4,12 +4,13 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { RevenueModel } from '@/app/lib/definitions/revenue_definitions';
-import { Switch } from '@/app/ui/components/switch';
+import { Switch } from '@/app/dashboard/components/switch';
 import RevenueStatus from '../RevenueStatus';
-import BRLCurrency from '@/app/ui/components/currency';
-import { MonthYearFormatter } from '@/app/ui/components/month_year_formatter';
+import BRLCurrency from '@/app/dashboard/components/currency';
+import { MonthYearFormatter } from '@/app/dashboard/components/month_year_formatter';
 import { ActionType } from '@/app/lib/types/revenue';
 import { CourseClassStudentModel } from '@/app/lib/definitions/course_class_students_definitions';
+
 
 interface RevenuesTableDesktopProps {
   revenues: RevenueModel[];
@@ -17,6 +18,9 @@ interface RevenuesTableDesktopProps {
   setStudentId: React.Dispatch<React.SetStateAction<string | null>>;
   setRevenue: React.Dispatch<React.SetStateAction<RevenueModel | null>>;
   loadRevenueDetails: (studentId: string) => Promise<CourseClassStudentModel[]>;
+  onFilterRange: () => Promise<void> | void;
+  filter: { startYm: string; endYm: string }; // "YYYY-MM"
+  setFilter: React.Dispatch<React.SetStateAction<{ startYm: string; endYm: string }>>;
 }
 
 export default function RevenuesTableDesktop({
@@ -25,11 +29,26 @@ export default function RevenuesTableDesktop({
   setStudentId,
   setRevenue,
   loadRevenueDetails,
+  onFilterRange,
+  filter,
+  setFilter,
 }: RevenuesTableDesktopProps) {
 
   const [expandedRows, setExpandedRows] = useState<{ [id: string]: CourseClassStudentModel[] }>({});
   const [loadingRow, setLoadingRow] = useState<string | null>(null);
   const [localStudentId, setLocalStudentId] = useState<string | null>(null);
+
+  // --- Filter state
+  const now = new Date();
+  const pad2 = (n: number) => String(n).padStart(2, '0');
+
+  const [startMonth, setStartMonth] = useState<string>(pad2(now.getMonth() + 1));
+  const [startYear, setStartYear] = useState<string>(String(now.getFullYear()));
+  const [endMonth, setEndMonth] = useState<string>(pad2(now.getMonth() + 1));
+  const [endYear, setEndYear] = useState<string>(String(now.getFullYear()));
+  const [filterError, setFilterError] = useState("");
+
+
 
   useEffect(() => {
     setStudentId(localStudentId);
@@ -44,12 +63,14 @@ export default function RevenuesTableDesktop({
   const handleSendReminder = (studentId: string, revenue: RevenueModel) => {
     setActionType('send_reminder_message');
     setStudentId(studentId);
+    console.log(`Model - handleSendReminder- revenue id ${revenue.id}`);
     setRevenue(revenue);
   };
 
   const handleSendPaymentRequest = (studentId: string, revenue: RevenueModel) => {
     setActionType('send_payment_message');
     setStudentId(studentId);
+    console.log(`Model - handleSendPaymentRequest- revenue id ${revenue.id}`);
     setRevenue(revenue);
   };
 
@@ -73,9 +94,20 @@ export default function RevenuesTableDesktop({
     }
   };
 
+  const applyFilter = async () => {
+    setFilterError("");
+    if (filter.endYm < filter.startYm) {
+      setFilterError("Data final deve ser maior ou igual à data inicial.");
+      return;
+    }
+    await onFilterRange();
+  };
+
   return (
     <>
-      <div className="grid grid-cols-12 text-left text-sm font-normal bg-gray-50 text-center rounded-lg">
+    
+      {/* --- Existing header row --- */}
+      < div className="grid grid-cols-12 text-left text-sm font-normal bg-gray-50 text-center rounded-lg" >
         <div className="px-4 py-3 font-medium sm:pl-6 border-b col-span-3">Nome</div>
         <div className="px-3 py-3 font-medium border-b col-span-1">Mês/Ano</div>
         <div className="px-3 py-3 font-medium border-b col-span-2">Valor</div>
@@ -89,7 +121,7 @@ export default function RevenuesTableDesktop({
             <div className="border rounded p-1 bg-white">Cobrança</div>
           </div>
         </div>
-      </div>
+      </div >
 
       <div className="bg-white">
         {revenues?.map((revenue) => {
@@ -137,7 +169,7 @@ export default function RevenuesTableDesktop({
                 </div>
               </div>
 
-                 {isExpanded && (
+              {isExpanded && (
                 <div className="col-span-12 text-sm px-6 py-3 border-b bg-white border-t-0">
                   <div className="grid gap-2">
                     {expandedRows[revenue.id!].map((entry, index) => (

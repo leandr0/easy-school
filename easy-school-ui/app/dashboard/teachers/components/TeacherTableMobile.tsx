@@ -2,7 +2,7 @@
 
 import React from "react";
 import { TeacherModel } from '@/app/lib/definitions/teacher_definitions';
-import { UpdateTeacher } from '../../../ui/buttons/ui_buttons';
+import { UpdateTeacher } from '../../components/ui_buttons';
 import TeacherStatus from './TeacherStatus';
 
 interface TeacherTableMobileProps {

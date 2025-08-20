@@ -26,7 +26,11 @@ export function LanguageSelectListComponent({
           <div className="flex flex-wrap gap-2">
             {languages?.map((language) => {
               const langId = String(language.id ?? '');
-              const isSelected = language_ids.includes(langId);
+              var isSelected = false;
+              
+              if(language_ids)
+                isSelected = language_ids.includes(langId);
+
               return (
                 <label
                   key={langId}
@@ -53,7 +57,10 @@ export function LanguageSelectListComponent({
           <div className="grid grid-cols-2 gap-2">
             {languages?.map((language) => {
               const langId = String(language.id ?? '');
-              const isSelected = language_ids.includes(langId);
+              var isSelected = false;
+              
+              if(language_ids)
+                isSelected = language_ids.includes(langId);
               return (
                 <label
                   key={langId}

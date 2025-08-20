@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/course/classes")
+@RequestMapping("/course_classes")
 public class CourseClassGateway {
 
     private final Log LOG = LogFactory.getLog(this.getClass());

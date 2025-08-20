@@ -1,11 +1,11 @@
-import Pagination from '@/app/ui/invoices/pagination';
+import Pagination from '@/app/dashboard/components/pagination';
 import Search from '@/app/ui/search';
-import { CreateCourse, CreateStudent } from '@/app/ui/buttons/ui_buttons';
+import { CreateCourse, CreateStudent } from '@/app/dashboard/components/ui_buttons';
 import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { fetchInvoicesPages } from '@/app/lib/data';
-import CoursesTable from '@/app/ui/courses/courses_table';
+import CoursesTable from '@/app/dashboard/courses/components/CoursesTable';
 
 import { Metadata } from 'next';
  

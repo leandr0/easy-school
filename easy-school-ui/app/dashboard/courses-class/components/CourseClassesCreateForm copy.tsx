@@ -6,12 +6,12 @@ import React, { useEffect, useState, useCallback } from "react";
 import { CourseClassCreateForm} from '@/app/lib/definitions/course_class_definitions';
 import { createCourseClass} from '@/app/services/courseClassService';
 
-import { findCourse, getAllCoursesAvailable } from '@/app/lib/actions/course_actions';
+import { findCourse, getAllCoursesAvailable } from '@/app/services/courseService';
 import { CourseModel } from '@/app/lib/definitions/courses_definitions';
 import { TeacherModel } from '@/app/lib/definitions/teacher_definitions';
 import { getAllTeachersAvailable, getAllTeachersAvailableByLanguage } from '@/app/services/teacherService';
 import { CalendarWeekDayModel } from '@/app/lib/definitions/calendar_week_day_definitions';
-import { getAllWeekDays } from '@/app/lib/actions/calendar_week_day_actions';
+import { getAllWeekDays } from '@/app/services/calendarWeekDayService';
 
 import { fetchAvailabilityTeacher } from '@/app/services/calendarRangeHourDayService';
 import { CalendarRangeHourDayModel } from '@/app/lib/definitions/calendat_range_hour_day_definitions';

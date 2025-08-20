@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
-import CreateMessageForm from "@/app/ui/adm/message/message_create-form";
+import Breadcrumbs from '@/app/dashboard/components/breadcrumbs';
+import CreateMessageForm from "@/app/dashboard/adm/messages/components/message_create-form";
 
 
 export default function Page({ params }: { params: { id: string } }) {

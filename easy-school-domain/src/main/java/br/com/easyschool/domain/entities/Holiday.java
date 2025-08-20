@@ -1,10 +1,8 @@
 package br.com.easyschool.domain.entities;
 
-import br.com.easyschool.domain.jpa.InstantToLongConverter;
-import br.com.easyschool.domain.jpa.LocalDateToLongConverter;
 import jakarta.persistence.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -18,8 +16,7 @@ public class Holiday {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @JdbcTypeCode(SqlTypes.BIGINT)
-    @Convert(converter = LocalDateToLongConverter.class)
+    @Convert(disableConversion = true)
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
@@ -30,13 +27,11 @@ public class Holiday {
     private String source;
     @Lob private String notes;
 
-    @JdbcTypeCode(SqlTypes.BIGINT)
-    @Convert(converter = InstantToLongConverter.class)
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private Instant createdAt = Instant.now();
 
-    @JdbcTypeCode(SqlTypes.BIGINT)
-    @Convert(converter = InstantToLongConverter.class)
+    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt = Instant.now();
 

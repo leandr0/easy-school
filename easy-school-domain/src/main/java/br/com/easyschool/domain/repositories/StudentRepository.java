@@ -37,4 +37,11 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
             """)
     List<Student> findStudentsInCourseClass(@Param("course_class_id") Integer courseClassId);
 
+    @Query(value = """
+               SELECT count(*)
+               FROM student
+               WHERE status = true
+            """,nativeQuery = true)
+    Integer totalStudentAvailable();
+
 }

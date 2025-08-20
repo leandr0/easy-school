@@ -4,6 +4,7 @@ import br.com.easyschool.domain.dto.CollectionFormDTO;
 import br.com.easyschool.domain.entities.Revenue;
 import br.com.easyschool.service.implementations.RevenueService;
 import br.com.easyschool.service.requests.CreateRevenueRequest;
+import br.com.easyschool.domain.vo.DataParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +24,14 @@ public class RevenueGateway {
     private final RevenueService service;
 
 
-    @GetMapping
-    public ResponseEntity<List<Revenue>> getAll() {
+    @GetMapping()
+    public ResponseEntity<List<Revenue>> getRevenuesByRangeData(@RequestParam(value = "start_month", required = true) Integer startMonth,
+                                                                @RequestParam(value = "start_year", required = true) Integer startYear,
+                                                                @RequestParam(value = "end_month", required = true) Integer endMonth,
+                                                                @RequestParam(value = "end_year", required = true) Integer endYear) {
 
         try {
-            return ResponseEntity.ok(service.getAll());
+            return ResponseEntity.ok(service.fetchByDataRange(new DataParam(startMonth,startYear),new DataParam(endMonth,endYear)));
         }catch (Throwable t){
             log.error("Find revenues {}",t.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -71,6 +75,7 @@ public class RevenueGateway {
             return ResponseEntity.internalServerError().build();
         }
     }
+
 
     @PutMapping("/{id}/reminder-message")
     public ResponseEntity<?> sendReminderMessage(@PathVariable("id") final Integer revenueId) {

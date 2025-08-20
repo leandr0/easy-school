@@ -1,6 +1,6 @@
-import Pagination from '@/app/ui/invoices/pagination';
+import Pagination from '@/app/dashboard/components/pagination';
 import Search from '@/app/ui/search';
-import { CreateCourse, CreateCourseClass, CreateStudent } from '@/app/ui/buttons/ui_buttons';
+import { CreateCourse, CreateCourseClass, CreateStudent } from '@/app/dashboard/components/ui_buttons';
 import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';

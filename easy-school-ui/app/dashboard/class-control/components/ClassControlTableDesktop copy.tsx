@@ -2,7 +2,7 @@
 
 import { format, addDays, addWeeks } from "date-fns";
 import { CourseClassCompleteModel } from "@/app/lib/definitions/course_class_definitions";
-import { Switch } from "@/app/ui/components/switch";
+import { Switch } from "@/app/dashboard/components/switch";
 
 interface ClassControlTableDesktopProps {
   classes: CourseClassCompleteModel[];

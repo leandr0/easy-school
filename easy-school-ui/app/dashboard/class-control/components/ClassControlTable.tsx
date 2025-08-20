@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
+import { useParams, useRouter } from 'next/navigation';
 import { CourseClassCompleteModel } from "@/app/lib/definitions/course_class_definitions";
 import { getAllCourseClassAvailable } from "@/app/services/courseClassService";
 import { getStudentsInCourseClass } from "@/app/services/studentService";
@@ -37,6 +38,7 @@ export default function ClassControlTable() {
   const [disabledDates, setDisabledDates] = useState<Set<string>>(new Set());
   const [existingRecords, setExistingRecords] = useState<ClassControlModel[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   // Function to load existing attendance records for the current week
   const loadExistingRecords = async (classId: string, weekStart: Date) => {
@@ -207,6 +209,12 @@ export default function ClassControlTable() {
     }));
   };
 
+ const onCancel = async () => {
+      setClassContent("");
+      setReplacement(false);
+      router.push('/dashboard');
+ }
+
   const saveAttendance = async () => {
     const selectedClass = courseClassList.find(c => String(c.id) === selectedClassId);
     if (!selectedClass || !selectedClass.teacher?.id) {
@@ -332,6 +340,7 @@ export default function ClassControlTable() {
               disabledDates={disabledDates}
               loading={loading}
               existingRecords={existingRecords}
+              onCancel={onCancel}
             />
           </div>
           <div className="md:hidden">
@@ -353,6 +362,7 @@ export default function ClassControlTable() {
               disabledDates={disabledDates}
               loading={loading}
               existingRecords={existingRecords}
+              onCancel={onCancel}
             />
           </div>
         </div>

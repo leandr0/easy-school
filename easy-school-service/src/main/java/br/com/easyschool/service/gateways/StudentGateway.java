@@ -6,8 +6,8 @@ import br.com.easyschool.domain.entities.Student;
 import br.com.easyschool.domain.repositories.CourseClassRepository;
 import br.com.easyschool.domain.repositories.CourseClassStudentRepository;
 import br.com.easyschool.domain.repositories.StudentRepository;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,24 +19,15 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/students")
+@Slf4j
+@RequiredArgsConstructor
 public class StudentGateway {
-
-    private final Log LOG = LogFactory.getLog(this.getClass());
 
     private final StudentRepository repository;
 
     private final CourseClassRepository courseClassRepository;
 
     private final CourseClassStudentRepository courseClassStudentRepository;
-
-
-   public StudentGateway(StudentRepository repository, CourseClassRepository courseClassRepository, CourseClassStudentRepository courseClassStudentRepository){
-
-       this.repository = repository;
-       this.courseClassRepository = courseClassRepository;
-       this.courseClassStudentRepository = courseClassStudentRepository;
-    }
-
 
     @GetMapping
     public List<Student> getStudents(@RequestParam(value = "not_in_course_class", required = false) String notInCourseClassId,

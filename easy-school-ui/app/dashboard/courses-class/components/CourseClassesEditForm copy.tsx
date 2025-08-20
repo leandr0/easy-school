@@ -12,12 +12,12 @@ import { TeacherModel } from '@/app/lib/definitions/teacher_definitions';
 import { CalendarRangeHourDayModel } from '@/app/lib/definitions/calendat_range_hour_day_definitions';
 import { CalendarWeekDayModel } from '@/app/lib/definitions/calendar_week_day_definitions';
 
-import { getAllWeekDays, getWeekDaysByCourseClass } from '@/app/lib/actions/calendar_week_day_actions';
+import { getAllWeekDays, getWeekDaysByCourseClass } from '@/app/services/calendarWeekDayService';
 import { getCourseClassById, updateCourseClass } from '@/app/services/courseClassService';
 import { fetchAvailabilityTeacher } from '@/app/services/calendarRangeHourDayService';
 
 import { BookOpenIcon } from '@heroicons/react/24/outline';
-import { Switch } from '@/app/ui/components/switch';
+import { Switch } from '@/app/dashboard/components/switch';
 
 type TeacherWithCalendars = {
   teacher: TeacherModel;

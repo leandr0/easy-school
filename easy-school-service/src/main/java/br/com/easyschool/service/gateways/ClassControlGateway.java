@@ -1,111 +1,38 @@
 package br.com.easyschool.service.gateways;
 
-import br.com.easyschool.domain.dto.ClassControlDTO;
+import br.com.easyschool.domain.dto.ClassControlCreateDTO;
 import br.com.easyschool.domain.dto.ClassControlTeacherStudentDTO;
-import br.com.easyschool.domain.entities.*;
-import br.com.easyschool.domain.repositories.ClassControlRepository;
-import br.com.easyschool.domain.repositories.ClassControlStudentRepository;
-import br.com.easyschool.domain.repositories.ClassControlTeacherRepository;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.http.HttpStatus;
+import br.com.easyschool.service.implementations.ClassControlService;
+import br.com.easyschool.service.response.ClassControlResponse;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.LinkedList;
+import java.time.DateTimeException;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/class/control")
+@RequestMapping("/class_control")
+@Slf4j
+@RequiredArgsConstructor
 public class ClassControlGateway {
 
-    private final Log LOG = LogFactory.getLog(this.getClass());
-    private final ClassControlRepository repository;
-    private final ClassControlStudentRepository classControlStudentRepository;
 
-    private final ClassControlTeacherRepository classControlTeacherRepository;
-    public ClassControlGateway(ClassControlRepository repository, ClassControlStudentRepository classControlStudentRepository, ClassControlTeacherRepository classControlTeacherRepository){
-        this.repository = repository;
-        this.classControlStudentRepository = classControlStudentRepository;
-        this.classControlTeacherRepository = classControlTeacherRepository;
-    }
+    private final ClassControlService service;
 
-    @PostMapping() // Add proper endpoint mapping
-    public ResponseEntity<String> save(@RequestBody ClassControlDTO[] classes){
+
+    @PostMapping
+    public ResponseEntity<String> save(@RequestBody ClassControlCreateDTO[] classes) {
 
         try {
-
-            Teacher teacher = null;
-
-            List<ClassControlStudent> classControlStudents = null;
-            List<ClassControl> classControls = new LinkedList<>();
-
-            for (ClassControlDTO dto: classes) {
-
-                if(teacher == null){
-                    teacher = new Teacher();
-                    teacher.setId(dto.getTeacherId());
-                }
-
-                ClassControl classControl = new ClassControl();
-                CourseClass courseClass = new CourseClass();
-                courseClass.setId(dto.getCourseClass());
-
-                classControl.setCourseClass(courseClass);
-
-                classControl.setContent(dto.getContent());
-
-                LocalDate now = LocalDate.parse(dto.getDate());
-                Integer year = now.getYear();
-                Integer day = now.getDayOfMonth();
-                Month month = now.getMonth();
-                Integer monthNumber = now.getMonthValue();
-                classControl.setDay(day);
-                classControl.setMonth(monthNumber);
-                classControl.setYear(year);
-                classControl.setReplacement(dto.isReplacement());
-
-
-                classControl = repository.save(classControl);
-
-
-                if(dto.getStudents().length > 0)
-                    classControlStudents = new LinkedList<>();
-
-                for (Integer studentId : dto.getStudents()) {
-                    ClassControlStudent classControlStudent = new ClassControlStudent();
-                    classControlStudent.setStudent(new Student(studentId));
-                    classControlStudent.setClassControl(classControl);
-
-                    classControlStudents.add(classControlStudent);
-                }
-
-                if(classControlStudents != null ){
-                    classControlStudentRepository.saveAll(classControlStudents);
-                }
-
-                if(dto.getTeacherId() != null){
-                    ClassControlTeacher classControlTeacher = new ClassControlTeacher();
-                    classControlTeacher.setTeacher(new Teacher(dto.getTeacherId()));
-                    classControlTeacher.setClassControl(classControl);
-                    classControlTeacherRepository.save(classControlTeacher);
-                }
-
-
-
-
-            }
-
-
-
-
-
-
-        }catch (Throwable t){
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(null);
+            service.save(classes);
+        } catch (Throwable t) {
+            log.error("Save Class Control Error : ",t.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
 
         return ResponseEntity.ok("Class control records saved successfully");
@@ -113,52 +40,62 @@ public class ClassControlGateway {
 
     @GetMapping("/{course_class_id}/course_class")
     public ResponseEntity<List<ClassControlTeacherStudentDTO>> filteringDataRange(@RequestParam(value = "start_date", required = true) String startDate,
-                                                                 @RequestParam(value = "end_date", required = true) String endDate,
-                                                                 @PathVariable("course_class_id") Integer courseCLassId){
+                                                                                  @RequestParam(value = "end_date", required = true) String endDate,
+                                                                                  @PathVariable("course_class_id") Integer courseCLassId) {
 
-        List<ClassControlTeacherStudentDTO> result;
+        List<ClassControlTeacherStudentDTO> result = null;
 
         try {
-            List<ClassControl> classControls = repository.fetchByDateRange(startDate, endDate, courseCLassId);
 
-            if(classControls != null && !classControls.isEmpty()){
-                result = new LinkedList<>();
-            }else{
-                return null;
+            result = service.filteringDataRange(startDate,endDate,courseCLassId);
+
+            if(result == null || result.isEmpty()){
+                return ResponseEntity.notFound().build();
             }
 
-            for (ClassControl classControl : classControls) {
-
-                Integer teacherId = classControlTeacherRepository.fetchTeacherIdByClassControlId(classControl.getId());
-
-                List<Integer> studentIds = classControlStudentRepository.fetchStudentIdsByClassControlId(classControl.getId());
-
-                ClassControlTeacherStudentDTO classControlTeacherStudentDTO = getClassControlTeacherStudentDTO(classControl, studentIds, teacherId);
-
-                result.add(classControlTeacherStudentDTO);
-
-            }
-
-
+        }catch (IllegalArgumentException i){
+            log.info(i.getMessage());
+            return ResponseEntity.badRequest().build();
         }
-        catch (Throwable t ){
-            LOG.info(t.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        catch (Throwable t) {
+            log.info(t.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
+
         return ResponseEntity.ok(result);
+
     }
 
-    private static ClassControlTeacherStudentDTO getClassControlTeacherStudentDTO(ClassControl classControl, List<Integer> studentIds, Integer teacherId) {
-        ClassControlTeacherStudentDTO classControlTeacherStudentDTO = new ClassControlTeacherStudentDTO();
-        classControlTeacherStudentDTO.setCourseClass(classControl.getCourseClass().getId());
-        classControlTeacherStudentDTO.setStudents(studentIds);
-        classControlTeacherStudentDTO.setContent(classControl.getContent());
-        classControlTeacherStudentDTO.setId(classControl.getId());
-        classControlTeacherStudentDTO.setDay(classControl.getDay());
-        classControlTeacherStudentDTO.setMonth(classControl.getMonth());
-        classControlTeacherStudentDTO.setYear(classControl.getYear());
-        classControlTeacherStudentDTO.setReplacement(classControl.getReplacement());
-        classControlTeacherStudentDTO.setTeacherId(teacherId);
-        return classControlTeacherStudentDTO;
+    @GetMapping("/control/{course_class_id}/course_class")
+    public ResponseEntity<List<ClassControlResponse>> fetchClassControlByCourseClassAndDateRange(
+            @RequestParam("start_day") @Min(1) @Max(31) Integer startDay,
+            @RequestParam("start_month") @Min(1) @Max(12) Integer startMonth,
+            @RequestParam("start_year") @Min(1900) Integer startYear,
+            @RequestParam("end_day") @Min(1) @Max(31) Integer endDay,
+            @RequestParam("end_month") @Min(1) @Max(12) Integer endMonth,
+            @RequestParam("end_year") @Min(1900) Integer endYear,
+            @PathVariable("course_class_id") @Min(1) Integer courseClassId) {
+
+        try {
+
+            List<ClassControlResponse> result = service.fetchClassControlByCourseClassAndDateRange(startDay,startMonth,startYear,endDay,endMonth,endYear,courseClassId);
+
+            if (result == null || result.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok(result);
+
+        } catch (DateTimeException e) {
+            log.warn("Invalid date parameters: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }catch (IllegalArgumentException i){
+            log.info(i.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+        catch (Throwable t) {
+            log.info(t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

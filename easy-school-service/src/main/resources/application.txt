@@ -1,0 +1,7 @@
+# Network configuration
+#server.address=0.0.0.0
+#server.port=8080
+
+# To see more network-related info in logs
+#logging.level.org.springframework.web=INFO
+#logging.level.org.springframework.boot.web.embedded.tomcat=INFO

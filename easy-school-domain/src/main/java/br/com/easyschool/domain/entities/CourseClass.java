@@ -1,6 +1,7 @@
 package br.com.easyschool.domain.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
@@ -37,10 +38,12 @@ public class CourseClass implements EntityBase {
 
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Course course;
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Teacher teacher;
 
 

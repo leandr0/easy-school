@@ -16,6 +16,17 @@ public interface RevenueRepository extends JpaRepository<Revenue, Integer> {
     @Query("SELECT r FROM Revenue r WHERE r.student.id = :student_id")
     List<Revenue> findByStudentId(@Param("student_id") Integer studentId);
 
+
+
+    @Query("""
+            SELECT r FROM Revenue r
+            WHERE ( r.month >= :start_month AND r.year >= :start_year )
+            AND (r.month <= :end_month AND r.year <= :end_year )""")
+    List<Revenue> fetchByRangeData(@Param("start_month") Integer startMonth,
+                                   @Param("start_year") Integer startYear,
+                                   @Param("end_month") Integer endMonth,
+                                   @Param("end_year") Integer endYear);
+
     @Query(value = """ 
             SELECT
             cc.id AS class_id,
@@ -96,8 +107,8 @@ public interface RevenueRepository extends JpaRepository<Revenue, Integer> {
     @Transactional
     @Query(value = """
             UPDATE revenue
-            SET status = "OVERDUE"
-            WHERE status = "OPEN"
+            SET status = 'OVERDUE'
+            WHERE status = 'OPEN'
             AND month = :month
             AND year = :year
             AND paid = false

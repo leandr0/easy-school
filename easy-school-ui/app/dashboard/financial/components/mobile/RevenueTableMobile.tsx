@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { RevenueModel } from '@/app/lib/definitions/revenue_definitions';
 import { CourseClassStudentModel } from '@/app/lib/definitions/course_class_students_definitions';
-import { Switch } from '@/app/ui/components/switch';
+import { Switch } from '@/app/dashboard/components/switch';
 import RevenueStatus from "../RevenueStatus";
-import BRLCurrency from '@/app/ui/components/currency';
-import { MonthYearFormatter } from '@/app/ui/components/month_year_formatter';
+import BRLCurrency from '@/app/dashboard/components/currency';
+import { MonthYearFormatter } from '@/app/dashboard/components/month_year_formatter';
 import { ActionType } from '@/app/lib/types/revenue';
 
 interface RevenuesTableMobileProps {

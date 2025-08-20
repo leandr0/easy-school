@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import DateInput from '../../../ui/components/DateInput';
-import BRLCurrency from '../../../ui/components/currency';
-import { Switch } from '@/app/ui/components/switch';
+import DateInput from '../../components/DateInput';
+import BRLCurrency from '../../components/currency';
+import { Switch } from '@/app/dashboard/components/switch';
 import BRLCurrencyDebug from '@/app/ui/components/currency_debug';
 
 type Props = {

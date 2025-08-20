@@ -68,7 +68,7 @@ export async function fetchSolicitacaoByMonth() {
                                     FROM
                                         solicitacao
                                     WHERE
-                                        solicitacao.data >= (CURRENT_DATE - INTERVAL '6 months')    
+                                        solicitacao.data >= (CURRENT_DATE - INTERVAL '60 months')    
                                     GROUP BY
                                         to_char(date_trunc('month', solicitacao.data), 'Mon YY')
                                     ORDER BY

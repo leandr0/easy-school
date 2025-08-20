@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS student (
 CREATE TABLE IF NOT EXISTS language (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
+    status BOOL NOT NULL,
+    image_url NOT NULL,
     UNIQUE(name)
 );
 
@@ -127,22 +129,40 @@ CREATE TABLE IF NOT EXISTS technical_config(
     UNIQUE(code)
 );
 
+SELECT ccl.*, ccs.student_id , cct.teacher_id 
+FROM class_control ccl
+INNER JOIN course_class cc
+ON ccl.course_class_id = cc.id
+LEFT JOIN class_control_student ccs
+ON ccl.id = ccs.class_control_id
+LEFT JOIN class_control_teacher cct
+ON ccl.id = cct.class_control_id
+WHERE 
+--cc.id = 13
+--AND
+( ccl.month >= 7 AND ccl.year >= 2025)
+AND ( ccl.month <= 10 AND ccl.year <= 2025)
+ORDER BY ccl.day, ccl.month, ccl.year ASC
+;
+
+
 CREATE TABLE IF NOT EXISTS class_control(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     day INTEGER NOT NULL,
     month INTEGER NOT NULL,
     year INTEGER NOT NULL,
-    replacement BOOL NOT NULL,
+    replacement BOOL,
     content TEXT NOT NULL,
     course_class_id NOT NULL,
     FOREIGN KEY (course_class_id) REFERENCES course_class (id),
     UNIQUE(day,month,year,course_class_id)
 );
 
+
 CREATE TABLE IF NOT EXISTS class_control_teacher(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     class_control_id INTEGER NOT NULL,
-    teacher_id NOT NULL,
+    teacher_id INTEGER NOT NULL,
     FOREIGN KEY (class_control_id) REFERENCES class_control (id),
     FOREIGN KEY (teacher_id) REFERENCES teacher (id),
     UNIQUE(teacher_id,class_control_id)

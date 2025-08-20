@@ -2,7 +2,7 @@ import { CalendarRangeHourDayModel } from "../lib/definitions/calendat_range_hou
 
 import { apiClient } from "@/app/config/api";
 import { URLPathParam } from "../lib/url_path_param";
-import { HttpError } from "@/app/config/api";
+
 
 const clientApi = apiClient.resource('/calendar/range-hour-days');
 

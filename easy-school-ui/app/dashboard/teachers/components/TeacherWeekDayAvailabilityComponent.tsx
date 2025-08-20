@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import { DeleteWeekDayAvailability } from '../../../ui/buttons/ui_buttons';
+import { DeleteWeekDayAvailability } from '../../components/ui_buttons';
 
 type Item = {
   uddi?: string;

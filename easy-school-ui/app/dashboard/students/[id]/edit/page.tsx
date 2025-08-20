@@ -1,5 +1,5 @@
-import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
-import StudentEditForm from '@/app/ui/students/StudentEditForm';
+import Breadcrumbs from '@/app/dashboard/components/breadcrumbs';
+import StudentEditForm from '../../components/StudentEditForm';
 import React, { useEffect, useState } from "react";
 
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { RevenueModel } from '@/app/lib/definitions/revenue_definitions'; // Assuming this path is correct
-import BRLCurrency from '@/app/ui/components/currency';
+import BRLCurrency from '@/app/dashboard/components/currency';
 
 interface RevenuePaymentIdentifiedModalProps {
   show: boolean;
@@ -20,6 +20,7 @@ export default function RevenuePaymentIdentifiedModal({
   if (!show || !revenue) {
     return null;
   }
+
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">

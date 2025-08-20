@@ -2,7 +2,7 @@
 
 import { TeacherModel } from '@/app/lib/definitions/teacher_definitions';
 import { CalendarRangeHourDayModel } from '@/app/lib/definitions/calendat_range_hour_day_definitions';
-import TimeDisplay from '../../../ui/components/time_display';
+import TimeDisplay from '../../components/time_display';
 
 interface Props {
   teachers: TeacherModel[];

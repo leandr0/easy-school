@@ -2,9 +2,9 @@
 'use client';
 
 import React from 'react';
-import DateInput from '@/app/ui/components/DateInput';
-import BRLCurrency from '@/app/ui/components/currency';
-import { Switch } from '@/app/ui/components/switch';
+import DateInput from '@/app/dashboard/components/DateInput';
+import BRLCurrency from '@/app/dashboard/components/currency';
+import { Switch } from '@/app/dashboard/components/switch';
 
 type Props = {
   formData: any;
@@ -24,14 +24,17 @@ export function TeacherInfoComponent({
       <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
         <header className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-gray-900">Informações do Professor</h2>
-          <div className="shrink-0">
-            <Switch
-              checked={Boolean(formData.status)}
-              onChange={(checked) => onSwitchStatus?.(checked)}
-              label={formData.status ? 'Ativo' : 'Inativo'}
-              color="green"
-            />
-          </div>
+          {formData.id &&
+
+            <div className="shrink-0">
+              <Switch
+                checked={Boolean(formData.status)}
+                onChange={(checked) => onSwitchStatus?.(checked)}
+                label={formData.status ? 'Ativo' : 'Inativo'}
+                color="green"
+              />
+            </div>
+          }
         </header>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

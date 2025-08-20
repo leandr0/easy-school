@@ -1,6 +1,7 @@
 package br.com.easyschool.service.gateways;
 
 
+import br.com.easyschool.domain.dto.DashBoardStudentLanguageDTO;
 import br.com.easyschool.domain.entities.Language;
 import br.com.easyschool.domain.repositories.LanguageRepository;
 import org.apache.commons.logging.Log;
@@ -24,6 +25,11 @@ public class LanguageGateway {
     @GetMapping
     public List<Language> getAll() {
         return repository.findAll();
+    }
+
+    @GetMapping("/total_students")
+    public List<DashBoardStudentLanguageDTO> getLanguageTotalStudents() {
+        return repository.totalStudentsLanguage();
     }
 
     @PostMapping

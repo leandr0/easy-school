@@ -7,8 +7,9 @@ import br.com.easyschool.domain.repositories.RevenueRepository;
 import br.com.easyschool.domain.repositories.StudentRepository;
 import br.com.easyschool.domain.repositories.TechnicalConfigRepository;
 import br.com.easyschool.domain.types.TechnicalConfigCodeType;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -16,13 +17,16 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/revenue/messages")
+@Slf4j
+@RequiredArgsConstructor
 public class RevenueMessageGateway {
 
-    private final Log LOG = LogFactory.getLog(this.getClass());
     private final RevenueMessageRepository repository;
 
     private final StudentRepository studentRepository;
@@ -30,80 +34,117 @@ public class RevenueMessageGateway {
     private final RevenueRepository revenueRepository;
 
     private final TechnicalConfigRepository technicalConfigRepository;
-
-
     private Student transactionalStudent;
 
-    public RevenueMessageGateway(RevenueMessageRepository repository,
-                                 StudentRepository studentRepository,
-                                 RevenueRepository revenueRepository,
-                                 TechnicalConfigRepository technicalConfigRepository){
-        this.repository = repository;
-        this.studentRepository = studentRepository;
-        this.revenueRepository = revenueRepository;
-        this.technicalConfigRepository = technicalConfigRepository;
-    }
-
-
     @GetMapping
-    public RevenueMessage getAll() {
-        return repository.findAll().get(0);
+    public ResponseEntity<RevenueMessage> getAll() {
+        try {
+
+            List<RevenueMessage> result = repository.findAll();
+
+            if (result.isEmpty()) {
+                log.warn("Revenue Message not found!");
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok(result.get(0));
+
+        }catch (Throwable t){
+            log.error("Error on getAll {}", t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/payment-message")
-    public String getPaymentMessage() {
-        return repository.findAll().get(0).getPaymentOverdueMessage();
+    public ResponseEntity<String> getPaymentMessage() {
+        try {
+            return ResponseEntity.ok(repository.findAll().get(0).getPaymentOverdueMessage());
+        }catch (Throwable t){
+            log.error("Error on getPaymentMessage {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/payment-message/student/{id}")
-    public String getPaymentMessageStudent(@PathVariable("id") final Integer studentId) {
+    public ResponseEntity<String> getPaymentMessageStudent(@PathVariable("id") final Integer studentId) {
 
-        if(transactionalStudent == null)
-            transactionalStudent = getStudent(studentId);
-        //check the student
-        String message =  repository.findAll().get(0).getPaymentOverdueMessage();
+        try {
+            if (transactionalStudent == null)
+                transactionalStudent = getStudent(studentId);
+            //check the student
+            String message = repository.findAll().get(0).getPaymentOverdueMessage();
 
-        message = buildMessage(message,transactionalStudent);
+            message = buildMessage(message, transactionalStudent);
 
-        transactionalStudent = null;
+            transactionalStudent = null;
 
-        return message;
+            return ResponseEntity.ok(message);
+
+        }catch (Throwable t){
+            log.error("Error on getPaymentMessageStudent {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 
     @GetMapping("/reminder-message/student/{id}")
-    public String getReminderMessage(@PathVariable("id") final Integer studentId) {
-        if(transactionalStudent == null)
-            transactionalStudent = getStudent(studentId);
+    public ResponseEntity<String> getReminderMessage(@PathVariable("id") final Integer studentId) {
+        try {
+            if (transactionalStudent == null)
+                transactionalStudent = getStudent(studentId);
             //check the student
 
-        String message = repository.findAll().get(0).getReminderMessage();
+            String message = repository.findAll().get(0).getReminderMessage();
 
-        message = buildMessage(message,transactionalStudent);
+            message = buildMessage(message, transactionalStudent);
 
-        return message;
+            return ResponseEntity.ok(message);
+
+        }catch (Throwable t){
+            log.error("Error on getReminderMessage {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/reminder-message/student/{id}/link")
-    public String getReminderMessageLink(@PathVariable("id") final Integer studentId){
+    public ResponseEntity<String> getReminderMessageLink(@PathVariable("id") final Integer studentId){
 
-        transactionalStudent = getStudent(studentId);
+        try {
+            transactionalStudent = getStudent(studentId);
 
-        return buildLink(transactionalStudent, getReminderMessage(studentId));
+            return ResponseEntity.ok(buildLink(transactionalStudent, getReminderMessage(studentId).getBody()));
+        }catch (NoSuchElementException n){
+            return ResponseEntity.notFound().build();
+        }catch (Throwable t){
+            log.error("Error on getReminderMessageLink {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 
     @GetMapping("/payment-message/student/{id}/link")
-    public String getPaymentMessageLink(@PathVariable("id") final Integer studentId) throws UnsupportedEncodingException {
+    public ResponseEntity<String>  getPaymentMessageLink(@PathVariable("id") final Integer studentId) throws UnsupportedEncodingException {
+        try {
+            transactionalStudent = getStudent(studentId);
 
-        transactionalStudent = getStudent(studentId);
+            return ResponseEntity.ok(buildLink(transactionalStudent, getPaymentMessageStudent(studentId).getBody()));
 
-        return buildLink(transactionalStudent,getPaymentMessageStudent(studentId));
+        }catch (NoSuchElementException n){
+            return ResponseEntity.notFound().build();
+        }catch (Throwable t){
+            log.error("Error on getReminderMessageLink {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     private  String buildLink(final Student student, final String message){
 
         String link = technicalConfigRepository.fetchParamByCode(TechnicalConfigCodeType.WHATSAPP_LINK.getValue());
+
+        if(link == null || link.isEmpty()) {
+            log.warn("WhatsApp link not found ! ");
+            throw new NoSuchElementException("WhatsApp link not found ! ");
+        }
 
         final String PHONE_NUMBER = "{phone_number}";
         final String MESSAGE = "{message}";
@@ -115,40 +156,59 @@ public class RevenueMessageGateway {
 
     }
 
-    private Student getStudent(Integer id){
-        return studentRepository.findById(id).orElse(null);
+    private Student getStudent(Integer id) throws Exception {
+        try {
+            return studentRepository.findById(id).orElse(null);
+
+        }catch (Throwable t){
+            log.error("Error on getStudent {}",t.getMessage());
+            throw  new Exception(t.getMessage());
+        }
     }
 
     @PostMapping
-    public RevenueMessage create(@RequestBody RevenueMessage revenueMessage) {
+    public ResponseEntity<RevenueMessage> create(@RequestBody RevenueMessage revenueMessage) {
 
-        return repository.save(revenueMessage);
+        try {
+            return ResponseEntity.ok(repository.save(revenueMessage));
+        }catch (Throwable t){
+            log.error("Error on create Revenue Message {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
-    private String buildMessage(String message, Student student){
+    private String buildMessage(String message, Student student) throws Exception {
+        try {
+            final String NOME = "{nome}";
+            final String DATA = "{data}";
+            final String VALOR = "{valor}";
 
-        final String NOME = "{nome}";
-        final String DATA = "{data}";
-        final String VALOR = "{valor}";
+            String amount = String.format("%.2f", getCurrentRevenueAmount(student.getId()));
 
-        String amount = String.format("%.2f", getCurrentRevenueAmount(student.getId()));
-
-        message = message.replace(NOME, student.getName())
-                .replace(DATA,student.getDueDate().toString())
-                .replace(VALOR, amount);
+            message = message.replace(NOME, student.getName())
+                    .replace(DATA, student.getDueDate().toString())
+                    .replace(VALOR, amount);
 
 
-
-        return message;
+            return message;
+        }catch (Throwable t){
+            log.error("Error on buildMessage {}",t.getMessage());
+            throw new Exception(t.getMessage());
+        }
     }
 
 
-    private Double getCurrentRevenueAmount(Integer studentId){
-        LocalDate now = LocalDate.now();
-        Integer year = now.getYear();
-        Month month = now.getMonth();
-        Integer monthNumber = now.getMonthValue();
+    private Double getCurrentRevenueAmount(Integer studentId) throws Exception {
+        try {
+            LocalDate now = LocalDate.now();
+            Integer year = now.getYear();
+            Month month = now.getMonth();
+            Integer monthNumber = now.getMonthValue();
 
-        return revenueRepository.getAmountByStudentIdAndData(studentId,monthNumber,year);
+            return revenueRepository.getAmountByStudentIdAndData(studentId, monthNumber, year);
+        }catch (Throwable t){
+            log.error("Error on getCurrentRevenueAmount {}",t.getMessage());
+            throw new Exception(t.getMessage());
+        }
     }
 }

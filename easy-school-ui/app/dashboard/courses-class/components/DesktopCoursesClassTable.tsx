@@ -1,6 +1,6 @@
 "use client"
 
-import { AddStudents, UpdateCourseClass } from '../../../ui/buttons/ui_buttons';
+import { AddStudents, UpdateCourseClass } from '../../components/ui_buttons';
 import CourseStatus from './CourseClassesStatus';
 import React from "react";
 import { CourseClassTeacherModel } from '@/app/lib/definitions/course_class_definitions';

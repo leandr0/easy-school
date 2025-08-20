@@ -9,7 +9,7 @@ import { createByTeacherId, deletRangeHourDayList, fetchByTeacher } from "@/app/
 import { CalendarRangeHourDayModel } from "@/app/lib/definitions/calendat_range_hour_day_definitions";
 import { getAllLanguages } from "@/app/services/languageService";
 import { CalendarWeekDayModel } from "@/app/lib/definitions/calendar_week_day_definitions";
-import { getAllWeekDays } from "@/app/lib/actions/calendar_week_day_actions";
+import { getAllWeekDays } from "@/app/services/calendarWeekDayService";
 import { v4 as uuidv4 } from 'uuid';
 import TeacherEditMobile from "./TeacherEditMobile";
 import { getTeacherById, updateTeacher } from "@/app/services/teacherService";

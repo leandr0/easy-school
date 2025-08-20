@@ -7,6 +7,8 @@ import br.com.easyschool.domain.repositories.RevenueRepository;
 import br.com.easyschool.domain.repositories.StudentRepository;
 import br.com.easyschool.domain.types.RevenueType;
 import br.com.easyschool.service.requests.CreateRevenueRequest;
+import br.com.easyschool.domain.vo.DataParam;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,10 +33,10 @@ public class RevenueService {
     private final StudentRepository studentRepository;
 
     @Transactional(readOnly = true)
-    public List<Revenue> getAll() throws Exception {
+    public List<Revenue> fetchByDataRange(@NonNull DataParam startData, @NonNull DataParam endData) throws Exception {
 
         try {
-            return repository.findAll();
+            return repository.fetchByRangeData(startData.getMonth(),startData.getYear(),endData.getMonth(),endData.getYear());
         }catch (Throwable t){
             log.error("Find revenues {}",t.getMessage());
             throw new Exception(t);
@@ -126,7 +128,7 @@ public class RevenueService {
 
         try {
 
-            Map<Integer, Float> students = new LinkedHashMap<>();
+            Map<Integer, Double> students = new LinkedHashMap<>();
             Map<Integer, Integer> studentDuedates = new LinkedHashMap<>();
 
             LocalDate now = LocalDate.now();
@@ -139,7 +141,7 @@ public class RevenueService {
                         students.merge(
                                 collectionForm.getStudentId(),
                                 collectionForm.getCoursePrice(),
-                                Float::sum
+                                Double::sum
                         );
                         studentDuedates.put(collectionForm.getStudentId(), collectionForm.getDueDate());
                     }

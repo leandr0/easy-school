@@ -9,7 +9,7 @@ import { CalendarWeekDayModel } from '@/app/lib/definitions/calendar_week_day_de
 import { CalendarRangeHourDayModel } from '@/app/lib/definitions/calendat_range_hour_day_definitions';
 import { createTeacher } from '@/app/services/teacherService';
 import { getAllLanguages } from '@/app/services/languageService';
-import { getAllWeekDays } from '@/app/lib/actions/calendar_week_day_actions';
+import { getAllWeekDays } from '@/app/services/calendarWeekDayService';
 
 export const useTeacherForm = () => {
   const router = useRouter();

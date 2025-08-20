@@ -47,4 +47,7 @@ public interface CourseClassRepository extends JpaRepository<CourseClass, Intege
             AND cc.status = 1;
             """, nativeQuery = true)
     List<CourseClassTeacherDTO> fetchCourseClassByTeacher(@Param("teacher_id") Integer teacherId);
+
+    @Query("SELECT count(*) FROM CourseClass WHERE status = true")
+    Integer totalCourseClassesAvailable();
 }

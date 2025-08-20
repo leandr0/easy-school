@@ -1,6 +1,7 @@
 package br.com.easyschool.domain.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
@@ -18,18 +19,22 @@ public class Student implements EntityBase {
 
     @Column(name = "phone_number")
     @JsonProperty("phone_number")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String phoneNumber;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String email;
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean status;
 
     @Column(name = "due_date")
     @JsonProperty("due_date")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer dueDate;
 
     @Column(name = "start_date")
     @JsonProperty("start_date")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private LocalDateTime startDate;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -38,14 +43,8 @@ public class Student implements EntityBase {
             joinColumns = @JoinColumn(name = "student_id"),
             inverseJoinColumns = @JoinColumn(name = "course_class_id"))
     @JsonProperty("course_class")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Set<CourseClass> courseClasses;
-
-    /**
-
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id")
-    private Set<Revenue> revenues;
-**/
 
     public Student(){}
 

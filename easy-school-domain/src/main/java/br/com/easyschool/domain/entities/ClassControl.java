@@ -1,5 +1,7 @@
 package br.com.easyschool.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 
@@ -29,7 +31,10 @@ public class ClassControl implements EntityBase {
 
     @ManyToOne
     @JoinColumn(name = "course_class_id", nullable = false)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("course_class")
     private CourseClass courseClass;
+
     @Override
     public Integer getId() {
         return id;
