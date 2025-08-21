@@ -312,3 +312,15 @@ inner join course_class_students ccs
 on t.id = ccs.student_id
 inner join course_class cc
 on cc.id = ccs.course_class_id;
+
+
+teachers
+|-[id]
+  |-edit
+    |-page.tsx
+|-components
+  |-TeacherCreateForm.tsx
+  |-TeacherAvailabilityInputComponent.tsx
+  |- CreateTeacherFormMobile.tsx
+|create
+  |-page.tsx

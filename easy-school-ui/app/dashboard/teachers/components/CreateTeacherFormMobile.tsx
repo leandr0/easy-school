@@ -92,7 +92,7 @@ export function CreateTeacherFormMobile({
           <div className="px-2 pb-4">
             <LanguageSelectListComponent
               languages={languages}
-              formData={formData}
+              language_ids={formData.language_ids}
               handleLanguageToggle={handleLanguageToggle}
               handleCheckboxChange={handleCheckboxChange}
             />
