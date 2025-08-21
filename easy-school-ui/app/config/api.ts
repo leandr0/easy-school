@@ -23,7 +23,7 @@ class ApiClient {
 
   constructor() {
     this.config = {
-      baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "" ,//|| 'http://localhost:8080',
+      baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://129.148.62.1:8080" ,
       timeout: parseInt(process.env.API_TIMEOUT || '5000'),
       retryAttempts: parseInt(process.env.API_RETRY_ATTEMPTS || '3'),
     };
