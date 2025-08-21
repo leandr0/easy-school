@@ -91,6 +91,12 @@ CREATE TABLE IF NOT EXISTS revenue (
     UNIQUE(student_id,month,year)
 );
 
+CREATE TABLE IF NOT EXISTS revenue_message (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    reminder_message TEXT NOT NULL,
+    payment_overdue_message TEXT NOT NULL
+);
+
 
 CREATE TABLE IF NOT EXISTS calendar_week_day(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -128,22 +134,6 @@ CREATE TABLE IF NOT EXISTS technical_config(
     param TEXT NOT NULL,
     UNIQUE(code)
 );
-
-SELECT ccl.*, ccs.student_id , cct.teacher_id 
-FROM class_control ccl
-INNER JOIN course_class cc
-ON ccl.course_class_id = cc.id
-LEFT JOIN class_control_student ccs
-ON ccl.id = ccs.class_control_id
-LEFT JOIN class_control_teacher cct
-ON ccl.id = cct.class_control_id
-WHERE 
---cc.id = 13
---AND
-( ccl.month >= 7 AND ccl.year >= 2025)
-AND ( ccl.month <= 10 AND ccl.year <= 2025)
-ORDER BY ccl.day, ccl.month, ccl.year ASC
-;
 
 
 CREATE TABLE IF NOT EXISTS class_control(

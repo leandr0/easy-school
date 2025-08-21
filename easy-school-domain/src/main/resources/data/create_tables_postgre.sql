@@ -77,6 +77,9 @@ CREATE TABLE IF NOT EXISTS course_class_students (
     FOREIGN KEY (student_id) REFERENCES student (id),
     UNIQUE(student_id, course_class_id)
 );
+ALTER TABLE course_class_students
+  ALTER COLUMN course_price TYPE double precision
+  USING course_price::double precision;
 
 -- Revenue tracking
 CREATE TABLE IF NOT EXISTS revenue (
@@ -93,6 +96,14 @@ CREATE TABLE IF NOT EXISTS revenue (
     FOREIGN KEY (student_id) REFERENCES student (id),
     UNIQUE(student_id, month, year)
 );
+
+-- Revenue message
+CREATE TABLE IF NOT EXISTS revenue_message (
+    id SERIAL PRIMARY KEY,
+    payment_overdue_message TEXT,
+    reminder_message TEXT
+);
+
 
 -- Calendar week days
 CREATE TABLE IF NOT EXISTS calendar_week_day (
