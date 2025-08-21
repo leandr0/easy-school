@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,29 +30,35 @@ public class HolidaySyncService {
 
     @Transactional
     public void syncYear(int year) {
-        List<BrasilApiHolidayDto> api = fetchYear(year);
+
+        try {
+            List<BrasilApiHolidayDto> api = fetchYear(year);
 
 
-        LocalDate start = Year.of(year).atMonth(1).atDay(1);
-        LocalDate end   = Year.of(year).atMonth(12).atEndOfMonth();
-        int deleted = repo.deleteByDateBetween(start, end);
-        log.info("Deleted {} holiday rows for {}", deleted, year);
+            LocalDate start = Year.of(year).atMonth(1).atDay(1);
+            LocalDate end = Year.of(year).atMonth(12).atEndOfMonth();
+            int deleted = repo.deleteByDateBetween(start, end);
+            log.info("Deleted {} holiday rows for {}", deleted, year);
 
 
-        List<Holiday> toSave = api.stream().map(dto -> {
-            Holiday h = new Holiday();
-            h.setDate(dto.getDate());
-            h.setName(dto.getName());
+            List<Holiday> toSave = api.stream().map(dto -> {
+                Holiday h = new Holiday();
+                h.setDate(dto.getDate());
+                h.setName(dto.getName());
 
-            String scope = normalizeScope(dto.getType());
-            h.setScope(scope);
-            h.setRegionCode(null);
-            h.setType(dto.getType());
-            return h;
-        }).collect(Collectors.toList());
+                String scope = normalizeScope(dto.getType());
+                h.setScope(scope);
+                h.setRegionCode(null);
+                h.setType(dto.getType());
+                return h;
+            }).collect(Collectors.toList());
 
-        repo.saveAll(toSave);
-        log.info("Inserted {} holidays for {}", toSave.size(), year);
+            repo.saveAll(toSave);
+            log.info("Inserted {} holidays for {}", toSave.size(), year);
+
+        }catch (Throwable t){
+            log.error("syncYear error {}", t.getMessage());
+        }
     }
 
     private String normalizeScope(String t) {
@@ -64,19 +71,24 @@ public class HolidaySyncService {
     }
 
     private List<BrasilApiHolidayDto> fetchYear(int year) {
-        ResponseEntity<BrasilApiHolidayDto[]> res = restClient.get()
-                .uri("/feriados/v1/{year}", year)
-                .retrieve()
-                .toEntity(BrasilApiHolidayDto[].class);
+        try {
+            ResponseEntity<BrasilApiHolidayDto[]> res = restClient.get()
+                    .uri("/feriados/v1/{year}", year)
+                    .retrieve()
+                    .toEntity(BrasilApiHolidayDto[].class);
 
-        BrasilApiHolidayDto[] body = res.getBody();
+            BrasilApiHolidayDto[] body = res.getBody();
 
-        if (body == null)
-            return List.of();
+            if (body == null)
+                return List.of();
 
-        return Arrays.stream(body)
-                .filter(h -> h.getDate() != null)
-                .collect(Collectors.toList());
+            return Arrays.stream(body)
+                    .filter(h -> h.getDate() != null)
+                    .collect(Collectors.toList());
+        }catch (Throwable t){
+            log.error("brasilapi.com.br error : {}",t.getMessage());
+            throw new NoSuchElementException(t.getMessage());
+        }
     }
 }
 
