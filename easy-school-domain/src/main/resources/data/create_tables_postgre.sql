@@ -97,6 +97,22 @@ CREATE TABLE IF NOT EXISTS revenue (
     UNIQUE(student_id, month, year)
 );
 
+-- Revenue course class students
+CREATE TABLE IF NOT EXISTS revenue_course_class_students (
+    id SERIAL PRIMARY KEY,
+    course_class_id INTEGER NOT NULL,
+    student_id INTEGER NOT NULL,
+    course_price DECIMAL NOT NULL,
+	revenue_id INTEGER NOT NULL,
+    FOREIGN KEY (course_class_id) REFERENCES course_class (id),
+    FOREIGN KEY (student_id) REFERENCES student (id),
+	FOREIGN KEY (revenue_id) REFERENCES revenue (id),
+    UNIQUE(student_id, course_class_id,revenue_id)
+);
+ALTER TABLE revenue_course_class_students
+  ALTER COLUMN course_price TYPE double precision
+  USING course_price::double precision;
+
 -- Revenue message
 CREATE TABLE IF NOT EXISTS revenue_message (
     id SERIAL PRIMARY KEY,

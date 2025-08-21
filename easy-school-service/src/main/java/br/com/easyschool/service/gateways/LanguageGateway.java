@@ -4,8 +4,9 @@ package br.com.easyschool.service.gateways;
 import br.com.easyschool.domain.dto.DashBoardStudentLanguageDTO;
 import br.com.easyschool.domain.entities.Language;
 import br.com.easyschool.domain.repositories.LanguageRepository;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,28 +14,57 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/languages")
+@Slf4j
+@RequiredArgsConstructor
 public class LanguageGateway {
 
-    private final Log LOG = LogFactory.getLog(this.getClass());
+
     private final LanguageRepository repository;
 
-    public LanguageGateway(LanguageRepository repository){
-        this.repository = repository;
-    }
-
     @GetMapping
-    public List<Language> getAll() {
-        return repository.findAll();
+    public ResponseEntity<List<Language>> getAll() {
+
+        try {
+             List<Language> result = repository.findAll();
+
+             if (result.isEmpty())
+                 return ResponseEntity.notFound().build();
+
+             return ResponseEntity.ok(result);
+
+        }catch (Throwable t){
+            log.error(t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/total_students")
-    public List<DashBoardStudentLanguageDTO> getLanguageTotalStudents() {
-        return repository.totalStudentsLanguage();
+    public ResponseEntity<List<DashBoardStudentLanguageDTO>> getLanguageTotalStudents() {
+        try {
+
+            List<DashBoardStudentLanguageDTO> result = repository.totalStudentsLanguage();
+
+            if(result.isEmpty())
+                return ResponseEntity.notFound().build();
+
+            return ResponseEntity.ok(result);
+
+        }catch (Throwable t){
+            log.error(t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping
-    public Language create(@RequestBody Language request) {
-        return repository.save(request);
+    public ResponseEntity<Language> create(@RequestBody Language request) {
+        try {
+
+            return ResponseEntity.ok(repository.save(request));
+
+        }catch (Throwable t){
+            log.error(t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 }

@@ -1,3 +1,14 @@
+/**
+DO $$ DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+        EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
+    END LOOP;
+END $$;
+**/
+
+
 insert into language (name,status,image_url ) values ( 'English',true, '/languages/united-kingdom.png');
 insert into language (name,status,image_url ) values ( 'Spanish',true, '/languages/spain.png');
 insert into language (name,status,image_url ) values ( 'Italian',true, '/languages/italy.png');
@@ -174,3 +185,130 @@ INSERT INTO teacher_skill (teacher_id,language_id) VALUES (4,11);
 INSERT INTO teacher_skill (teacher_id,language_id) VALUES (5,7);
 INSERT INTO teacher_skill (teacher_id,language_id) VALUES (5,8);
 INSERT INTO teacher_skill (teacher_id,language_id) VALUES (5,12);
+
+
+
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (19,8,2025,false,'verbo to be',1);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (21,8,2025,false,'verbo to be',1);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (8,7,2025,false,'Present perfect',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (10,7,2025,false,'Present perfect',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (15,7,2025,false,'Video tedtalks',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (17,7,2025,false,'Video tedtalks',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (22,7,2025,false,'Modal verbs',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (24,7,2025,false,'Modal verbs',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (29,7,2025,false,'Past simple',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (31,7,2025,false,'Past simple',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (5,8,2025,false,'modal verbs',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (7,8,2025,false,'modal verbs',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (12,8,2025,false,'Grammar exercises',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (15,8,2025,false,'Grammar exercises',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (19,8,2025,false,'Ausência do professor',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (21,8,2025,false,'Revisão modal verbs',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (22,8,2025,true,'Grammar exercises',2);
+INSERT INTO class_control (day,month,year,replacement, content, course_class_id) VALUES (4,8,2025,false,'Listening practice ',8);
+
+
+
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (1,2);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (1,5);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (1,10);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (1,17);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (2,2);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (2,5);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (2,10);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (2,17);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (3,6);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (3,8);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (3,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (3,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (4,6);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (4,8);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (4,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (4,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (5,6);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (5,8);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (5,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (5,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (6,6);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (6,8);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (6,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (6,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (7,6);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (7,8);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (7,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (7,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (8,6);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (8,8);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (8,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (8,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (9,6);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (9,8);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (9,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (9,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (10,6);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (10,8);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (10,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (10,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (11,6);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (11,8);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (11,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (11,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (12,6);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (12,8);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (12,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (12,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (13,6);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (13,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (14,8);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (14,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (14,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (15,6);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (15,8);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (15,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (15,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (16,6);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (16,8);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (16,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (16,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (17,6);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (17,8);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (17,14);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (17,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (18,2);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (18,3);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (18,4);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (18,7);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (18,9);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (18,15);
+INSERT INTO class_control_student (class_control_id,student_id) VALUES (18,17);
+
+
+
+
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (1,3);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (2,3);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (3,4);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (4,4);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (5,4);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (6,4);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (7,4);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (8,4);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (9,4);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (10,4);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (11,4);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (12,4);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (13,4);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (14,4);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (16,4);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (17,4);
+INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (18,2);
+
+
+select 'INSERT INTO revenue_course_class_students (course_class_id,student_id,course_price,revenue_id) VALUES ('|| cc.id ||','||t.id||','||r.amount||','||r.id||');'
+from revenue r
+inner join student t
+on t.id = r.student_id
+inner join course_class_students ccs
+on t.id = ccs.student_id
+inner join course_class cc
+on cc.id = ccs.course_class_id;

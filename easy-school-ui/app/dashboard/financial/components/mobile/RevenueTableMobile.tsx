@@ -9,13 +9,14 @@ import RevenueStatus from "../RevenueStatus";
 import BRLCurrency from '@/app/dashboard/components/currency';
 import { MonthYearFormatter } from '@/app/dashboard/components/month_year_formatter';
 import { ActionType } from '@/app/lib/types/revenue';
+import { RevenueCourseClassStudentModel } from '@/app/lib/definitions/revenue_course_class_student_definitons';
 
 interface RevenuesTableMobileProps {
   revenues: RevenueModel[];
   setActionType: React.Dispatch<React.SetStateAction<ActionType | null>>;
   setStudentId: React.Dispatch<React.SetStateAction<string | null>>;
   setRevenue: React.Dispatch<React.SetStateAction<RevenueModel | null>>;
-  loadRevenueDetails: (studentId: string) => Promise<CourseClassStudentModel[]>;
+  loadRevenueDetails: (studentId: string, revenueId: string) => Promise<RevenueCourseClassStudentModel[]>;
 }
 
 export default function RevenuesTableMobile({
@@ -56,7 +57,7 @@ export default function RevenuesTableMobile({
     } else {
       try {
         setLoadingRow(revenueId);
-        const details = await loadRevenueDetails(studentId);
+        const details = await loadRevenueDetails(studentId,revenueId);
         setExpanded(prev => ({ ...prev, [revenueId]: details }));
       } catch (err) {
         console.error(err);

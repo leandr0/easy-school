@@ -1,4 +1,3 @@
-// RevenuesTable.tsx
 'use client';
 
 import React, { useEffect, useState, useCallback } from "react";
@@ -13,9 +12,9 @@ import RevenuePaymentIdentifiedModal from "./desktop/RevenuePaymentIdentifiedMod
 import RevenuePaymentIdentifiedModalMobile from "./mobile/RevenuePaymentIdentifiedModalMobile";
 import RevenueLinkModalMobile from "./mobile/RevenueLinkModalMobile";
 import { ActionType } from "@/app/lib/types/revenue";
-import { getByStudentId } from "@/app/services/courseClassStudentService";
-import { CourseClassStudentModel } from "@/app/lib/definitions/course_class_students_definitions";
-import RevenueMonthRangeFilter, { MonthRange } from "./RevenueMonthRangeFilter";
+import RevenueMonthRangeFilter from "./RevenueMonthRangeFilter";
+import { fetchRevenueCourseClassStudentByStudentAndRevenue } from "@/app/services/revenueCourseClassStudent";
+import { RevenueCourseClassStudentModel } from "@/app/lib/definitions/revenue_course_class_student_definitons";
 
 export default function RevenuesTable() {
 
@@ -53,9 +52,9 @@ export default function RevenuesTable() {
     }
   }, []);
 
-  const loadRevenueDetails = useCallback(async (studentId: string): Promise<CourseClassStudentModel[]> => {
+  const loadRevenueDetails = useCallback(async (studentId: string,revenueId: string): Promise<RevenueCourseClassStudentModel[]> => {
     try {
-      return await getByStudentId(studentId);
+      return await fetchRevenueCourseClassStudentByStudentAndRevenue(studentId,revenueId);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       setError(errorMessage);
@@ -110,7 +109,6 @@ export default function RevenuesTable() {
               setLinkToDisplay(generatedLink);
               setShowLinkModal(true);
               setMessage("");
-              await loadRevenueDetails(studentId);
             } catch (err) {
               setMessage(handleApiError(err));
             }

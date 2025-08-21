@@ -10,6 +10,7 @@ import BRLCurrency from '@/app/dashboard/components/currency';
 import { MonthYearFormatter } from '@/app/dashboard/components/month_year_formatter';
 import { ActionType } from '@/app/lib/types/revenue';
 import { CourseClassStudentModel } from '@/app/lib/definitions/course_class_students_definitions';
+import { RevenueCourseClassStudentModel } from '@/app/lib/definitions/revenue_course_class_student_definitons';
 
 
 interface RevenuesTableDesktopProps {
@@ -17,7 +18,7 @@ interface RevenuesTableDesktopProps {
   setActionType: React.Dispatch<React.SetStateAction<ActionType | null>>;
   setStudentId: React.Dispatch<React.SetStateAction<string | null>>;
   setRevenue: React.Dispatch<React.SetStateAction<RevenueModel | null>>;
-  loadRevenueDetails: (studentId: string) => Promise<CourseClassStudentModel[]>;
+  loadRevenueDetails: (studentId: string,revenueId:string) => Promise<RevenueCourseClassStudentModel[]>;
   onFilterRange: () => Promise<void> | void;
   filter: { startYm: string; endYm: string }; // "YYYY-MM"
   setFilter: React.Dispatch<React.SetStateAction<{ startYm: string; endYm: string }>>;
@@ -34,7 +35,7 @@ export default function RevenuesTableDesktop({
   setFilter,
 }: RevenuesTableDesktopProps) {
 
-  const [expandedRows, setExpandedRows] = useState<{ [id: string]: CourseClassStudentModel[] }>({});
+  const [expandedRows, setExpandedRows] = useState<{ [id: string]: RevenueCourseClassStudentModel[] }>({});
   const [loadingRow, setLoadingRow] = useState<string | null>(null);
   const [localStudentId, setLocalStudentId] = useState<string | null>(null);
 
@@ -84,7 +85,7 @@ export default function RevenuesTableDesktop({
     } else {
       try {
         setLoadingRow(revenueId);
-        const details = await loadRevenueDetails(studentId);
+        const details = await loadRevenueDetails(studentId,revenueId);
         setExpandedRows(prev => ({ ...prev, [revenueId]: details }));
       } catch (error) {
         console.error("Erro ao carregar detalhes:", error);
