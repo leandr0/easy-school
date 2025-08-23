@@ -1,16 +1,11 @@
 'use server'
 import { serialize } from 'cookie'
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { encrypt ,generateJwtToken} from '@/app/lib/session'
-import { loginUser } from 'auth'
-import { cookies } from 'next/headers';
-import { UserField } from '@/app/lib/definitions';
-import { fetchCustomers } from '@/app/lib/data';  
-import { CustomerField } from '@/app/lib/definitions';
-import { NextRequest, NextResponse } from 'next/server';
+import { generateJwtToken} from '@/app/lib/session'
+import { NextResponse } from 'next/server';
+import { UserModel } from './definitions/user_definitions'
 
 
-export async function setUserInCookie(user: UserField): Promise<NextResponse> {
+export async function setUserInCookie(user: UserModel): Promise<NextResponse> {
   if (!user) {
     throw new Error('User is undefined');
   }
@@ -35,7 +30,7 @@ export async function setUserInCookie(user: UserField): Promise<NextResponse> {
   return response;
 }
 
-export async function setUserInCookieServer(user: UserField): Promise<NextResponse> {
+export async function setUserInCookieServer(user: UserModel): Promise<NextResponse> {
   const token = generateJwtToken(user);
 
   const response = NextResponse.json({ message: 'Login successful' });
@@ -54,26 +49,3 @@ export async function setUserInCookieServer(user: UserField): Promise<NextRespon
   
   return response;
 }
-
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { email, password } = req.body;
-  
-    // Log the email and password for debugging purposes
-    //console.log(req.body.email);
-    //console.log(req.body.password);
-  
-    // Attempt to log in the user
-    const user: UserField | undefined = await loginUser(email, password);
-  
-    // Handle the case where login fails (i.e., user is undefined)
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-  
-    // If login is successful, set the user in the cookie
-    await setUserInCookieServer(user);
-  
-    // Return a success response to the client
-    return res.status(200).json({ message: 'Successfully set cookie!' });
-  }

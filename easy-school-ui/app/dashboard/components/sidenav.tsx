@@ -53,7 +53,7 @@ export default function SideNav() {
         <form onSubmit={handleSubmit} className="mt-3">
           <button
             className="w-full flex h-[48px] items-center justify-center gap-2 rounded-md bg-gray-50 p-3
-                       text-sm font-medium hover:bg-sky-100 hover:text-blue-600"
+                       text-sm font-medium hover:bg-sky-100 hover:text-red-400"
           >
             <PowerIcon className="w-6" />
             <span>Sign Out</span>
@@ -68,10 +68,10 @@ export default function SideNav() {
         <form onSubmit={handleSubmit}>
           <button
             className="w-full flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3
-                       text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:justify-start md:p-2 md:px-3"
+                       text-sm font-medium hover:bg-sky-100 hover:text-red-400 md:justify-start md:p-2 md:px-3"
           >
-            <PowerIcon className="w-6" />
-            <div className="hidden md:block">Sign Out</div>
+            <PowerIcon className="w-6 " />
+            <div className="hidden md:block ">Sign Out</div>
           </button>
         </form>
       </div>

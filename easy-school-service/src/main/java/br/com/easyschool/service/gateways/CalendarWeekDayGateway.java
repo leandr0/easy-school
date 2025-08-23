@@ -2,8 +2,9 @@ package br.com.easyschool.service.gateways;
 
 import br.com.easyschool.domain.entities.CalendarWeekDay;
 import br.com.easyschool.domain.repositories.CalendarWeekDayRepository;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,27 +12,45 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/week-days")
+@Slf4j
+@RequiredArgsConstructor
 public class CalendarWeekDayGateway {
-
-    private final  Log LOG = LogFactory.getLog(this.getClass());
-
 
     private final CalendarWeekDayRepository repository;
 
-
-    public CalendarWeekDayGateway(CalendarWeekDayRepository repository){
-        this.repository = repository;
-    }
-
     @GetMapping
-    public List<CalendarWeekDay> getAll() {
-        return repository.findAll();
+    public ResponseEntity<List<CalendarWeekDay>> getAll() {
+        try {
+
+            List<CalendarWeekDay> result = repository.findAll();
+
+            if(result.isEmpty())
+                ResponseEntity.notFound().build();
+
+            return ResponseEntity.ok(result);
+
+        }catch (Throwable t){
+            log.error(t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 
     @GetMapping("/{id}/course-class")
-    public List<CalendarWeekDay> getByCourseClassId(@PathVariable final Integer id) {
-        return repository.findBydCourseClassId(id);
+    public ResponseEntity<List<CalendarWeekDay>> getByCourseClassId(@PathVariable final Integer id) {
+        try {
+
+            List<CalendarWeekDay> result = repository.findBydCourseClassId(id);
+
+            if(result.isEmpty())
+                ResponseEntity.notFound().build();
+
+            return ResponseEntity.ok(result);
+
+        }catch (Throwable t){
+            log.error(t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 }

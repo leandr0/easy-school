@@ -2,20 +2,18 @@
 const textEncoder = new TextEncoder();
 import jwt from 'jsonwebtoken';
 import { parse } from 'cookie';
-import { UserField } from './definitions';
+import { User, UserField } from './definitions';
+import { UserModel } from './definitions/user_definitions';
 const ENCRYPTION_KEY = 'K4fJmvZJYk3FXYdZ1QEnu7EZzX8Zri1PxAbLOMFFUP8='; 
 
 const JWT_SECRET = process.env.JWT_SECRET || 'zcffHBNq4d2zxvOTiJ2r/PzSq45CGEnzapG12Qdc0lk='; // Store this securely
 
 // Function to generate a JWT token
-export function generateJwtToken(user: UserField): string {
+export function generateJwtToken(user: UserModel): string {
   return jwt.sign(
     {
       id: user.id,
-      email: user.email,
-      name: user.name,
-      cpf: user.cpf
-      
+      username: user.username
     },
     JWT_SECRET,
     { expiresIn: '7d' }

@@ -4,7 +4,6 @@ import { CreateStudent } from '@/app/dashboard/components/ui_buttons';
 import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
-import { fetchInvoicesPages } from '@/app/lib/data';
 import StudentsTable from './components/students_table';
 
 import { Metadata } from 'next';
@@ -24,7 +23,7 @@ export default async function Page({
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
 
-  const totalPages = await fetchInvoicesPages(query);
+  const totalPages = 1;
  
   return (
     <div className="w-full">

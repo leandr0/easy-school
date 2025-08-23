@@ -1,7 +1,4 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { fetchCustomers } from '@/app/lib/data';  
-import { CustomerField } from '@/app/lib/definitions';
-
 
 export async function GET(request: NextRequest) {
     console.log('Chamando a API');
@@ -20,10 +17,10 @@ export async function GET(request: NextRequest) {
     
     if(apiKey === correctApiKey){
         console.log("Inside the IF : ", apiKey === correctApiKey);
-        const data : CustomerField[] = await fetchCustomers(); 
+
         //console.log(data);
         
-        return NextResponse.json(data, { status: 200 });
+        return NextResponse.json({ status: 200 });
     }
     else{
         console.log('Invalid API KEY');

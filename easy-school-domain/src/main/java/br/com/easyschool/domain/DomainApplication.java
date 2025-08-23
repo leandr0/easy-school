@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories("br.com.easyschool.domain.repositories")
-@EntityScan("br.com.easyschool.domain.entities")
+@EntityScan(value = {"br.com.easyschool.domain.entities"})
 @SpringBootApplication
 public class DomainApplication {
     public static void main(String[] args) {

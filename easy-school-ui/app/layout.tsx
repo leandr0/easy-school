@@ -7,8 +7,12 @@ export const metadata: Metadata = {
     template: '%s | Easy School',
     default: 'Easy School',
   },
-  description: 'The official Next.js Learn Dashboard built with App Router.',
-  metadataBase: new URL('https://next-learn-dashboard.vercel.sh'),
+  description: 'The official Easy School.',
+  metadataBase: new URL('https://ylisacademy.my.canva.site/'),
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico"
+  }
 };
 
 

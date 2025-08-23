@@ -99,7 +99,7 @@ export default function CreateMessageForm() {
               <p className="text-xs text-gray-500 mb-2">
                 Use variáveis como <code className="bg-gray-100 px-1 rounded">{"{nome}"}</code>,{' '}
                 <code className="bg-gray-100 px-1 rounded">{"{valor}"}</code> e{' '}
-                <code className="bg-gray-100 px-1 rounded">{"{vencimento}"}</code>.
+                <code className="bg-gray-100 px-1 rounded">{"{data}"}</code>.
               </p>
               <div className="relative">
                 <textarea
@@ -110,7 +110,7 @@ export default function CreateMessageForm() {
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, reminder_message: e.target.value }))
                   }
-                  placeholder="Olá {nome}, este é um lembrete do pagamento de {valor} com vencimento em {vencimento}."
+                  placeholder="Olá {nome}, este é um lembrete do pagamento de {valor} com vencimento em {data}."
                   className="
                     block w-full rounded-md border border-gray-300 bg-white
                     py-2 px-3 text-sm outline-none
@@ -133,7 +133,7 @@ export default function CreateMessageForm() {
                 Pagamento Atrasado
               </label>
               <p className="text-xs text-gray-500 mb-2">
-                Ex.: <code className="bg-gray-100 px-1 rounded">“Seu pagamento de {`{valor}`} venceu em {`{vencimento}`}.”</code>
+                Ex.: <code className="bg-gray-100 px-1 rounded">“Seu pagamento de {`{valor}`} venceu em {`{data}`}.”</code>
               </p>
               <div className="relative">
                 <textarea
@@ -147,7 +147,7 @@ export default function CreateMessageForm() {
                       payment_overdue_message: e.target.value,
                     }))
                   }
-                  placeholder="Olá {nome}, identificamos um pagamento em atraso no valor de {valor}, com vencimento em {vencimento}. Por favor, regularize."
+                  placeholder="Olá {nome}, identificamos um pagamento em atraso no valor de {valor}, com vencimento em {data}. Por favor, regularize."
                   className="
                     block w-full rounded-md border border-gray-300 bg-white
                     py-2 px-3 text-sm outline-none
@@ -167,7 +167,7 @@ export default function CreateMessageForm() {
                 Variáveis suportadas:{' '}
                 <code className="bg-white px-1 rounded border">{'{nome}'}</code>,{' '}
                 <code className="bg-white px-1 rounded border">{'{valor}'}</code>,{' '}
-                <code className="bg-white px-1 rounded border">{'{vencimento}'}</code>.
+                <code className="bg-white px-1 rounded border">{'{data}'}</code>.
               </p>
             </div>
           </div>

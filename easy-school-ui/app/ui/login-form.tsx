@@ -11,6 +11,7 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import { useFormState, useFormStatus } from 'react-dom';
+import { loginUser } from 'auth';
 
 
 
@@ -26,17 +27,14 @@ export default function LoginForm() {
     const email = formData.get('email')
     const password = formData.get('password')
 
-    const response = await fetch('/api/security/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    })
+    const response = await loginUser(email?.toString()!,password?.toString()!);
+
     console.log(response);
-    if (response.ok) {
+    if (response) {
       router.push('/dashboard')
     } else {
       // Handle errors
-    }
+    }         
   }
  
 

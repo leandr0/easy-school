@@ -149,7 +149,7 @@ export default function SolicitacaoMonthChart() {
           {solicitacaoMonth.map((month) => (
            <div key={month.month} className="flex flex-col items-center w-[40px] ">
               <div
-                className="w-full rounded-md bg-blue-300 "
+                className="w-full rounded-md bg-purple-400 "
                 style={{
                   height: `${(chartHeight / topLabel) * month.total}px`,
                 }}

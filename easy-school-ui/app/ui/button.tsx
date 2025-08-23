@@ -11,7 +11,7 @@ export function Button({ children, className,variant = 'primary', ...rest }: But
 
   const variantClasses = {
     primary:
-      'bg-purple-400 text-white hover:bg-purple-500 focus-visible:outline-blue-500 active:bg-blue-600',
+      'bg-purple-400 text-white hover:bg-purple-500 focus-visible:outline-purple-500 active:bg-purple-600',
     secondary:
       'bg-gray-100 text-gray-600 hover:bg-gray-200 focus-visible:outline-gray-400',
   };

@@ -7,8 +7,8 @@ import br.com.easyschool.domain.repositories.CourseClassRepository;
 import br.com.easyschool.domain.repositories.CourseRepository;
 import br.com.easyschool.domain.repositories.TeacherRepository;
 import br.com.easyschool.service.requests.CreateCourseClassRequest;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +19,10 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/course_classes")
+@Slf4j
+@RequiredArgsConstructor
 public class CourseClassGateway {
 
-    private final Log LOG = LogFactory.getLog(this.getClass());
     private final CourseClassRepository repository;
 
     private final CourseRepository courseRepository;
@@ -29,13 +30,6 @@ public class CourseClassGateway {
     private final TeacherRepository teacherRepository;
 
     private final CourseClassCalendarRepository courseClassCalendarRepository;
-
-    public CourseClassGateway(CourseClassRepository repository, CourseRepository courseRepository, TeacherRepository teacherRepository, CourseClassCalendarRepository courseClassCalendarRepository){
-        this.repository = repository;
-        this.courseRepository = courseRepository;
-        this.teacherRepository = teacherRepository;
-        this.courseClassCalendarRepository = courseClassCalendarRepository;
-    }
 
     @GetMapping
     public List<CourseClass> getAll(){
@@ -62,7 +56,7 @@ public class CourseClassGateway {
         try {
            result =  repository.fetchCourseClassByTeacher(teacherId);
         }catch (Throwable t){
-            LOG.info(t.getMessage());
+            log.info(t.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
