@@ -1,10 +1,3 @@
-import NextAuth from 'next-auth';
-import Credentials from 'next-auth/providers/credentials';
-import { sql } from '@vercel/postgres';
-import type { User, UserField } from '@/app/lib/definitions';
-import bcrypt from 'bcrypt';
-import { authConfig } from 'auth.config';
-import { encrypt,comparePasswords,getKey } from './app/lib/session';
 import { login } from './app/services/security/loginService';
 import { UserModel } from './app/lib/definitions/user_definitions';
 

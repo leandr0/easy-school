@@ -3,7 +3,10 @@ import { CourseClassCompleteModel, CourseClassEditForm, CourseClassModel, Course
 import { apiClient } from "@/app/config/api";
 import { URLPathParam } from "../lib/url_path_param";
 
-const clientApi = apiClient.resource('/course_classes');
+
+import { externalApiClient } from "../config/clientAPI";
+
+const clientApi = externalApiClient.resource('/course_classes');
 
 export async function getAllCourseClass(): Promise<CourseClassTeacherModel[]> {
   return clientApi.get();

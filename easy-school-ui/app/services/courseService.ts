@@ -1,7 +1,9 @@
 import { CourseModel } from "../lib/definitions/courses_definitions";
 import { apiClient } from "@/app/config/api";
 
-const clientApi = apiClient.resource('/courses');
+import { externalApiClient } from "../config/clientAPI";
+
+const clientApi = externalApiClient.resource('/courses');
 
 // Fetch all students
 export async function getAllCourses(): Promise<CourseModel[]> {

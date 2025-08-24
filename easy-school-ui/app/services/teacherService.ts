@@ -2,9 +2,9 @@ import { TeacherModel, TeacherUpdateModel } from "../lib/definitions/teacher_def
 
 import { apiClient } from "@/app/config/api";
 
+import { externalApiClient } from "../config/clientAPI";
 
-
-const clientApi = apiClient.resource('/teachers');
+const clientApi = externalApiClient.resource('/teachers');
 
 // Fetch all students
 export async function getAllTeachers(): Promise<TeacherModel[]> {

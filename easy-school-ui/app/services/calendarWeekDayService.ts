@@ -2,7 +2,9 @@ import { CalendarWeekDayModel } from "../lib/definitions/calendar_week_day_defin
 
 import { apiClient } from "@/app/config/api";
 
-const clientApi = apiClient.resource('/week-days');
+import { externalApiClient } from "../config/clientAPI";
+
+const clientApi = externalApiClient.resource('/week-days');
 
 export async function getAllWeekDays(): Promise<CalendarWeekDayModel[]> {
   return clientApi.get();

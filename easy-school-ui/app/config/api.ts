@@ -18,15 +18,23 @@ interface ApiConfig {
   retryAttempts: number;
 }
 
-class ApiClient {
+export class ApiClient {
   private config: ApiConfig;
 
-  constructor() {
+  constructor(config?: Partial<ApiConfig>) {
     this.config = {
-      baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://129.148.62.1:8080" ,
+      baseURL: config?.baseURL!,
       timeout: parseInt(process.env.API_TIMEOUT || '5000'),
       retryAttempts: parseInt(process.env.API_RETRY_ATTEMPTS || '3'),
     };
+  }
+
+
+  setBaseURL(url: string) {
+    this.config.baseURL = url;
+  }
+  getBaseURL() {
+    return this.config.baseURL;
   }
 
   async request<T>(
@@ -117,7 +125,7 @@ class ResourceClient {
   constructor(
     private apiClient: ApiClient,
     private basePath: string
-  ) {}
+  ) { }
 
   private buildEndpoint(endpoint: string = ''): string {
     if (!endpoint) {

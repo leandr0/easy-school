@@ -2,8 +2,9 @@ import { StudentCoursePriceModel, StudentModel } from "../lib/definitions/studen
 import { apiClient } from "@/app/config/api";
 import { URLPathParam } from "@/app/lib/url_path_param"
 
+import { externalApiClient } from "../config/clientAPI";
 
-const clientApi = apiClient.resource('/students');
+const clientApi = externalApiClient.resource('/students');
 
 export async function getAllStudents(): Promise<StudentModel[]> {
   return clientApi.get<StudentModel[]>();

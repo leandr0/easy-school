@@ -11,7 +11,7 @@ import { cookies } from 'next/headers'; // Next.js 13 App Router
 
 // Your handler function (for GET, POST, etc.)
 export async function GET(req: Request): Promise<NextResponse> {
-  // Retrieve cookies from the request
+
   const cookieStore = cookies(); // App Router API to get cookies
 
   const allCookies = await cookieStore.getAll(); // Returns an array of { name, value } objects
@@ -33,7 +33,7 @@ export async function GET(req: Request): Promise<NextResponse> {
   // Verify the JWT token
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log('Decoded JWT:', decoded); // Access user data from the token
+    console.log('Decoded JWT:', decoded); 
 
     let res = NextResponse.json({ message: decoded}, { status: 200 });
 
@@ -50,7 +50,7 @@ export async function GET(req: Request): Promise<NextResponse> {
 }
 
 export async function POST(req: Request) : Promise<NextResponse> {
-  
+  console.log(`delete cookie`);
   const { cookieName } = await req.json();
   let res = NextResponse.json({ message:  'Cookie deleted'}, { status: 200 });
   

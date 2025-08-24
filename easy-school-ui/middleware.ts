@@ -13,34 +13,40 @@ const publicRoutes = ['/login', '/signup', '/'];
 
 export default async function middleware(req: NextRequest) {
 
-  const path = req.nextUrl.pathname;
-  const isProtectedRoute = protectedRoutes.includes(path);
-  const isPublicRoute = publicRoutes.includes(path);
+  const { pathname } = req.nextUrl;
 
-  const sessionCookie = cookies().get('user')?.value;
+  // Read the cookie from the request (Edge-compatible)
+  const token = req.cookies.get('user')?.value;
 
-  let session: UserField | undefined;
+  console.log(`Temos token ${token}`);
 
-  console.log('middleware');
-  if (sessionCookie) {
-    console.log('Temos Cookie');
-    try {
-      //const decryptedSession = await decrypt(sessionCookie);
-      //const decryptedSession = jwt.verify(sessionCookie, JWT_SECRET);
-      //session = decryptedSession as UserField;
-      //console.log('session : '+ session);
-    } catch (error) {
-      console.error('Error decrypting session:', error);
-    }
-  }
-/** 
-  if (isProtectedRoute && !session?.id) {
-    return NextResponse.redirect(new URL('/login', req.nextUrl));
+  //if (pathname === '/login') return NextResponse.next();
+  // If there is no token, redirect to /login
+  if (!token) {
+    const url = req.nextUrl.clone();
+    url.pathname = '/login';
+    url.searchParams.set('from', pathname);
+    return NextResponse.redirect(url);
   }
 
-  if (isPublicRoute && session?.id && !req.nextUrl.pathname.startsWith('/dashboard')) {
-    return NextResponse.redirect(new URL('/dashboard', req.nextUrl));
+  // (Optional) verify JWT using jose (Edge-compatible)
+  try {
+    //const secret = new TextEncoder().encode(JWT_SECRET);
+    //await jose.jwtVerify(token, secret); // throws if invalid/expired
+  } catch {
+    const url = req.nextUrl.clone();
+    url.pathname = '/login';
+    url.searchParams.set('from', pathname);
+    return NextResponse.redirect(url);
   }
-**/
+
   return NextResponse.next();
 }
+
+
+export const config = {
+  matcher: [
+    // negative lookahead: exclude login, api, _next, static files and favicon
+    '/((?!login|api|_next|favicon\\.ico|.*\\.(?:png|jpg|jpeg|gif|webp|svg|css|js|map)).*)',
+  ],
+};

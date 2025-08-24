@@ -4,7 +4,9 @@ import { apiClient } from "@/app/config/api";
 import { URLPathParam } from "../lib/url_path_param";
 
 
-const clientApi = apiClient.resource('/calendar/range-hour-days');
+import { externalApiClient } from "../config/clientAPI";
+
+const clientApi = externalApiClient.resource('/calendar/range-hour-days');
 
 export async function fetchAvailabilityTeacher(
   calendar_week_day_ids: string[],

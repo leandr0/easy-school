@@ -41,7 +41,7 @@ public class SecurityGateway {
             User user = userRepository.findByUsername(request.getUsername());
 
             if(user == null)
-                ResponseEntity.notFound().build();
+               return ResponseEntity.notFound().build();
 
             if(!passwordService.matches(request.getPassword(),user.getPasswordHash()))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

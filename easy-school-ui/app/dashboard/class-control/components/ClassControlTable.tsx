@@ -278,7 +278,6 @@ export default function ClassControlTable() {
 
     try {
       await storeFrequencyClass(records);
-      alert("Presença salva com sucesso!");
 
       // Reset class content after successful save
       setClassContent("");

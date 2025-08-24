@@ -1,10 +1,10 @@
 import { CourseClassStudentModel, CreateCourseClassStudentModel } from "../lib/definitions/course_class_students_definitions";
 import { apiClient } from "@/app/config/api";
-
-const clientApi = apiClient.resource('/course_class_students');
-
 import { URLPathParam } from "../lib/url_path_param";
 
+import { externalApiClient } from "../config/clientAPI";
+
+const clientApi = externalApiClient.resource('/course_class_students');
 
 export async function createCourseClassStudent(model: CreateCourseClassStudentModel): Promise<void> {
   clientApi.post("/student-list",model);

@@ -2,21 +2,37 @@
 'use server'
 
 import { NextRequest, NextResponse } from 'next/server';
-import { loginUser } from 'auth';
 import { setUserInCookieServer } from '@/app/lib/login';
-import { login } from '@/app/services/security/loginService';
+import { externalApiClient } from '@/app/config/clientAPI';
 import { UserModel } from '@/app/lib/definitions/user_definitions';
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
-  const { email, password } = await req.json();
+export async function POST(req: NextRequest) {
 
-  // Authenticate the user
-  const user: UserModel = await login(email, password);
+  console.log('API Login receiving request ');
+  const { username, password } = await req.json();
+
+  console.log('API Login setting path externa API ');
+  const authApi = externalApiClient.resource('/security/login');
+
+  console.log('API Login setting UserModel ');
+  let user: UserModel;
+  try {
+    console.log('API Login calling external API ');
+    user = await authApi.post<UserModel>({ username, password });
+    console.log('API Login external API returns');
+  } catch (e) {
+    console.log('API Login external API got error');
+    // Map backend errors
+    const status = (e as any)?.status ?? 500;
+    const msg = (e as Error)?.message ?? 'Login failed';
+    return NextResponse.json({ error: msg }, { status });
+  }
 
   if (!user) {
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
   }
 
-  // Set the user in the session cookie and return the response
-  return await setUserInCookieServer(user);
+  console.log('calling setUserInCookieServer');
+  // Set cookie and return
+  return setUserInCookieServer(user);
 }

@@ -31,7 +31,10 @@ export async function setUserInCookie(user: UserModel): Promise<NextResponse> {
 }
 
 export async function setUserInCookieServer(user: UserModel): Promise<NextResponse> {
-  const token = generateJwtToken(user);
+
+  console.log('setUserInCookieServer');
+
+  const token = "token";//generateJwtToken(user);
 
   const response = NextResponse.json({ message: 'Login successful' });
   

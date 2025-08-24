@@ -5,8 +5,9 @@ import { TeacherModel } from "../lib/definitions/teacher_definitions";
 import { apiClient } from "@/app/config/api";
 import { URLPathParam } from "../lib/url_path_param";
 
+import { externalApiClient } from "../config/clientAPI";
 
-const clientApi = apiClient.resource('/revenues');
+const clientApi = externalApiClient.resource('/revenues');
 
 export async function getRevenuesByRangeDate(startMonth:string,startYear:string,endMonth:string,endYear:string): Promise<RevenueModel[]> {
   

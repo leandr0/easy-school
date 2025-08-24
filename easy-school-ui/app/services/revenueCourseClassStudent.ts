@@ -2,7 +2,9 @@ import { apiClient } from "@/app/config/api";
 import { RevenueCourseClassStudentModel } from "../lib/definitions/revenue_course_class_student_definitons";
 import { URLPathParam } from "../lib/url_path_param";
 
-const clientApi = apiClient.resource('/revenue_course_class_student');
+import { externalApiClient } from "../config/clientAPI";
+
+const clientApi = externalApiClient.resource('/revenue_course_class_student');
 
 // Fetch all students
 export async function fetchRevenueCourseClassStudentByStudentAndRevenue(student_id: any, revenue_id: any): Promise<RevenueCourseClassStudentModel[]> {

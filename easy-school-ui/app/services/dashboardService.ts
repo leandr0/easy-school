@@ -1,7 +1,10 @@
-import { apiClient } from "@/app/config/api";
+
 import { DashBoardGrowthModel, DashBoardTotalCardsLanguageModel, DashBoardTotalCardsModel } from "../lib/definitions/dashboard_definition";
 
-const clientApi = apiClient.resource('/dashboard');
+
+import { externalApiClient } from "../config/clientAPI";
+
+const clientApi = externalApiClient.resource('/dashboard');
 
 // Fetch all students
 export async function getTeacherCourseClassLanguageStudent(): Promise<DashBoardTotalCardsModel> {

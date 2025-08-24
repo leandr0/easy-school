@@ -2,7 +2,9 @@ import { DashBoardTotalCardsLanguageModel } from "../lib/definitions/dashboard_d
 import { LanguageModel } from "../lib/definitions/language_definitions";
 import { apiClient } from "@/app/config/api";
 
-const clientApi = apiClient.resource('/languages');
+import { externalApiClient } from "../config/clientAPI";
+
+const clientApi = externalApiClient.resource('/languages');
 
 // Fetch all students
 export async function getAllLanguages(): Promise<LanguageModel[]> {

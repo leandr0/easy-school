@@ -6,12 +6,11 @@ import { lusitana } from '@/app/ui/fonts';
 import {
   AtSymbolIcon,
   KeyIcon,
-  ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
-import { useFormState, useFormStatus } from 'react-dom';
-import { loginUser } from 'auth';
+import { useFormStatus } from 'react-dom';
+import { loginSetCookie } from '../services/security/securityService';
 
 
 
@@ -27,7 +26,7 @@ export default function LoginForm() {
     const email = formData.get('email')
     const password = formData.get('password')
 
-    const response = await loginUser(email?.toString()!,password?.toString()!);
+    const response = await loginSetCookie(email?.toString()!,password?.toString()!);
 
     console.log(response);
     if (response) {

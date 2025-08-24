@@ -3,7 +3,9 @@ import { apiClient } from "@/app/config/api";
 import { ClassControlModel, ClassControlResponseModel } from "../lib/definitions/class_control_definitions";
 import { URLPathParam } from "../lib/url_path_param";
 
-const clientApi = apiClient.resource('/class_control');
+import { externalApiClient } from "../config/clientAPI";
+
+const clientApi = externalApiClient.resource('/class_control');
 
 export async function storeFrequencyClass(data: any): Promise<void> {
   clientApi.post(data);

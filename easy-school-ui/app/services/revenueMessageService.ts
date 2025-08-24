@@ -1,10 +1,10 @@
 import { MessageModel } from "../lib/definitions/messages_definitions";
 
-import { apiClient } from "@/app/config/api";
 import { URLPathParam } from "../lib/url_path_param";
 
+import { externalApiClient } from "../config/clientAPI";
 
-const clientApi = apiClient.resource('/revenue/messages');
+const clientApi = externalApiClient.resource('/revenue/messages');
 
 // Fetch all students
 export async function getAllMessages(): Promise<MessageModel> {
