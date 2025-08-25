@@ -7,6 +7,7 @@ import br.com.easyschool.domain.repositories.security.RoleRepository;
 import br.com.easyschool.domain.repositories.security.UserRepository;
 import br.com.easyschool.domain.repositories.security.UserRolesRepository;
 import br.com.easyschool.service.requests.security.LoginRequest;
+import br.com.easyschool.service.response.security.UserResponse;
 import br.com.easyschool.service.security.PasswordService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,7 @@ public class SecurityGateway {
 
 
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody LoginRequest request){
+    public ResponseEntity<UserResponse> login(@RequestBody LoginRequest request){
 
         try{
 
@@ -43,10 +44,17 @@ public class SecurityGateway {
             if(user == null)
                return ResponseEntity.notFound().build();
 
-            if(!passwordService.matches(request.getPassword(),user.getPasswordHash()))
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            //TODO: Check is user is blocked
 
-            return ResponseEntity.ok(user);
+            if(!passwordService.matches(request.getPassword(),user.getPasswordHash())) {
+                //TODO: In case of not math password increase failed_attempts until 3 after block user
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            //TODO: check locked_until parameter
+            //TODO: updated last_login_at value
+
+            return ResponseEntity.ok(new UserResponse(user));
 
         }catch (Throwable t){
             log.error(t.getMessage());

@@ -32,9 +32,10 @@ export async function setUserInCookie(user: UserModel): Promise<NextResponse> {
 
 export async function setUserInCookieServer(user: UserModel): Promise<NextResponse> {
 
-  console.log('setUserInCookieServer');
+  
+  console.log(`user ${JSON.stringify(user)}`);
 
-  const token = "token";//generateJwtToken(user);
+  const token = generateJwtToken(user);
 
   const response = NextResponse.json({ message: 'Login successful' });
   

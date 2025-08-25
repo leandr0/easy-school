@@ -8,8 +8,8 @@ import br.com.easyschool.domain.repositories.TeacherRepository;
 import br.com.easyschool.domain.repositories.TeacherSkillRepository;
 import br.com.easyschool.service.requests.CreateLTeacherSkillListRequest;
 import br.com.easyschool.service.requests.CreateTeacherSkillRequest;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,24 +18,15 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/teacher/skills")
+@Slf4j
+@RequiredArgsConstructor
 public class TeacherSkillGateway {
-
-    private final Log LOG = LogFactory.getLog(this.getClass());
 
     private final TeacherSkillRepository repository;
 
     private final LanguageRepository languageRepository;
 
     private final TeacherRepository teacherRepository;
-
-    public TeacherSkillGateway(TeacherSkillRepository repository,
-                               LanguageRepository languageRepository,
-                               TeacherRepository teacherRepository){
-        this.repository = repository;
-        this.languageRepository = languageRepository;
-        this.teacherRepository = teacherRepository;
-    }
-
 
     @GetMapping
     public List<TeacherSkill> getAll() {

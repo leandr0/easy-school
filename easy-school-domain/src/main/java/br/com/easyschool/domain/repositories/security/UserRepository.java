@@ -18,4 +18,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             """, nativeQuery = true)
     User findByUsername(@Param("username") String username);
 
+
 }

@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev": "next dev -H 0.0.0.0 -p 3000",
     "prettier": "prettier --write --ignore-unknown .",
     "prettier:check": "prettier --check --ignore-unknown .",
     "start": "next start",
@@ -20,6 +20,7 @@
     "@vercel/postgres": "^0.5.1",
     "autoprefixer": "^10.4.20",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "clsx": "^2.0.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^11.5.4",
@@ -38,7 +39,7 @@
     "typescript": "5.2.2",
     "use-debounce": "^10.0.0",
     "uuid": "^11.1.0",
-    "zod": "^3.22.2"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.1",

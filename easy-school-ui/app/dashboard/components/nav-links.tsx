@@ -90,7 +90,8 @@ const links: NavLink[] = [
     href: '/dashboard/adm',
     icon: WrenchScrewdriverIcon,
     subItems: [
-      { name: 'Mensagens', href: '/dashboard/adm/messages' }
+      { name: 'Mensagens', href: '/dashboard/adm/messages' },
+      { name: 'Usuários', href: '/dashboard/adm/user' }
     ]
   }
 ];

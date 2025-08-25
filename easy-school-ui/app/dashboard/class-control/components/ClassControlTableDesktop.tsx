@@ -195,8 +195,8 @@ export default function ClassControlTableDesktop({
                             >
                               {present ? (
                                 <div className={`w-6 h-6 flex items-center justify-center rounded-full text-white transition-all duration-300 ${disabled
-                                    ? 'bg-green-400'
-                                    : 'bg-green-500 transform hover:scale-110 animate-fadeIn'
+                                  ? 'bg-green-400'
+                                  : 'bg-green-500 transform hover:scale-110 animate-fadeIn'
                                   }`}>
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -211,8 +211,8 @@ export default function ClassControlTableDesktop({
                                 </div>
                               ) : (
                                 <div className={`w-6 h-6 flex items-center justify-center rounded-full text-gray-600 transition-all duration-300 ${disabled
-                                    ? 'bg-red-300'
-                                    : 'bg-gray-300 transform hover:scale-110 animate-fadeIn'
+                                  ? 'bg-red-300'
+                                  : 'bg-gray-300 transform hover:scale-110 animate-fadeIn'
                                   }`}>
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -261,26 +261,28 @@ export default function ClassControlTableDesktop({
             />
           </div>
 
-          <div className="mt-6 flex justify-end gap-4">
 
-            <CancelButton
-              type="button"
-              onClick={onCancel}
-            >
-              Voltar
-            </CancelButton>
-            <Button
-              className='hover:bg-purple-500'
-              type="submit"
-              onClick={onSaveAttendance}
-              disabled={loading}
-            >
-              {loading ? "Carregando..." : "Salvar Presença"}
-            </Button>
-          </div>
-    
+
         </>
       )}
+      <div className="mt-6 flex justify-end gap-4">
+
+        <CancelButton
+          type="button"
+          onClick={onCancel}
+        >
+          Voltar
+        </CancelButton>
+        {existingRecords.length > 0 && (
+          <Button
+            className='hover:bg-purple-500'
+            type="submit"
+            onClick={onSaveAttendance}
+            disabled={loading}
+          >
+            {loading ? "Carregando..." : "Salvar Presença"}
+          </Button>)}
+      </div>
     </div>
   );
 }

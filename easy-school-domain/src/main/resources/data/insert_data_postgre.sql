@@ -303,8 +303,13 @@ INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (16,4);
 INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (17,4);
 INSERT INTO class_control_teacher (class_control_id,teacher_id) VALUES (18,2);
 
+INSERT INTO users (username, password_hash, status) VALUES ('ht@target.com.br', crypt('123456', gen_salt('bf', 12)), true) RETURNING id
 
-select 'INSERT INTO revenue_course_class_students (course_class_id,student_id,course_price,revenue_id) VALUES ('|| cc.id ||','||t.id||','||r.amount||','||r.id||');'
+INSERT INTO roles (role,code) VALUES ('ADMIN',100);
+INSERT INTO roles (role,code) VALUES ('TEACHER',200);
+INSERT INTO roles (role,code) VALUES ('STUDENT',300);
+
+select 'INSERT INTO revenue_course_class_students (course_class_id,student_id,course_price,revenue_id) VALUES ('|| cc.id ||','||t.id||','||ccs.course_price||','||r.id||');'
 from revenue r
 inner join student t
 on t.id = r.student_id
@@ -313,6 +318,11 @@ on t.id = ccs.student_id
 inner join course_class cc
 on cc.id = ccs.course_class_id;
 
+
+select 'UPDATE users SET role_id = '||ur.role_id||' WHERE id = '''||u.id||''';'
+from user_roles ur
+inner join users u
+on u.id = ur.user_id;
 
 teachers
 |-[id]

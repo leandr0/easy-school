@@ -258,3 +258,45 @@ CREATE TRIGGER trg_holiday_touch_updated_at
 BEFORE UPDATE ON holiday
 FOR EACH ROW
 EXECUTE FUNCTION update_holiday_timestamp();
+
+
+CREATE EXTENSION IF NOT EXISTS citext;
+
+CREATE TABLE IF NOT EXISTS users (
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    username         CITEXT NOT NULL UNIQUE,            -- or email
+    password_hash    TEXT   NOT NULL,                   -- stores PHC string (e.g. $argon2id$...)
+    status           BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    last_login_at    TIMESTAMPTZ,
+    failed_attempts  INTEGER NOT NULL DEFAULT 0,
+    locked_until     TIMESTAMPTZ,
+    role_id          INTEGER NOT NULL,
+    FOREIGN KEY (role_id) REFERENCES roles (id)
+);
+
+
+CREATE TABLE IF NOT EXISTS roles (
+    id    SERIAL PRIMARY KEY,
+    role  TEXT NOT NULL UNIQUE,
+    code  INTEGER NOT NULL UNIQUE
+);
+
+-- Many-to-many: a user can have multiple roles
+CREATE TABLE IF NOT EXISTS user_roles (
+    user_id UUID    NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    role_id INTEGER NOT NULL REFERENCES roles (id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, role_id)
+);
+
+-- Permissions per path (if you're mapping URL paths)
+CREATE TABLE IF NOT EXISTS role_paths (
+    id      SERIAL  PRIMARY KEY,
+    role_id INTEGER NOT NULL REFERENCES roles (id) ON DELETE CASCADE,
+    path    TEXT    NOT NULL,
+    UNIQUE (role_id, path)
+);
+
+
+curl -d '{"username" : "ht@target.com.br", "password" : "123456"}' -H "Content-Type: application/json" -X POST http://192.168.15.51:3000/api/security/login

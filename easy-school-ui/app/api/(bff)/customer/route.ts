@@ -26,5 +26,5 @@ export async function GET(request: NextRequest) {
         console.log('Invalid API KEY');
         return NextResponse.json({ error: 'Invalid API key' }, { status: 405 });
     }
-    console.log('WTF');
+   
 }
