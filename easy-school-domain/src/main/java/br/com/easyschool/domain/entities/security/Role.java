@@ -23,4 +23,15 @@ public class Role {
     @Getter @Setter
     private Integer code;
 
+    /**
+    @ManyToMany
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @Getter @Setter
+    private List<User> users;
+    */
+
 }

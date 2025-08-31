@@ -44,7 +44,7 @@ public interface CourseClassRepository extends JpaRepository<CourseClass, Intege
             INNER JOIN calendar_week_day cwd
             ON cwd.id = ccc.calendar_week_day_id
             WHERE cc.teacher_id = :teacher_id
-            AND cc.status = 1;
+            AND cc.status = true;
             """, nativeQuery = true)
     List<CourseClassTeacherDTO> fetchCourseClassByTeacher(@Param("teacher_id") Integer teacherId);
 

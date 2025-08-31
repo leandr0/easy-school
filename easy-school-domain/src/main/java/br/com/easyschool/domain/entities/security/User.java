@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 @Entity
 @Table(name = "users",
@@ -55,8 +56,13 @@ public class User {
     @Getter @Setter
     private  OffsetDateTime lockedUntil;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
+    //@ManyToMany(mappedBy = "users")
+    @ManyToMany
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     @Getter @Setter
-    private Role role;
+    private List<Role> roles;
 }

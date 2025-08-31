@@ -20,6 +20,7 @@ public class UserRoles {
     @Getter @Setter
     private Role role;
 
+
     @ManyToOne
     @JoinColumn(name = "user_id",nullable = false)
     @Getter @Setter
