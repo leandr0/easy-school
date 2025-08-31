@@ -27,8 +27,7 @@ insert into calendar_week_day (week_day ) values ( 'Sábado');
 INSERT INTO scheduled_job (name, type, cron_expression, active) VALUES ('reconcile-payments', 'CRON', '0 0 0 1 * ?', true);
 INSERT INTO scheduled_job (name, type, interval_ms, initial_delay_ms, active, payload_json) VALUES ('send-dunning-emails', 'FIXED_DELAY', 900000, 60000, false, '{batchSize:200}');
 
-
-INSERT INTO technical_config (code, param) VALUES (1,'http://api.whatsapp.com/send?phone={phone_number}&text={message}');
+git add app/.com/send?phone={phone_number}&text={message}');
 
 INSERT INTO revenue_message (payment_overdue_message,reminder_message ) VALUES ( 'Hello, hello , {nome} ! identificamos o atraso do pagamento no valor de  R${valor} que venceu dia {data}!','Hello, hello , {nome} ! passando para lembrá-lo do R${valor} que vence dia {data}!');
 
@@ -323,14 +322,3 @@ select 'UPDATE users SET role_id = '||ur.role_id||' WHERE id = '''||u.id||''';'
 from user_roles ur
 inner join users u
 on u.id = ur.user_id;
-
-teachers
-|-[id]
-  |-edit
-    |-page.tsx
-|-components
-  |-TeacherCreateForm.tsx
-  |-TeacherAvailabilityInputComponent.tsx
-  |- CreateTeacherFormMobile.tsx
-|create
-  |-page.tsx
