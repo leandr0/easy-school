@@ -10,20 +10,17 @@ import br.com.easyschool.service.requests.CourseClassStudentRequest;
 import br.com.easyschool.service.requests.CreateCourseClassSudentListRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/course_class_students")
+@RequestMapping("/course-class-students")
 @Slf4j
 @RequiredArgsConstructor
 public class CourseClassStudentGateway {
 
-    private final Log LOG = LogFactory.getLog(this.getClass());
     private final CourseClassStudentRepository repository;
 
     private final StudentRepository studentRepository;
@@ -47,6 +44,7 @@ public class CourseClassStudentGateway {
         CourseClassStudent entity = new CourseClassStudent();
         entity.setCourseClass(courseClass);
         entity.setStudent(student);
+        entity.setCoursePrice(request.getCoursePrice());
 
 
         return repository.save(entity);
@@ -82,12 +80,12 @@ public class CourseClassStudentGateway {
         return result;
     }
 
-    @DeleteMapping("/{student_id}/student/{course_class_id}/course-class")
+    @DeleteMapping("/student/{student_id}/course-class/{course_class_id}")
     public void getDeleteByStudentAndCourseClass(@PathVariable("student_id") Integer studentId, @PathVariable("course_class_id") Integer courseClassId){
         repository.deleteByStudentIdAndCourseClassId(studentId,courseClassId);
     }
 
-    @GetMapping("/{student_id}/student")
+    @GetMapping("/student/{student_id}")
     public List<CourseClassStudent> fetchCourseClassByStudentId(@PathVariable("student_id") Integer studentId){
         return repository.fetchCourseClassByStudentId(studentId);
     }

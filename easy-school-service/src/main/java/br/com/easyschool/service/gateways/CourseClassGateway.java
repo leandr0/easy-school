@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/course_classes")
+@RequestMapping("/course-classes")
 @Slf4j
 @RequiredArgsConstructor
 public class CourseClassGateway {

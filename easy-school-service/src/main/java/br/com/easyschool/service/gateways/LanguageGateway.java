@@ -38,7 +38,7 @@ public class LanguageGateway {
         }
     }
 
-    @GetMapping("/total_students")
+    @GetMapping("/total-students")
     public ResponseEntity<List<DashBoardStudentLanguageDTO>> getLanguageTotalStudents() {
         try {
 

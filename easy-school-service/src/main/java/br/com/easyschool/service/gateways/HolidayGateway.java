@@ -36,14 +36,13 @@ public class HolidayGateway {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{year}/year")
+    @GetMapping("/year/{year}")
     public ResponseEntity<List<Holiday>> fetchHolidayByYear (@PathVariable("year") final Integer year){
 
         if (year == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        log.info(" request year {}",year);
         return ResponseEntity.ok().body(repository.findByDateBetween(LocalDate.of(year, 1, 1),
                LocalDate.of(year, 12, 31)));
     }

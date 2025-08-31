@@ -11,7 +11,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/revenue_course_class_student")
+@RequestMapping("/revenue-course-class-student")
 @Slf4j
 @RequiredArgsConstructor
 public class RevenueCourseClassStudentGateway {
@@ -19,7 +19,7 @@ public class RevenueCourseClassStudentGateway {
 
     private final RevenueCourseClassStudentRepository repository;
 
-    @GetMapping("{student_id}/student/{revenue_id}/revenue")
+    @GetMapping("/student/{student_id}/revenue/{revenue_id}")
     public ResponseEntity<List<RevenueCourseClassStudent>> fetchRevenueCourseClassStudentByStudentAndRevenue(@PathVariable("student_id")Integer studentId, @PathVariable("revenue_id")Integer revenueId){
 
         try{

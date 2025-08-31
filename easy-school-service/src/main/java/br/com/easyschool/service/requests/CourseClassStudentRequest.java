@@ -1,28 +1,21 @@
 package br.com.easyschool.service.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 public class CourseClassStudentRequest {
 
     @JsonProperty("course_class_id")
+    @Getter @Setter
     private Integer courseClassId;
 
     @JsonProperty("student_id")
+    @Getter @Setter
     private Integer studentId;
 
-    public Integer getCourseClassId() {
-        return courseClassId;
-    }
+    @JsonProperty("course_price")
+    @Getter @Setter
+    private Double coursePrice;
 
-    public void setCourseClassId(Integer courseClassId) {
-        this.courseClassId = courseClassId;
-    }
-
-    public Integer getStudentId() {
-        return studentId;
-    }
-
-    public void setStudentId(Integer studentId) {
-        this.studentId = studentId;
-    }
 }

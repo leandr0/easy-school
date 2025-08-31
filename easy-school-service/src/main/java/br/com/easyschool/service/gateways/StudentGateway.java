@@ -30,17 +30,62 @@ public class StudentGateway {
     private final CourseClassStudentRepository courseClassStudentRepository;
 
     @GetMapping
-    public List<Student> getStudents(@RequestParam(value = "not_in_course_class", required = false) String notInCourseClassId,
-                                     @RequestParam(value = "in_course_class", required = false) String inCourseClassId) {
+    public ResponseEntity<List<Student>> getStudents() {
 
-        if (notInCourseClassId != null && !notInCourseClassId.isEmpty()) {
-            return repository.findStudentsNotInCourseClass(Integer.valueOf(notInCourseClassId));
-        } else if (inCourseClassId != null && !inCourseClassId.isEmpty()) {
-            return repository.findStudentsInCourseClass(Integer.valueOf(inCourseClassId));
-        } else {
-            return repository.findAll();
+        try {
+
+            List<Student> result = repository.findAll();
+
+            if(result.isEmpty())
+                return ResponseEntity.notFound().build();
+
+            return ResponseEntity.ok(result);
+
+        }catch (Throwable t){
+            log.error(t.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
+
     }
+
+    @GetMapping("/course-class/{id}/students")
+    public ResponseEntity<List<Student>> getStudentsCourseClass(@PathVariable(value = "id" , required = true) final Integer courseClassId) {
+
+        try {
+
+            List<Student> result = repository.findStudentsInCourseClass(courseClassId);
+
+            if(result.isEmpty())
+                return ResponseEntity.notFound().build();
+
+            return ResponseEntity.ok(result);
+
+        }catch (Throwable t){
+            log.error(t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+
+    }
+
+    @GetMapping("/course-class/{id}/candidate-students")
+    public ResponseEntity<List<Student>> getStudentsNotCourseClass(@PathVariable(value = "id" , required = true) final Integer courseClassId) {
+
+        try {
+
+            List<Student> result = repository.findStudentsNotInCourseClass(courseClassId);
+
+            if(result.isEmpty())
+                return ResponseEntity.notFound().build();
+
+            return ResponseEntity.ok(result);
+
+        }catch (Throwable t){
+            log.error(t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+
+    }
+
 
     @GetMapping("/{id}/course-price")
     public ResponseEntity<StudentDTO> findStudentCoursePrice(@PathVariable("id") final Integer studentId) {

@@ -16,7 +16,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/class_control")
+@RequestMapping("/class-control")
 @Slf4j
 @RequiredArgsConstructor
 public class ClassControlGateway {
@@ -38,7 +38,7 @@ public class ClassControlGateway {
         return ResponseEntity.ok("Class control records saved successfully");
     }
 
-    @GetMapping("/{course_class_id}/course_class")
+    @GetMapping("/course-class/{course_class_id}")
     public ResponseEntity<List<ClassControlTeacherStudentDTO>> filteringDataRange(@RequestParam(value = "start_date", required = true) String startDate,
                                                                                   @RequestParam(value = "end_date", required = true) String endDate,
                                                                                   @PathVariable("course_class_id") Integer courseCLassId) {
@@ -66,7 +66,7 @@ public class ClassControlGateway {
 
     }
 
-    @GetMapping("/control/{course_class_id}/course_class")
+    @GetMapping("/control/course-class/{course_class_id}")
     public ResponseEntity<List<ClassControlResponse>> fetchClassControlByCourseClassAndDateRange(
             @RequestParam("start_day") @Min(1) @Max(31) Integer startDay,
             @RequestParam("start_month") @Min(1) @Max(12) Integer startMonth,

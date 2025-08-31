@@ -36,7 +36,7 @@ public class CalendarWeekDayGateway {
     }
 
 
-    @GetMapping("/{id}/course-class")
+    @GetMapping("/course-class/{id}")
     public ResponseEntity<List<CalendarWeekDay>> getByCourseClassId(@PathVariable final Integer id) {
         try {
 

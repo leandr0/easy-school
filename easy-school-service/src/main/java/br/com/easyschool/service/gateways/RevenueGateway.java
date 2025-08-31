@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +24,8 @@ public class RevenueGateway {
 
     private final RevenueService service;
 
-
-    @GetMapping()
+    @PreAuthorize( "hasRole('ADMIN')")
+    @GetMapping("/date-range")
     public ResponseEntity<List<Revenue>> getRevenuesByRangeData(@RequestParam(value = "start_month", required = true) Integer startMonth,
                                                                 @RequestParam(value = "start_year", required = true) Integer startYear,
                                                                 @RequestParam(value = "end_month", required = true) Integer endMonth,
@@ -38,7 +39,7 @@ public class RevenueGateway {
         }
     }
 
-
+    @PreAuthorize( "hasRole('ADMIN')")
     @GetMapping("/student/{id}")
     public ResponseEntity<List<Revenue>> findByStudent(@PathVariable Integer id) {
 
@@ -51,7 +52,7 @@ public class RevenueGateway {
             return  ResponseEntity.internalServerError().build();
         }
     }
-
+    @PreAuthorize( "hasRole('ADMIN')")
     @GetMapping("/collection-form")
     public ResponseEntity<List<CollectionFormDTO>> fetchCollectionForm() {
         try {
@@ -63,7 +64,7 @@ public class RevenueGateway {
             return ResponseEntity.internalServerError().build();
         }
     }
-
+    @PreAuthorize( "hasRole('ADMIN')")
     @GetMapping("/collection-form/student/{id}")
     public ResponseEntity<List<CollectionFormDTO>> fetchCollectionFormByStudent(@PathVariable Integer id) {
         try {
@@ -76,7 +77,7 @@ public class RevenueGateway {
         }
     }
 
-
+    @PreAuthorize( "hasRole('ADMIN')")
     @PutMapping("/{id}/reminder-message")
     public ResponseEntity<?> sendReminderMessage(@PathVariable("id") final Integer revenueId) {
         try {
@@ -90,7 +91,7 @@ public class RevenueGateway {
             return ResponseEntity.internalServerError().build();
         }
     }
-
+    @PreAuthorize( "hasRole('ADMIN')")
     @PutMapping("/{id}/payment-message")
     public ResponseEntity<?> sendPaymentMessage(@PathVariable("id") final Integer revenueId) {
         try {
@@ -104,7 +105,7 @@ public class RevenueGateway {
             return ResponseEntity.internalServerError().build();
         }
     }
-
+    @PreAuthorize( "hasRole('ADMIN')")
     @PutMapping("/{id}/payment-status")
     public ResponseEntity<?> updatePaymentStatus(@PathVariable("id") final Integer revenueId, @RequestBody Map<String, String> body) {
 
@@ -119,7 +120,7 @@ public class RevenueGateway {
             return ResponseEntity.internalServerError().build();
         }
     }
-
+    @PreAuthorize( "hasRole('ADMIN')")
     @PostMapping("/collection-form")
     public ResponseEntity<List<Revenue>> createRevenuesFromCollectionForm(@RequestBody @NonNull List<CollectionFormDTO> request) {
 
@@ -132,7 +133,8 @@ public class RevenueGateway {
             return ResponseEntity.internalServerError().build();
         }
     }
-
+    //TODO: Criar Lógica para criar por estudante em períodos anteriores
+    @PreAuthorize( "hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Revenue> create(@RequestBody CreateRevenueRequest request) {
 

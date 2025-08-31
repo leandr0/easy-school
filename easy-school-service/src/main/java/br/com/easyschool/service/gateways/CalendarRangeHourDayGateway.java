@@ -1,30 +1,30 @@
 package br.com.easyschool.service.gateways;
 
 import br.com.easyschool.domain.entities.CalendarRangeHourDay;
+import br.com.easyschool.domain.entities.Teacher;
 import br.com.easyschool.domain.repositories.CalendarRangeHourDayRepository;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/calendar/range-hour-days")
+@Slf4j
+@RequiredArgsConstructor
 public class CalendarRangeHourDayGateway {
 
-    private final Log LOG = LogFactory.getLog(this.getClass());
     private final CalendarRangeHourDayRepository repository;
 
-    public CalendarRangeHourDayGateway(CalendarRangeHourDayRepository repository) {
-        this.repository = repository;
-
-    }
-
-
-    @GetMapping
+    @GetMapping("teacher/available")
     public List<CalendarRangeHourDay> fetchAvailabilityTeacher(@RequestParam(value = "calendar_week_day_ids", required = true) List<Integer> calendarWeekDayIds,
                                                                @RequestParam(value = "language_id", required = true) Integer languageId,
                                                                @RequestParam(value = "start_hour", required = true) Integer startHour,
@@ -42,7 +42,7 @@ public class CalendarRangeHourDayGateway {
     }
 
 
-    @GetMapping("/{id}/teacher")
+    @GetMapping("/teacher/{id}")
     public ResponseEntity<List<CalendarRangeHourDay>> fetchByTeacherId(@PathVariable(value = "id", required = true) Integer teacherId) {
 
         List<CalendarRangeHourDay> result = null;
@@ -61,7 +61,7 @@ public class CalendarRangeHourDayGateway {
 
 
     @DeleteMapping("resources")
-    public ResponseEntity delete(@RequestParam(value = "id", required = true) List<Integer> ids) {
+    public ResponseEntity delete(@RequestParam(value = "ids", required = true) List<Integer> ids) {
 
         try {
             repository.deleteAllById(ids);
@@ -78,17 +78,39 @@ public class CalendarRangeHourDayGateway {
     }
 
 
-    @PostMapping("/{id}/teacher")
-    public ResponseEntity<List<CalendarRangeHourDay>> createByTeacher(@RequestBody List<CalendarRangeHourDay> request) {
+    @PostMapping("/teacher/{id}")
+    public ResponseEntity<List<CalendarRangeHourDay>> createByTeacher(@PathVariable("id") Integer teacherId, @RequestBody @Valid List<CalendarRangeHourDay> request) {
 
-        List<CalendarRangeHourDay> result = null;
+        if (request == null || request.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
 
         try {
-            result = repository.saveAll(request);
-        }catch (Throwable t){
-            return ResponseEntity.notFound().build();
+
+            Teacher teacher = new Teacher(teacherId);
+
+            // Use stream API for cleaner transformation
+            List<CalendarRangeHourDay> calendarEntries = request.stream()
+                    .map(entry -> {
+                        entry.setTeacher(teacher);
+                        return entry;
+                    })
+                    .collect(Collectors.toList());
+
+            List<CalendarRangeHourDay> savedEntries = repository.saveAll(calendarEntries);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedEntries);
+
+        } catch (DataIntegrityViolationException e) {
+            log.warn("Data integrity violation while creating calendar entries for teacher {}: {}",
+                    teacherId, e.getMessage());
+            return ResponseEntity.badRequest().build();
+
+        } catch (Exception e) {
+            log.error("Unexpected error while creating calendar entries for teacher {}: {}",
+                    teacherId, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
     @PostMapping("/list")
     public Collection<CalendarRangeHourDay> createAll(@RequestBody Collection<CalendarRangeHourDay> request) {

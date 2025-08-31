@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -31,7 +32,7 @@ public class UserResponse {
     private  OffsetDateTime lockedUntil;
 
     @Getter @Setter
-    private Role role;
+    private List<Role> roles;
 
     @JsonProperty("created_at")
     @Getter @Setter
@@ -40,7 +41,7 @@ public class UserResponse {
     public UserResponse(final User entity){
 
         this.id = entity.getId();
-        this.role = entity.getRole();
+        this.roles = entity.getRoles();
         this.failedAttempts = entity.getFailedAttempts();
         this.lockedUntil = entity.getLockedUntil();
         this.status = entity.isStatus();

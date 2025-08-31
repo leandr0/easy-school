@@ -1,6 +1,5 @@
 package br.com.easyschool.service.gateways.security;
 
-import br.com.easyschool.domain.entities.security.Role;
 import br.com.easyschool.domain.entities.security.User;
 import br.com.easyschool.domain.repositories.security.UserRepository;
 import br.com.easyschool.domain.repositories.security.UserRolesRepository;
@@ -10,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +27,7 @@ public class UserGateway {
 
     private final UserRolesRepository userRolesRepository;
 
+    @PreAuthorize( "hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UserResponse> create(@RequestBody UserCreationRequest request) {
         try{
@@ -36,9 +37,7 @@ public class UserGateway {
             entity.setPasswordHash(request.getPasswordHash());
             entity.setStatus(true);
 
-            Role role = new Role();
-            role.setId(request.getRoleId());
-            entity.setRole(role);
+            entity.setRoles(request.getRoles());
             entity = repository.save(entity);
 
             return ResponseEntity.ok(new UserResponse(entity));
@@ -48,8 +47,7 @@ public class UserGateway {
             return ResponseEntity.internalServerError().build();
         }
     }
-
-
+    @PreAuthorize( "hasRole('ADMIN')")
     @PutMapping
     public ResponseEntity<UserResponse> update(@RequestBody UserCreationRequest request) {
         try{
@@ -59,14 +57,14 @@ public class UserGateway {
             entity.setId(request.getId());
             entity.setUsername(request.getUsername());
 
-            if(request.getPasswordHash() != null && !request.getPasswordHash().isEmpty())
+            if(request.getPasswordHash() != null && !request.getPasswordHash().isEmpty()) {
                 entity.setPasswordHash(request.getPasswordHash());
+                entity.setFailedAttempts(0);
+                entity.setLockedUntil(null);
+            }
 
             entity.setStatus(request.getStatus());
-
-            Role role = new Role();
-            role.setId(request.getRoleId());
-            entity.setRole(role);
+            entity.setRoles(request.getRoles());
             entity = repository.save(entity);
 
             return ResponseEntity.ok(new UserResponse(entity));
@@ -81,6 +79,7 @@ public class UserGateway {
         }
     }
 
+    @PreAuthorize( "hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserResponse>> fetchAll() {
         try{
@@ -101,6 +100,7 @@ public class UserGateway {
 
     }
 
+    @PreAuthorize( "hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> fetchAById(@PathVariable("id") UUID userId) {
         try{

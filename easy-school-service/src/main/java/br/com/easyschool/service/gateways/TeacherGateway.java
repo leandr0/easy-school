@@ -5,9 +5,12 @@ import br.com.easyschool.domain.repositories.TeacherRepository;
 import br.com.easyschool.service.requests.CreateLTeacherSkillListRequest;
 import br.com.easyschool.service.requests.CreateTeacherRequest;
 import br.com.easyschool.service.response.TeacherResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
@@ -16,6 +19,8 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/teachers")
+@Slf4j
+@RequiredArgsConstructor
 public class TeacherGateway {
 
     private final Log LOG = LogFactory.getLog(this.getClass());
@@ -26,22 +31,16 @@ public class TeacherGateway {
 
     private final CalendarRangeHourDayGateway calendarRangeHourDayGateway;
 
-    public TeacherGateway(TeacherRepository repository,
-                          TeacherSkillGateway teacherSkillGateway,
-                          CalendarRangeHourDayGateway calendarRangeHourDayGateway) {
-        this.repository = repository;
-        //  this.teacherController = teacherController;
-        this.teacherSkillGateway = teacherSkillGateway;
-        this.calendarRangeHourDayGateway = calendarRangeHourDayGateway;
-    }
 
 
+    @PreAuthorize( "hasRole('ADMIN')")
     @GetMapping
     public List<Teacher> getAll() {
 
         return repository.findAll();
     }
 
+    @PreAuthorize( "hasRole('ADMIN')")
     @GetMapping("/available")
     public List<TeacherResponse> getAllTeachersAvailable(@RequestParam(value = "language", required = false) String languageId,
                                                          @RequestParam(value = "course_class", required = false) String courseClassId) {
@@ -56,7 +55,8 @@ public class TeacherGateway {
 
     }
 
-
+    //@PreAuthorize( "hasRole('ADMIN','TEACHER')")
+    @PreAuthorize( "hasRole('ADMIN') or hasRole('TEACHER')")
     @GetMapping("/{id}")
     public ResponseEntity<Teacher> findTeacherById(@PathVariable("id") final Integer teacherId) {
 
@@ -75,6 +75,7 @@ public class TeacherGateway {
         return ResponseEntity.ok(teacher);
     }
 
+    @PreAuthorize( "hasRole('ADMIN')")
     @PostMapping
     public Teacher create(@RequestBody CreateTeacherRequest request) {
 
@@ -103,6 +104,8 @@ public class TeacherGateway {
         return teacher;
     }
 
+    //@PreAuthorize( "hasRole('ADMIN','TEACHER')")//para lista
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @PutMapping
     public ResponseEntity<Teacher> update(@RequestBody Teacher teacher) {
 
