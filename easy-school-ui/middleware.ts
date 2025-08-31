@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { decrypt } from '@/app/lib/session';
 import { cookies } from 'next/headers';
 import { UserField } from '@/app/lib/definitions';
-
+ import { jwtVerify, importJWK, importSPKI } from 'jose';
 import jwt from 'jsonwebtoken';
 import { parse } from 'cookie';
 
@@ -18,7 +18,7 @@ export default async function middleware(req: NextRequest) {
   // Read the cookie from the request (Edge-compatible)
   const token = req.cookies.get('user')?.value;
 
-  console.log(`Temos token ${token}`);
+  //console.log(`Temos token ${token}`);
 
   //if (pathname === '/login') return NextResponse.next();
   // If there is no token, redirect to /login
@@ -32,7 +32,8 @@ export default async function middleware(req: NextRequest) {
   // (Optional) verify JWT using jose (Edge-compatible)
   try {
     //const secret = new TextEncoder().encode(JWT_SECRET);
-    //await jose.jwtVerify(token, secret); // throws if invalid/expired
+    //const { payload, protectedHeader } = await jwtVerify(token, secret); // throws if invalid/expired
+     //console.log('JWT verified successfully:', payload);
   } catch {
     const url = req.nextUrl.clone();
     url.pathname = '/login';

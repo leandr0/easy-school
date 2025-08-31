@@ -4,7 +4,7 @@
 import { Button } from '@/app/ui/button';
 import { useRouter } from 'next/navigation';
 import { v4 as uuid } from 'uuid';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { TeacherInfoComponent } from './TeacherInfoComponent';
 import { LanguageSelectListComponent } from './LanguageSelectListComponent';
@@ -12,16 +12,13 @@ import { TeacherWeekDayAvailabilityComponent } from './TeacherWeekDayAvailabilit
 import { CalendarWeekDaySelectComponent } from './CalendarWeekDaySelectComponent';
 import { TeacherAvailabilityInputComponent } from './TeacherAvailabilityInputComponent';
 import { CancelAndRedirect } from '../../components/ui_buttons';
-import { createTeacher } from '@/app/services/teacherService';
-import { CalendarRangeHourDayModel } from '@/app/lib/definitions/calendat_range_hour_day_definitions';
 import { CreateTeacherFormModel, TeacherModel, TeacherWeekDayAvailableModel } from '@/app/lib/definitions/teacher_definitions';
 import { LanguageModel } from '@/app/lib/definitions/language_definitions';
 import { CalendarWeekDayModel } from '@/app/lib/definitions/calendar_week_day_definitions';
-import { getAllLanguages } from '@/app/services/languageService';
-import { getAllWeekDays } from '@/app/services/calendarWeekDayService';
-
-// --- NEW: Mobile wrapper component import (file below)
 import { CreateTeacherFormMobile } from './CreateTeacherFormMobile';
+import { getAllLanguages } from '@/bff/services/language.server';
+import { getAllWeekDays } from '@/bff/services/calendarWeekDay.server';
+import { createTeacher } from '@/bff/services/teacher.server';
 
 export default function CreateTeacherForm() {
   const router = useRouter();
@@ -36,10 +33,8 @@ export default function CreateTeacherForm() {
   });
 
   const [teacherWeeDayAvailables, setTeacherWeeDayAvailables] = useState<TeacherWeekDayAvailableModel[]>([]);
-  const [calendarRangeHourDayModels, setCalendarRangeHourDayModels] = useState<CalendarRangeHourDayModel[]>([]);
   const [languages, setLanguages] = useState<LanguageModel[]>([]);
   const [weekDays, setWeekDays] = useState<CalendarWeekDayModel[]>([]);
-  const [teacher, setTeacher] = useState<TeacherModel>();
   const [actionType, setActionType] = useState<string | null>(null);
   const [message, setMessage] = useState('');
 
@@ -85,21 +80,56 @@ export default function CreateTeacherForm() {
     });
   };
 
-  useEffect(() => {
-    getAllLanguages()
-      .then(setLanguages)
-      .catch(err => setError(err.message));
+
+ const getLanguages = useCallback(async () => {
+    setError(null);
+
+    try {
+      const res = await getAllLanguages();
+
+      setLanguages(res);
+    } catch (err: any) {
+      if (err.name !== 'AbortError') setError(err.message || 'Erro desconhecido');
+    }
+  }, []);
+
+
+   useEffect(() => {
+    const ctrl = new AbortController();
+    // call it (no payload needed for GET)
+    getLanguages();
+
+    return () => ctrl.abort();
+  }, [getLanguages]);
+
+
+  const getWeekDays = useCallback(async () => {
+    setError(null);
+
+    try {
+      const res = await getAllWeekDays()
+
+      const list: CalendarWeekDayModel[] = res;
+
+      setWeekDays([
+        { id: '', week_day: 'Selecione um dia da semana ... ' }, // placeholder
+        ...list,
+      ]);
+    } catch (err: any) {
+      if (err.name !== 'AbortError') setError(err.message || 'Erro desconhecido');
+    }
   }, []);
 
   useEffect(() => {
-    getAllWeekDays()
-      .then(list =>
-        setWeekDays([
-          { id: '', week_day: 'Selecione um dia da semana ... ' },
-          ...list,
-        ]),
-      )
-      .catch(err => setError(err.message));
+    const ctrl = new AbortController();
+    // call it (no payload needed for GET)
+    getWeekDays();
+
+    return () => ctrl.abort();
+  }, [getWeekDays]);
+
+  const saveTeacher = useCallback(async (payload: TeacherModel) => {
+    const res = await createTeacher(payload);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -155,7 +185,7 @@ export default function CreateTeacherForm() {
         })),
       };
 
-      await createTeacher(newTeacher);
+      await saveTeacher(newTeacher);
 
       setMessage('✅ Teacher created successfully!');
       setFormData({

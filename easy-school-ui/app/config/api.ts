@@ -92,78 +92,71 @@ export class ApiClient {
     }
   }
 
-  get<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, { method: 'GET' });
-  }
-
-  post<T>(endpoint: string, data: any): Promise<T> {
-    return this.request<T>(endpoint, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  put<T>(endpoint: string, data: any): Promise<T> {
-    return this.request<T>(endpoint, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-  }
-
-  delete<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, { method: 'DELETE' });
-  }
-
   // Create resource-specific client
   resource(basePath: string) {
     return new ResourceClient(this, basePath);
   }
+
+  get<T>(endpoint: string, init?: RequestInit): Promise<T> {
+    return this.request<T>(endpoint, { method: 'GET', ...(init || {}) });
+  }
+
+  post<T>(endpoint: string, data: any, init?: RequestInit): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      ...(init || {}),
+    });
+  }
+
+  put<T>(endpoint: string, data: any, init?: RequestInit): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      ...(init || {}),
+    });
+  }
+
+  delete<T>(endpoint: string, init?: RequestInit): Promise<T> {
+    return this.request<T>(endpoint, { method: 'DELETE', ...(init || {}) });
+  }
 }
 
-// Resource-specific client that prefixes all endpoints
+// Resource-specific client
 class ResourceClient {
-  constructor(
-    private apiClient: ApiClient,
-    private basePath: string
-  ) { }
+  constructor(private apiClient: ApiClient, private basePath: string) { }
 
   private buildEndpoint(endpoint: string = ''): string {
-    if (!endpoint) {
-      return this.basePath;
-    }
-
-    if (endpoint.startsWith('?')) {
-      return `${this.basePath}${endpoint}`;
-    }
-
-    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    return `${this.basePath}${cleanEndpoint}`;
+    if (!endpoint) return this.basePath;
+    if (endpoint.startsWith('?')) return `${this.basePath}${endpoint}`;
+    const clean = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    return `${this.basePath}${clean}`;
   }
 
-  get<T>(endpoint: string = ''): Promise<T> {
-    return this.apiClient.get<T>(this.buildEndpoint(endpoint));
+  get<T>(endpoint: string = '', init?: RequestInit): Promise<T> {
+    return this.apiClient.get<T>(this.buildEndpoint(endpoint), init);
   }
 
-  post<T>(data?: any): Promise<T>;
-  post<T>(endpoint: string, data?: any): Promise<T>;
-  post<T>(endpointOrData?: string | any, data?: any): Promise<T> {
+  post<T>(data?: any, init?: RequestInit): Promise<T>;
+  post<T>(endpoint: string, data?: any, init?: RequestInit): Promise<T>;
+  post<T>(endpointOrData?: string | any, data?: any, init?: RequestInit): Promise<T> {
     if (typeof endpointOrData !== 'string') {
-      return this.apiClient.post<T>(this.buildEndpoint(''), endpointOrData);
+      return this.apiClient.post<T>(this.buildEndpoint(''), endpointOrData, data as RequestInit); // data here is actually init
     }
-    return this.apiClient.post<T>(this.buildEndpoint(endpointOrData), data);
+    return this.apiClient.post<T>(this.buildEndpoint(endpointOrData), data, init);
   }
 
-  put<T>(data?: any): Promise<T>;
-  put<T>(endpoint: string, data?: any): Promise<T>;
-  put<T>(endpointOrData?: string | any, data?: any): Promise<T> {
+  put<T>(data?: any, init?: RequestInit): Promise<T>;
+  put<T>(endpoint: string, data?: any, init?: RequestInit): Promise<T>;
+  put<T>(endpointOrData?: string | any, data?: any, init?: RequestInit): Promise<T> {
     if (typeof endpointOrData !== 'string') {
-      return this.apiClient.put<T>(this.buildEndpoint(''), endpointOrData);
+      return this.apiClient.put<T>(this.buildEndpoint(''), endpointOrData, data as any);
     }
-    return this.apiClient.put<T>(this.buildEndpoint(endpointOrData), data);
+    return this.apiClient.put<T>(this.buildEndpoint(endpointOrData), data, init);
   }
 
-  delete<T>(endpoint: string = ''): Promise<T> {
-    return this.apiClient.delete<T>(this.buildEndpoint(endpoint));
+  delete<T>(endpoint: string = '', init?: RequestInit): Promise<T> {
+    return this.apiClient.delete<T>(this.buildEndpoint(endpoint), init);
   }
 }
 

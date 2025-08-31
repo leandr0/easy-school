@@ -3,12 +3,13 @@ import { upstream } from 'bff/http';
 import { RoleSchema } from 'bff/schemas'; 
 import { z } from 'zod';
 import CreateUserForm from '../components/CreateUserForm';
+import { fetchRoles } from '@/bff/services/security/role.server';
 
 export const metadata = { title: 'Create User' };
 
 export default async function Page() {
-  const data = await upstream<any>('/security/roles', { method: 'GET' });
-  const roles = z.array(RoleSchema).parse(data);
+  
+  const roles = await fetchRoles();
 
   return (
     <main className="p-4 max-w-xl mx-auto">

@@ -2,19 +2,25 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { RevenueModel } from '@/app/lib/definitions/revenue_definitions';
-import { getRevenuesByRangeDate, sendPaymentMessage, sendReminderMessage, updatePaymentStatus } from '@/app/services/revenueService';
+
 
 import RevenuesTableDesktop from "./desktop/RevenueTableDesktop";
 import RevenuesTableMobile from './mobile/RevenueTableMobile';
-import { getReminderMessage, getPaymentMessage } from "@/app/services/revenueMessageService";
+
 import RevenueLinkModal from "./desktop/RevenueLinkModal";
 import RevenuePaymentIdentifiedModal from "./desktop/RevenuePaymentIdentifiedModal";
 import RevenuePaymentIdentifiedModalMobile from "./mobile/RevenuePaymentIdentifiedModalMobile";
 import RevenueLinkModalMobile from "./mobile/RevenueLinkModalMobile";
 import { ActionType } from "@/app/lib/types/revenue";
 import RevenueMonthRangeFilter from "./RevenueMonthRangeFilter";
-import { fetchRevenueCourseClassStudentByStudentAndRevenue } from "@/app/services/revenueCourseClassStudent";
+
 import { RevenueCourseClassStudentModel } from "@/app/lib/definitions/revenue_course_class_student_definitons";
+
+
+import { getReminderMessage, getPaymentMessage } from "@/bff/services/revenueMessage.server";
+import { getRevenuesByRangeDate, sendPaymentMessage, sendReminderMessage, updatePaymentStatus } from '@/bff/services/revenue.server';
+import { fetchRevenueCourseClassStudentByStudentAndRevenue } from "@/bff/services/revenueCourseClass.server";
+import { HttpError } from "@/app/config/api";
 
 export default function RevenuesTable() {
 
@@ -42,22 +48,30 @@ export default function RevenuesTable() {
       const year = String(now.getFullYear());                   // "2025"
 
       const data = await getRevenuesByRangeDate(month, year, month, year);
+
       setRevenues(data);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
-      setError(errorMessage);
+
+      if (!(err instanceof HttpError)) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+        setError(errorMessage);
+      }
+
+
     } finally {
       setLoading(false);
       setIsModalLoading(false);
     }
   }, []);
 
-  const loadRevenueDetails = useCallback(async (studentId: string,revenueId: string): Promise<RevenueCourseClassStudentModel[]> => {
+  const loadRevenueDetails = useCallback(async (studentId: string, revenueId: string): Promise<RevenueCourseClassStudentModel[]> => {
     try {
-      return await fetchRevenueCourseClassStudentByStudentAndRevenue(studentId,revenueId);
+      return await fetchRevenueCourseClassStudentByStudentAndRevenue(studentId, revenueId);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
-      setError(errorMessage);
+      if (!(err instanceof HttpError)) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+        setError(errorMessage);
+      }
       return [];
     }
   }, []);
@@ -172,12 +186,12 @@ export default function RevenuesTable() {
     if (linkToDisplay) {
       window.open(linkToDisplay, '_blank');
     }
-    
-    
+
+
     if (revenue?.id) {
-      
+
       try {
-        
+
         if (actionType === "send_reminder_message") {
           sendReminderMessage(revenue.id);
           setMessage("✅ Reminder message sent successfully!");
@@ -227,7 +241,7 @@ export default function RevenuesTable() {
   const handleFilterRange = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);     
+      setError(null);
 
       const { startYm, endYm } = filter;
       if (endYm < startYm) throw new Error('Data final deve ser maior ou igual à data inicial.');
@@ -239,8 +253,10 @@ export default function RevenuesTable() {
       setRevenues(data);
       setHasActiveFilter(true);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
-      setError(errorMessage);
+      if (!(err instanceof HttpError)) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
       setIsModalLoading(false);

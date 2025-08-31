@@ -7,8 +7,10 @@ import {
 } from '@heroicons/react/24/outline';
 import { lusitana } from '@/app/ui/fonts';
 import { DashBoardTotalCardsModel } from '@/app/lib/definitions/dashboard_definition';
-import { getTeacherCourseClassLanguageStudent } from '@/app/services/dashboardService';
+
 import { useState, useEffect } from 'react';
+
+import { getTeacherCourseClassLanguageStudent } from '@/bff/services/dashboard.server';
 
 const iconMap = {
   teacher: AcademicCapIcon,

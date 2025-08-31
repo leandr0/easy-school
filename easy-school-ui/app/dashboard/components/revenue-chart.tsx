@@ -5,7 +5,7 @@ import { CalendarIcon } from '@heroicons/react/24/outline';
 import { lusitana } from '@/app/ui/fonts';
 import { useState, useEffect } from 'react';
 import { DashBoardGrowthModel } from '@/app/lib/definitions/dashboard_definition';
-import { getGrowthData } from '@/app/services/dashboardService';
+import { getGrowthData } from '@/bff/services/dashboard.server';
 
 export default function SolicitacaoMonthChart() {
   const [solicitacaoMonth, setSolicitacaoMonth] = useState<DashBoardGrowthModel[]>([]);

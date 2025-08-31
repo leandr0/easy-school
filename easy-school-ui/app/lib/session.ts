@@ -10,11 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'zcffHBNq4d2zxvOTiJ2r/PzSq45CGEnzap
 
 // Function to generate a JWT token
 export function generateJwtToken(user: UserModel): string {
-  return jwt.sign(
-    {
-      id: user.id,
-      username: user.username
-    },
+  return jwt.sign(user,
     JWT_SECRET,
     { expiresIn: '7d' }
   );

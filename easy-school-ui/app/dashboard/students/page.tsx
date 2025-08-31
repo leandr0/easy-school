@@ -4,7 +4,7 @@ import { CreateStudent } from '@/app/dashboard/components/ui_buttons';
 import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
-import StudentsTable from './components/students_table';
+import StudentsTable from './components/StudentsTable';
 
 import { Metadata } from 'next';
  

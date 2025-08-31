@@ -2,16 +2,17 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from 'next/navigation';
-import { getAllCoursesAvailable, findCourse } from '@/app/services/courseService';
-import { getAllWeekDays } from '@/app/services/calendarWeekDayService';
-import { fetchAvailabilityTeacher } from '@/app/services/calendarRangeHourDayService';
-import { createCourseClass } from '@/app/services/courseClassService';
 
 import { CourseClassCreateForm } from '@/app/lib/definitions/course_class_definitions';
 import { CourseModel } from '@/app/lib/definitions/courses_definitions';
 import { TeacherModel } from '@/app/lib/definitions/teacher_definitions';
 import { CalendarWeekDayModel } from '@/app/lib/definitions/calendar_week_day_definitions';
 import { CalendarRangeHourDayModel } from '@/app/lib/definitions/calendat_range_hour_day_definitions';
+
+import { createCourseClass } from "@/bff/services/courseClass.server"; 
+import { getAllWeekDays } from "@/bff/services/calendarWeekDay.server"; 
+import { fetchAvailabilityTeacher } from "@/bff/services/calendarRangeHourDay.server";
+import { findCourse, getAllCoursesAvailable } from "@/bff/services/course.server";
 
 import CreateCourseClassFormMobile from "./CreateCourseClassFormMobile";
 import CreateCourseClassFormDesktop from "./CreateCourseClassFormDesktop";

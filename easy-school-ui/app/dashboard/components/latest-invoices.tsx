@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { lusitana } from '@/app/ui/fonts';
 import { useState, useEffect } from 'react';
 
-import { getLanguageTotalStudents } from '@/app/services/languageService';
+import { getLanguageTotalStudents } from '@/bff/services/language.server';
 import { DashBoardTotalCardsLanguageModel } from '@/app/lib/definitions/dashboard_definition';
 
 export default function ReportOperadora() {

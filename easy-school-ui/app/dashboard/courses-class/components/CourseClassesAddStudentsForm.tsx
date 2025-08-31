@@ -2,22 +2,22 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
-import { BookOpenIcon } from '@heroicons/react/24/outline';
 
-import { Button } from '@/app/ui/button';
-import DeleteStudantFromCourseClassList from '@/app/dashboard/components/ui_buttons';
-import SelectableStudentsTable , { SelectableStudentsTableRef }from '../../students/components/students_selectable_table';
+import{ SelectableStudentsTableRef }from '../../students/components/StudentsSelectableTable';
 
 import { CourseClassAddStudentsForm } from '@/app/lib/definitions/course_class_definitions';
 import { StudentModel } from '@/app/lib/definitions/students_definitions';
 import { CreateCourseClassStudentModel } from '@/app/lib/definitions/course_class_students_definitions';
 
-import { getCourseClassById } from '@/app/services/courseClassService';
-import { getStudentsInCourseClass, getStudentsNotInCourseClass } from '@/app/services/studentService';
-import { createCourseClassStudent, deleteByStudentAndCourseClass } from '@/app/services/courseClassStudentService';
 
 import AddStudentsDesktop from './AddStudentsDesktop';
 import AddStudentsMobile from './AddStudentsMobile';
+
+import { getCourseClassById } from '@/bff/services/courseClass.server';
+import { getStudentsInCourseClass, getStudentsNotInCourseClass } from '@/bff/services/student.server';
+import { createCourseClassStudent, deleteByStudentAndCourseClass } from '@/bff/services/courseClassStudent.server';
+
+
 
 export type AddStudentsCommonProps = {
   formData: CourseClassAddStudentsForm;

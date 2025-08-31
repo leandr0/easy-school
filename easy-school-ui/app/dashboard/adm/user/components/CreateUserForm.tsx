@@ -3,6 +3,7 @@
 
 import { useFormState, useFormStatus } from 'react-dom';
 import { createUserAction } from '@/app/actions/users';
+import { RoleModel } from '@/app/lib/definitions/role_definitions';
 
 type Role = { id: string; role: string; code: string };
 
@@ -21,7 +22,7 @@ function SubmitButton() {
 
 const initialState = null as any;
 
-export default function CreateUserForm({ roles }: { roles: Role[] }) {
+export default function CreateUserForm({ roles }: { roles: RoleModel[] }) {
   const [state, action] = useFormState(createUserAction, initialState);
 
   return (

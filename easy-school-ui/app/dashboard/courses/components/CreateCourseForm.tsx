@@ -6,11 +6,14 @@ import { Button } from '@/app/ui/button';
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { CourseModel } from '@/app/lib/definitions/courses_definitions';
-import { createCourse } from '@/app/services/courseService';
+
 import { BookOpenIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
 import { LanguageModel } from '@/app/lib/definitions/language_definitions';
-import { getAllLanguages } from '@/app/services/languageService';
+
 import BRLCurrency from '../../components/currency';
+
+import { createCourse } from '@/bff/services/course.server';
+import { getAllLanguages } from '@/bff/services/language.server';
 
 export default function CreateCourseForm() {
   const router = useRouter();

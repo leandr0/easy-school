@@ -2,7 +2,7 @@
 import { ApiClient } from "./api";
 
 // Browser -> Next API (relative path, works in all envs)
-export const browserApiClient = new ApiClient({
+export const bffApiClient = new ApiClient({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api'
 });
 

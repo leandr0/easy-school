@@ -16,7 +16,9 @@ export async function POST(req: NextRequest) {
   let user: UserModel;
   try {
 
+    console.log("Calling Service API Login");
     user = await authApi.post<UserModel>({ username, password });
+    console.log(`Return Service APi login ${JSON.stringify(user)}`);
 
   } catch (e) {
 
@@ -34,5 +36,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
   }
 
+  console.log(`Calling serUserInCookieServer`);
   return setUserInCookieServer(user);
 }

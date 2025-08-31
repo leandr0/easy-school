@@ -1,7 +1,7 @@
 // app/actions/users.ts
 'use server';
 
-import { z } from 'zod';
+import { number, z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { upstream } from 'bff/http';
 import { revalidatePath } from 'next/cache';
@@ -10,57 +10,60 @@ import { PATHS } from '@/bff/paths';
 
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
+import { createUser, updateUser } from '@/bff/services/security/user.server';
+import { UserModel } from "@/app/lib/definitions/user_definitions";
 
 const EDIT_COOKIE = 'edit_user';
-const JWT_SECRET = process.env.JWT_SECRET!; 
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 const CreateUserSchema = z.object({
-    username: z.string().trim().email('Please enter a valid email address'),
-    password: z.string().min(6, 'Password must have at least 6 characters'),
-    roleId: z.string().min(1, 'Role is required').transform((s) => Number(s)),
+  username: z.string().trim().email('Please enter a valid email address'),
+  password: z.string().min(6, 'Password must have at least 6 characters'),
+  roleId: z.string().min(1, 'Role is required').transform((s) => Number(s)),
 });
 
 type ActionState =
-    | { ok?: boolean; errors?: Record<string, string[]>; serverError?: string }
-    | null;
+  | { ok?: boolean; errors?: Record<string, string[]>; serverError?: string }
+  | null;
 
 export async function createUserAction(
-    _prev: ActionState,
-    formData: FormData
+  _prev: ActionState,
+  formData: FormData
 ): Promise<ActionState> {
-    const raw = {
-        username: String(formData.get('username') ?? ''),
-        password: String(formData.get('password') ?? ''),
-        roleId: String(formData.get('roleId') ?? ''),
+  const raw = {
+    username: String(formData.get('username') ?? ''),
+    password: String(formData.get('password') ?? ''),
+    roleId: String(formData.get('roleId') ?? ''),
+  };
+
+  const parsed = CreateUserSchema.safeParse(raw);
+  if (!parsed.success) {
+    const { fieldErrors } = parsed.error.flatten();
+    return { ok: false, errors: fieldErrors };
+  }
+
+  const email = parsed.data.username.toLowerCase();
+  const password_hash = await bcrypt.hash(parsed.data.password, 12);
+  const role_id = parsed.data.roleId;
+
+  try {
+
+    const user: UserModel = {
+      username: email,
+      roles: [{ id: Number(role_id).toString() }],
+      password_hash: password_hash,
     };
 
-    const parsed = CreateUserSchema.safeParse(raw);
-    if (!parsed.success) {
-        const { fieldErrors } = parsed.error.flatten();
-        return { ok: false, errors: fieldErrors };
-    }
-
-    const email = parsed.data.username.toLowerCase();
-    const password_hash = await bcrypt.hash(parsed.data.password, 12);
-    const role_id = parsed.data.roleId;
-
-    try {
-        await upstream(PATHS.SECURITY.USERS, {
-            method: 'POST',
-            body: JSON.stringify({
-                username: email,
-                password_hash,
-                role_id,
-            }),
-        });
 
 
-    } catch (e: any) {
-        return { ok: false, serverError: e?.message ?? 'Failed to create user' };
-    }
+    await createUser(user);
 
-    revalidatePath('/dashboard/adm/user');
-    redirect('/dashboard/adm/user?created=1');
+  } catch (e: any) {
+    return { ok: false, serverError: e?.message ?? 'Failed to create user' };
+  }
+
+  revalidatePath('/dashboard/adm/user');
+  redirect('/dashboard/adm/user?created=1');
 }
 
 export async function beginEditUser(formData: FormData) {
@@ -143,20 +146,31 @@ export async function updateUserAction(_prev: ActionState, formData: FormData): 
   const role_id = Number(parsed.data.roleId);
 
   // build payload; include password_hash only if a new password was entered
-  const body: Record<string, unknown> = { id, username: email, status ,role_id};
+  const body: Record<string, unknown> = { id, username: email, status, role_id };
   if (parsed.data.password) {
     body.password_hash = await bcrypt.hash(parsed.data.password, 12);
   }
 
   try {
-    console.log(body);
-    console.log(role_id);
+
     // Update basic fields
     await upstream(`${PATHS.SECURITY.USERS}`, {
       method: 'PUT', // adjust to PATCH if your API expects it
       body: JSON.stringify(body),
     });
 
+    const user: UserModel = {
+      id: id,
+      username: email,
+      roles: [{ id: Number(role_id).toString() }],
+      status: status,
+    };
+
+    if (parsed.data.password) {
+      user.password_hash = parsed.data.password;
+    }
+
+    await updateUser(user);
     /* Update role (if your API needs a separate call)
     await upstream(`${PATHS.SECURITY.USERS}/${id}/roles`, {
       method: 'PUT', // or POST depending on your backend

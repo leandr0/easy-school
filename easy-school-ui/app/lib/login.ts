@@ -1,8 +1,8 @@
 'use server'
 import { serialize } from 'cookie'
-import { generateJwtToken} from '@/app/lib/session'
 import { NextResponse } from 'next/server';
 import { UserModel } from './definitions/user_definitions'
+import { generateJwtToken } from '@/sign';
 
 
 export async function setUserInCookie(user: UserModel): Promise<NextResponse> {
@@ -11,7 +11,7 @@ export async function setUserInCookie(user: UserModel): Promise<NextResponse> {
   }
 
   // Create JWT token
-  const token = generateJwtToken(user);
+  const token = JSON.stringify(generateJwtToken(user));
 
   // Create a new NextResponse
   const response = NextResponse.json({ message: 'User authenticated' });
@@ -33,23 +33,25 @@ export async function setUserInCookie(user: UserModel): Promise<NextResponse> {
 export async function setUserInCookieServer(user: UserModel): Promise<NextResponse> {
 
   
-  console.log(`user ${JSON.stringify(user)}`);
+  console.log(`setUserInCookieServer >  user ${JSON.stringify(user)}`);
 
-  const token = generateJwtToken(user);
+
+  
+  const token = await generateJwtToken(user);
+
+  console.log(`Generated token ${token}`);
 
   const response = NextResponse.json({ message: 'Login successful' });
   
-  // Serialize the cookie
-  const cookie = serialize('user', token, {
+ response.cookies.set({
+    name: 'user',
+    value: token,
     httpOnly: true,
-    //secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-    maxAge: 60 * 60 * 24 * 7, // 1 week
-    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
     path: '/',
+    maxAge: 60 * 60 * 24 * 7,
   });
 
-  // Set the 'Set-Cookie' header in the response
-  response.headers.set('Set-Cookie', cookie);
-  
   return response;
 }

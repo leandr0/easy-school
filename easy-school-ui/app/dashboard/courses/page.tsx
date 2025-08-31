@@ -1,9 +1,11 @@
 import Pagination from '@/app/dashboard/components/pagination';
 import Search from '@/app/ui/search';
-import { CreateCourse, CreateStudent } from '@/app/dashboard/components/ui_buttons';
+import { CreateCourse} from '@/app/dashboard/components/ui_buttons';
 import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
+
+
 import CoursesTable from '@/app/dashboard/courses/components/CoursesTable';
 
 import { Metadata } from 'next';

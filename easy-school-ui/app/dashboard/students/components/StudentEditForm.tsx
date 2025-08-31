@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { StudentCoursePriceModel, CoursePriceModel } from '@/app/lib/definitions/students_definitions';
-import { findByIdCoursePrice, updateStudentAndCoursePrice } from '@/app/services/studentService';
 import StudentEditDesktopForm from './StudentEditDesktopForm';
 import StudentEditMobileForm from './StudentEditMobileForm';
 import { EditCourseModalDesktop } from './EditCourseModalDesktop';
 import { EditCourseModalMobile } from './EditCourseModalMobile';
 import { ConfirmUpdateModalDesktop } from './ConfirmUpdateModalDesktop';
 import { ConfirmUpdateModalMobile } from './ConfirmUpdateModalMobile';
+import { findByIdCoursePrice, updateStudentAndCoursePrice } from "@/bff/services/student.server";
 
 export default function StudentEditForm({ student_id }: { student_id: string }) {
   const router = useRouter();
@@ -33,14 +33,17 @@ export default function StudentEditForm({ student_id }: { student_id: string }) 
   const [showConfirmUpdateModal, setShowConfirmUpdateModal] = useState(false);
 
   useEffect(() => {
-    findByIdCoursePrice(student_id)
-      .then(student => {
+    const fetchStudentData = async () => {
+      try {
+        const student = await findByIdCoursePrice(student_id);
         setFormData(student);
-      })
-      .catch((err) => {
+      } catch (err: any) {
         setError(err.message);
-      });
+      }
+    };
+    fetchStudentData();
   }, [student_id]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;

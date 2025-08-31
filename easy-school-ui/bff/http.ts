@@ -13,7 +13,7 @@ async function fetchWithTimeout(input: RequestInfo, init: RequestInit & { timeou
 }
 
 export async function upstream<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const res = await fetchWithTimeout(`${ENV.API_BASE_URL}${path}`, init);
+  const res = await fetchWithTimeout(`http://192.168.15.51:3000${path}`, init);//fetchWithTimeout(`${ENV.API_BASE_URL}${path}`, init);//http://192.168.15.51/
   const ctype = res.headers.get('content-type') || '';
   const body = ctype.includes('application/json') ? await res.json() : await res.text();
   if (!res.ok) {

@@ -5,7 +5,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { MessageModel } from '@/app/lib/definitions/messages_definitions';
 import FormActions from '../../../courses-class/components/FormActions';
-import { getAllMessages, saveMessages } from '@/app/services/revenueMessageService';
+
+import { getAllMessages, saveMessages } from '@/bff/services/revenueMessage.server';
 
 export default function CreateMessageForm() {
   const router = useRouter();

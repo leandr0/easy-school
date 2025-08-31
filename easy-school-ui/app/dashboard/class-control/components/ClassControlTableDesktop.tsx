@@ -273,7 +273,7 @@ export default function ClassControlTableDesktop({
         >
           Voltar
         </CancelButton>
-        {existingRecords.length > 0 && (
+        {selectedClassId && (
           <Button
             className='hover:bg-purple-500'
             type="submit"

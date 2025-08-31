@@ -5,10 +5,11 @@ import { useMemo, useState } from 'react';
 import type { User } from '@/bff/schemas';
 import { UpdateBase } from '@/app/dashboard/components/ui_buttons';
 import EditUserAction from './EditUserAction';
+import { UserModel } from '@/app/lib/definitions/user_definitions';
 
 
 type Props = {
-  users: User[];
+  users: UserModel[];
   formatDate: (ts?: string | null) => string;
 };
 
@@ -53,7 +54,7 @@ export default function UsersListMobile({ users, formatDate }: Props) {
                   >
                     {u.status ? 'Ativo' : 'Inativo'}
                   </span>
-                  <EditUserAction id={u.id} />
+                  <EditUserAction id={u.id!} />
                 </div>
               </div>
             </li>

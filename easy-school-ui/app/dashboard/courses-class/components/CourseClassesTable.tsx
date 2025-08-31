@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { CourseClassTeacherModel } from '@/app/lib/definitions/course_class_definitions';
-import { getAllCourseClass } from '@/app/services/courseClassService';
 import DesktopCoursesClassTable from './DesktopCoursesClassTable';
 import MobileCoursesClassTable from "./MobileCoursesClassTable";
+import { getAllCourseClass } from "@/bff/services/courseClass.server"; 
+
 
 export default function CoursesClassTable({
   query,
@@ -17,17 +18,24 @@ export default function CoursesClassTable({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    getAllCourseClass()
-      .then(data => {
+ useEffect(() => {
+      const ctrl = new AbortController();
+
+      setLoading(true);
+      const fetchTeacherData = async () => {
+  
+        const data = await getAllCourseClass();
         setCourseClasses(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+      }
+  
+      
+      fetchTeacherData();
+  
+      setLoading(false);
+      return () => ctrl.abort();
+  
+    }, []);
+
 
 
 const filteredCourses = React.useMemo(() => {

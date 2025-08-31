@@ -4,20 +4,24 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
 import { Button, CancelButton } from '@/app/ui/button';
+import { BookOpenIcon } from '@heroicons/react/24/outline';
+import { Switch } from '@/app/dashboard/components/switch';
+
 import WeekDaySelector from '@/app/dashboard/courses-class/components/WeekDaySelector';
 import TimeSelector from '@/app/dashboard/courses-class/components/TimeSelector';
 import TeacherCalendarList from '@/app/dashboard/courses-class/components/TeacherCalendarListDesktop';
+
 
 import { TeacherModel } from '@/app/lib/definitions/teacher_definitions';
 import { CalendarRangeHourDayModel } from '@/app/lib/definitions/calendat_range_hour_day_definitions';
 import { CalendarWeekDayModel } from '@/app/lib/definitions/calendar_week_day_definitions';
 
-import { getAllWeekDays, getWeekDaysByCourseClass } from '@/app/services/calendarWeekDayService';
-import { getCourseClassById, updateCourseClass } from '@/app/services/courseClassService';
-import { fetchAvailabilityTeacher } from '@/app/services/calendarRangeHourDayService';
 
-import { BookOpenIcon } from '@heroicons/react/24/outline';
-import { Switch } from '@/app/dashboard/components/switch';
+import { getAllWeekDays, getWeekDaysByCourseClass } from '@/bff/services/calendarWeekDay.server';
+import { getCourseClassById, updateCourseClass } from '@/bff/services/courseClass.server';
+import { fetchAvailabilityTeacher } from '@/bff/services/calendarRangeHourDay.server';
+
+
 
 type TeacherWithCalendars = {
   teacher: TeacherModel;
@@ -244,7 +248,6 @@ export default function EditCourseClassPage() {
         teacher: selectedTeacherId ? ({ id: selectedTeacherId } as any) : undefined,
       } as any);
 
-      alert('Turma atualizada com sucesso!');
       router.push('/dashboard/courses-class');
     } catch (e: any) {
       setError(e?.message || 'Erro ao salvar alterações');

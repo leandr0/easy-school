@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getAllCourses } from "@/app/services/courseService";
+import { getAllCourses } from "@/bff/services/course.server";
+
 import { CourseModel } from "@/app/lib/definitions/courses_definitions";
 
 import CoursesTableDesktop from "./CoursesTableDesktop";
@@ -24,6 +25,8 @@ export default function CoursesTable({ query, currentPage }: Props) {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [query, currentPage]); // keep dependencies explicit if you later wire server-side filters
+
+
 
   if (loading) {
     return (

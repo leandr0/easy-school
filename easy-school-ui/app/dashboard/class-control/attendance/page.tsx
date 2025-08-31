@@ -1,4 +1,3 @@
-import ClassControlTable from '../components/ClassControlTable';
 import { lusitana } from '@/app/ui/fonts';
 
 import { Metadata } from 'next';

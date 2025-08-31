@@ -2,16 +2,18 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { CourseClassCompleteModel } from "@/app/lib/definitions/course_class_definitions";
-import { getAllCourseClassAvailable } from "@/app/services/courseClassService";
-import { getStudentsInCourseClass } from "@/app/services/studentService";
-import { storeFrequencyClass, filteringDataRange, controlFilteringDataRange } from "@/app/services/classControlService";
-import { addDays, format, startOfWeek, addWeeks, subWeeks, endOfWeek } from "date-fns";
-import { ClassControlModel, ClassControlResponseModel } from "@/app/lib/definitions/class_control_definitions";
+
+import { addDays, format, startOfWeek, endOfWeek } from "date-fns";
+import { ClassControlResponseModel } from "@/app/lib/definitions/class_control_definitions";
 import AttendenceClassControlTableDesktop from "./AttendenceClassControlTableDesktop";
-import AttendenceDateRangeFilter from "./AttendenceDateRangeFilter";
+
 import { StudentModel } from "@/app/lib/definitions/students_definitions";
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import AttendenceClassControlTableMobile from "./AttendenceClassControlTableMobile";
+
+import { getAllCourseClassAvailable } from "@/bff/services/courseClass.server";
+import { controlFilteringDataRange } from "@/bff/services/classControl.server";
+
 
 type Participant = {
     id: string;

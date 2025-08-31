@@ -1,15 +1,21 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from 'next/navigation';
-import { CourseClassCompleteModel } from "@/app/lib/definitions/course_class_definitions";
-import { getAllCourseClassAvailable } from "@/app/services/courseClassService";
-import { getStudentsInCourseClass } from "@/app/services/studentService";
-import { storeFrequencyClass, filteringDataRange } from "@/app/services/classControlService";
+import { useRouter } from 'next/navigation';
+
 import { addDays, format, startOfWeek, addWeeks, subWeeks, endOfWeek } from "date-fns";
-import ClassControlTableDesktop from "./ClassControlTableDesktop";
+
+import { CourseClassCompleteModel } from "@/app/lib/definitions/course_class_definitions";
 import { ClassControlModel } from "@/app/lib/definitions/class_control_definitions";
+
+import ClassControlTableDesktop from "./ClassControlTableDesktop";
 import ClassControlTableMobile from "./ClassControleTableMobile";
+
+
+import { getAllCourseClassAvailable } from "@/bff/services/courseClass.server";
+import { getStudentsInCourseClass } from "@/bff/services/student.server";
+import { storeFrequencyClass, filteringDataRange } from "@/bff/services/classControl.server";
+
 
 type Participant = {
   id: string;

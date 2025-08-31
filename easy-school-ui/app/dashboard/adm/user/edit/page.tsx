@@ -7,6 +7,8 @@ import { PATHS } from '@/bff/paths';
 import { RoleSchema, type Role } from '@/bff/schemas';
 import { z } from 'zod';
 import EditUserForm from '../components/EditUserForm';
+import { findUser } from '@/bff/services/security/user.server';
+import { fetchRoles } from '@/bff/services/security/role.server';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const EDIT_COOKIE = 'edit_user';
@@ -16,6 +18,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Page() {
   const token = cookies().get(EDIT_COOKIE)?.value;
+
   if (!token) redirect('/dashboard/adm/user?updated=1');
 
   let id: string;
@@ -29,9 +32,10 @@ export default async function Page() {
 
   // load user + roles
   const [userRaw, rolesRaw] = await Promise.all([
-    upstream<unknown>(`${PATHS.SECURITY.USERS}/${id}`, { method: 'GET' }),
-    upstream<unknown>(PATHS.SECURITY.ROLES, { method: 'GET' }),
+    findUser(id),
+    fetchRoles(),
   ]);
+
   const roles: Role[] = z.array(RoleSchema).parse(rolesRaw);
 
   // try to infer current role id from common shapes

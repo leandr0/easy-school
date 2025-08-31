@@ -3,7 +3,7 @@
 import { BookOpenIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
 import DeleteStudantFromCourseClassList from '@/app/dashboard/components/ui_buttons';
-import SelectableStudentsTable , { SelectableStudentsTableRef }from '../../students/components/students_selectable_table';
+import SelectableStudentsTable , { SelectableStudentsTableRef }from '../../students/components/StudentsSelectableTable';
 import { AddStudentsCommonProps } from './CourseClassesAddStudentsForm';
 
 export default function AddStudentsMobile({

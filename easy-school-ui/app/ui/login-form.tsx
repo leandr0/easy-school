@@ -10,7 +10,7 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 import { useFormStatus } from 'react-dom';
-import { loginSetCookie } from '../services/security/securityService';
+import { login } from '@/bff/services/security/login.server';
 
 
 
@@ -25,8 +25,8 @@ export default function LoginForm() {
     const formData = new FormData(event.currentTarget)
     const email = formData.get('email')
     const password = formData.get('password')
-
-    const response = await loginSetCookie(email?.toString()!,password?.toString()!);
+    console.log('calling loginSetCookie');
+    const response = await login(email?.toString()!,password?.toString()!);
 
     console.log(response);
     if (response) {

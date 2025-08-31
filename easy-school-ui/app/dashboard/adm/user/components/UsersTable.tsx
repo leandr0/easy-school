@@ -6,10 +6,11 @@ import type { User } from '@/bff/schemas';
 import { Switch } from '@/app/dashboard/components/switch';
 import { UpdateBase } from '@/app/dashboard/components/ui_buttons';
 import EditUserAction from './EditUserAction';
+import { UserModel } from '@/app/lib/definitions/user_definitions';
 
 
 type Props = {
-  users: User[];
+  users: UserModel[];
   formatDate: (ts?: string | null) => string;
 };
 
@@ -56,7 +57,7 @@ export default function UsersTable({ users, formatDate }: Props) {
                 <td className="px-4 py-2">{formatDate(u.created_at)}</td>
                 <td className="px-4 py-2">
                     <div className="flex justify-end">
-                      <EditUserAction id={u.id} />
+                      <EditUserAction id={u.id!} />
                     </div>
                   </td>
               </tr>

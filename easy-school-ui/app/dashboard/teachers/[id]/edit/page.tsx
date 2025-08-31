@@ -1,6 +1,4 @@
 import Breadcrumbs from '@/app/dashboard/components/breadcrumbs';
-import StudentEditForm from '@/app/ui/students/StudentEditForm';
-import React, { useEffect, useState } from "react";
 import TeacherEditForm from '../../components/EditTeacherForm';
 
 

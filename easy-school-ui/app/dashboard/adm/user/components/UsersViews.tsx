@@ -1,4 +1,3 @@
-// app/adm/user/components/UsersViews.tsx
 'use client';
 
 import UsersTable from './UsersTable';
@@ -6,9 +5,9 @@ import UsersListMobile from './UsersListMobile';
 import type { User } from '@/bff/schemas';
 import { formatBRDate } from '@/app/lib/dates';
 import Link from 'next/link';
-import { CancelButton } from '@/app/ui/button';
+import { UserModel } from '@/app/lib/definitions/user_definitions';
 
-type Props = { users: User[] };
+type Props = { users: UserModel[] };
 
 export default function UsersViews({ users }: Props) {
     // function lives here and is passed down
@@ -19,7 +18,7 @@ export default function UsersViews({ users }: Props) {
             <div className="md:hidden relative pt-14">
 
                 <Link
-                    href="user/create"           // or /dashboard/adm/user/create
+                    href="/dashboard/adm/user/create"           // or /dashboard/adm/user/create
                     className="absolute top-0 right-0 w-14 h-14 rounded-full bg-purple-600 text-white flex items-center justify-center text-2xl shadow-lg z-10"
                     aria-label="Criar usuário"
                 >
@@ -30,7 +29,7 @@ export default function UsersViews({ users }: Props) {
             <div className="hidden md:block">
                 <div className="flex items-center justify-between mb-4">
                     <Link
-                        href="/adm/user/create"
+                        href="/dashboard/adm/user/create"
                         className="rounded-md bg-purple-600 text-white px-4 py-2 hover:bg-purple-700"
                     >
                         + Create User

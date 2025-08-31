@@ -1,15 +1,14 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { Button } from '@/app/ui/button';
 import { LanguageModel } from '@/app/lib/definitions/language_definitions';
 import { CourseModel } from '@/app/lib/definitions/courses_definitions';
 
-import { getAllLanguages } from '@/app/services/languageService';
-import { createCourse, findCourse } from '@/app/services/courseService';
+import { getAllLanguages } from '@/bff/services/language.server';
+import { createCourse, findCourse } from '@/bff/services/course.server';
 
 import EditCourseFormDesktop from './EditCourseFormDesktop';
 import EditCourseFormMobile from './EditCourseFormMobile';

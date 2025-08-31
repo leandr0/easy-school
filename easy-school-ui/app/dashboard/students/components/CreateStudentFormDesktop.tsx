@@ -69,6 +69,7 @@ export default function CreateStudentFormDesktop({
                   type="number"
                   name="due_date"
                   id="due_date"
+                  
                   min={5}
                   max={20}
                   step={5}

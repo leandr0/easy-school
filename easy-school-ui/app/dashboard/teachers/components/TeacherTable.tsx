@@ -2,9 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { TeacherModel } from '@/app/lib/definitions/teacher_definitions';
-import { getAllTeachers } from '@/app/services/teacherService';
 import TeacherTableMobile from './TeacherTableMobile';
 import TeacherTableDesktop from "./TeacherTableDesktop";
+import { bffApiClient } from "@/app/config/clientAPI";
+import { getAllTeachers } from "@/bff/services/teacher.server";
+
+
+const clientApi = bffApiClient.resource('/teachers');
 
 export default function TeacherTable({
   query,
@@ -18,11 +22,20 @@ export default function TeacherTable({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const ctrl = new AbortController();
     setIsLoading(true);
-    getAllTeachers()
-      .then(setTeachers)
-      .catch((err) => setError(err.message))
-      .finally(() => setIsLoading(false));
+
+    const fetchTeacherData = async () => {
+
+      const data = await getAllTeachers();
+      setTeachers(data);
+    }
+
+    fetchTeacherData();
+
+    setIsLoading(false);
+    return () => ctrl.abort();
+
   }, []);
 
   return (
@@ -30,7 +43,7 @@ export default function TeacherTable({
       <div className="inline-block min-w-full align-middle">
         {/* Mobile View */}
         <div className="md:hidden">
-          <TeacherTableMobile 
+          <TeacherTableMobile
             teachers={teachers}
             isLoading={isLoading}
             error={error}
@@ -39,7 +52,7 @@ export default function TeacherTable({
 
         {/* Desktop View */}
         <div className="hidden md:block">
-          <TeacherTableDesktop 
+          <TeacherTableDesktop
             teachers={teachers}
             isLoading={isLoading}
             error={error}

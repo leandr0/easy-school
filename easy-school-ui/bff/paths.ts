@@ -1,4 +1,3 @@
-// app/bff/paths.ts
 export const PATHS = {
   SECURITY: {
     LOGIN: '/security/login',
