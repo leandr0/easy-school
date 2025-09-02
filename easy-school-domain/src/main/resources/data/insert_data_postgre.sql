@@ -322,3 +322,8 @@ select 'UPDATE users SET role_id = '||ur.role_id||' WHERE id = '''||u.id||''';'
 from user_roles ur
 inner join users u
 on u.id = ur.user_id;
+
+--select 'INSERT INTO roles (role, code) VALUES ('''||role||''','||code||');' from roles;
+INSERT INTO roles (role, code) VALUES ('ADMIN',100);
+INSERT INTO roles (role, code) VALUES ('TEACHER',200);
+INSERT INTO roles (role, code) VALUES ('STUDENT',300);

@@ -2,8 +2,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import jwt from 'jsonwebtoken';
-import { upstream } from '@/bff/http';
-import { PATHS } from '@/bff/paths';
 import { RoleSchema, type Role } from '@/bff/schemas';
 import { z } from 'zod';
 import EditUserForm from '../components/EditUserForm';

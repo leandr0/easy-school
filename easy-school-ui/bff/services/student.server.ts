@@ -42,11 +42,11 @@ export async function getStudentsInCourseClass(course_class_id:any): Promise<Stu
 }
 
 export async function createStudent(student: StudentModel): Promise<void> {
-  console.log(`createStudent ${student}`);
+
   return await clientApi.post<void>(student);
 }
 
 export async function updateStudentAndCoursePrice(student: StudentModel): Promise<void> {
-  console.log(`updateStudentAndCoursePrice ${JSON.stringify(student)}`);
+
   return await clientApi.put("/course-price",student);
 }

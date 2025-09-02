@@ -17,9 +17,9 @@ export async function GET(req: Request): Promise<NextResponse> {
   const allCookies = await cookieStore.getAll(); // Returns an array of { name, value } objects
 
   // Log each cookie key-value pair
-  console.log('All Cookies:');
+
   allCookies.forEach(({ name, value }) => {
-    console.log(`${name}: ${value}`);
+
   });
 
 
@@ -29,11 +29,11 @@ export async function GET(req: Request): Promise<NextResponse> {
   if (!token) {
     return NextResponse.json({ error: 'Unauthorized, no token' }, { status: 407 });
   }
-  console.log('Token : ',token);
+
   // Verify the JWT token
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log('Decoded JWT:', decoded); 
+
 
     let res = NextResponse.json({ message: decoded}, { status: 200 });
 
@@ -50,7 +50,7 @@ export async function GET(req: Request): Promise<NextResponse> {
 }
 
 export async function POST(req: Request) : Promise<NextResponse> {
-  console.log(`delete cookie`);
+
   const { cookieName } = await req.json();
   let res = NextResponse.json({ message:  'Cookie deleted'}, { status: 200 });
   

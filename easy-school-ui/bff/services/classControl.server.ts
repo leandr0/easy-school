@@ -6,7 +6,7 @@ import { bffApiClient} from "@/app/config/clientAPI";
 const clientApi = bffApiClient.resource('/class-control');
 
 export async function storeFrequencyClass(data: any): Promise<void> {
-    console.log(`storeFrequencyClass ${storeFrequencyClass}`);
+
   await clientApi.post(data);
 }
 

@@ -16,16 +16,20 @@ export async function POST(req: NextRequest) {
   let user: UserModel;
   try {
 
-    console.log("Calling Service API Login");
+
     user = await authApi.post<UserModel>({ username, password });
-    console.log(`Return Service APi login ${JSON.stringify(user)}`);
+
 
   } catch (e) {
+    
 
     const status = (e as any)?.status ?? 500;
+
     const msg = (e as Error)?.message ?? 'Login failed';
 
+
     if (status === 404 || status === 400) {
+
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
@@ -33,9 +37,12 @@ export async function POST(req: NextRequest) {
   }
 
   if (!user) {
+
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
   }
 
-  console.log(`Calling serUserInCookieServer`);
-  return setUserInCookieServer(user);
+
+  const reponse = await setUserInCookieServer(req,user);
+
+  return reponse;
 }

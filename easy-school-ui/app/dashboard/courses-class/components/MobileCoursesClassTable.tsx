@@ -4,7 +4,7 @@ import { AddStudents, UpdateCourseClass } from '../../components/ui_buttons';
 import CourseStatus from './CourseClassesStatus';
 import React, { useEffect, useState } from "react";
 import { CourseClassTeacherModel } from '@/app/lib/definitions/course_class_definitions';
-
+import Image from 'next/image';
 interface MobileCoursesClassTableProps {
   courseClasses: CourseClassTeacherModel[];
 }
@@ -12,7 +12,7 @@ interface MobileCoursesClassTableProps {
 export default function MobileCoursesClassTable({
   courseClasses,
 }: MobileCoursesClassTableProps) {
-  console.log(`Mobile ${courseClasses}`);
+
 
 
   return (
@@ -30,17 +30,19 @@ export default function MobileCoursesClassTable({
         <div className="space-y-3">
           {courseClasses.map((course_class) => (
             <div key={course_class.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-              
+
               {/* Card Header */}
               <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0">
-                      <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                        <span className="text-blue-600 font-semibold text-sm">
-                          {course_class.name!.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
+                      <Image
+                        src={course_class.course.language?.image_url!}
+                        alt={`${course_class.course.language?.name}'s profile picture`}
+                        className="mr-4 rounded-full"
+                        width={32}
+                        height={32}
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-semibold text-gray-900 truncate">
@@ -57,7 +59,7 @@ export default function MobileCoursesClassTable({
               {/* Card Body */}
               <div className="px-4 py-3">
                 <div className="space-y-3">
-                  
+
                   {/* Teacher Info */}
                   <div>
                     <div className="flex items-center space-x-2">
@@ -99,13 +101,13 @@ export default function MobileCoursesClassTable({
               {/* Card Footer - Action Buttons */}
               <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
                 <div className="flex justify-end space-x-2">
-                  <AddStudents 
-                    id_course_class={course_class.id as string} 
+                  <AddStudents
+                    id_course_class={course_class.id as string}
                     disabled={!course_class.status}
                   />
-                  <UpdateCourseClass 
-                    id={course_class.id as string} 
-                    disabled={false} 
+                  <UpdateCourseClass
+                    id={course_class.id as string}
+                    disabled={false}
                   />
                 </div>
               </div>

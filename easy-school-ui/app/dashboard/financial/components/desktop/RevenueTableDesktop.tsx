@@ -64,14 +64,14 @@ export default function RevenuesTableDesktop({
   const handleSendReminder = (studentId: string, revenue: RevenueModel) => {
     setActionType('send_reminder_message');
     setStudentId(studentId);
-    console.log(`Model - handleSendReminder- revenue id ${revenue.id}`);
+
     setRevenue(revenue);
   };
 
   const handleSendPaymentRequest = (studentId: string, revenue: RevenueModel) => {
     setActionType('send_payment_message');
     setStudentId(studentId);
-    console.log(`Model - handleSendPaymentRequest- revenue id ${revenue.id}`);
+
     setRevenue(revenue);
   };
 

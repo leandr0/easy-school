@@ -137,10 +137,10 @@ export default function TeacherEditForm({ teacher_id }: { teacher_id: string }) 
 
       } 
       catch (err: any) {
-        console.log("Error caught:", err); // Debug log
+
 
         if (err instanceof HttpError && err.status === 404) {
-        console.log("Teacher calendar not found (404), fetching teacher data...");
+
         
         try {
           // Fallback to getting teacher by ID
@@ -350,8 +350,8 @@ export default function TeacherEditForm({ teacher_id }: { teacher_id: string }) 
         });
 
         if (calendarRangeHourDayModels) {
-          console.log("Itens para adicionar");
-          console.log(calendarRangeHourDayModels);
+
+
           createByTeacher(teacher_id, calendarRangeHourDayModels);
         }
 

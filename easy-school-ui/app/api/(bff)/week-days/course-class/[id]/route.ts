@@ -24,7 +24,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
     return NextResponse.json(data);
   } catch (e: any) {
-    console.log(`Get Teacher By Id ERROR ${e}`);
+
     
     if (e instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     if (e instanceof ForbiddenError) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });

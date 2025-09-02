@@ -20,6 +20,6 @@ app.prepare().then(() => {
     handle(req, res, parsedUrl);
   }).listen(3000,'0.0.0.0' ,(err) => {
     if (err) throw err;
-    console.log('> Ready on https://localhost:3000');
+
   });
 });

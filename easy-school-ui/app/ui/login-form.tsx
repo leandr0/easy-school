@@ -25,11 +25,12 @@ export default function LoginForm() {
     const formData = new FormData(event.currentTarget)
     const email = formData.get('email')
     const password = formData.get('password')
-    console.log('calling loginSetCookie');
+
     const response = await login(email?.toString()!,password?.toString()!);
 
-    console.log(response);
+
     if (response) {
+
       router.push('/dashboard')
     } else {
       // Handle errors

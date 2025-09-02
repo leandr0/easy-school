@@ -94,7 +94,7 @@ export default function AttendenceClassControlTableDesktop({
             <div className="bg-white">
               {existingRecords?.map((classControl) => {
                 const isExpanded = !!expandedRows[classControl.class_control?.id!];
-                console.log(classControl);
+
                 return (
                   <div key={classControl.class_control?.id}>
                     <div

@@ -4,7 +4,7 @@ import React from "react";
 import { UpdateBase } from "../../components/ui_buttons";
 import CourseStatus from "./CourseStatus";
 import { CourseModel } from "@/app/lib/definitions/courses_definitions";
-
+import Image from 'next/image';
 type Props = {
   courses: CourseModel[];
 };
@@ -36,8 +36,18 @@ export default function CoursesTableDesktop({ courses }: Props) {
               [&:last-child>td:first-child]:rounded-bl-lg
               [&:last-child>td:last-child]:rounded-br-lg"
           >
+
+
+
             <td className="whitespace-nowrap py-3 pl-6 pr-3">
               <div className="flex items-center gap-3">
+                <Image
+                  src={course.language?.image_url!}
+                  alt={`${course.language?.name}'s profile picture`}
+                  className="mr-4 rounded-full"
+                  width={32}
+                  height={32}
+                />
                 <p>{course.name}</p>
               </div>
             </td>

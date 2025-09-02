@@ -59,7 +59,7 @@ const filteredCourses = React.useMemo(() => {
     return <div className="text-center p-8 text-red-600">Erro: {error}</div>;
   }
 
-  console.log("courseClasses in parent:", courseClasses);
+
 
   return (
     <div className="mt-6 flow-root">

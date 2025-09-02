@@ -30,9 +30,9 @@ export default function CardWrapper() {
         setLoading(true);
         setError(null);
         
-        console.log('Fetching dashboard data...');
+
         const data = await getTeacherCourseClassLanguageStudent();
-        console.log('Dashboard data received:', data);
+
         
         setTotalNumber(data);
       } catch (err) {

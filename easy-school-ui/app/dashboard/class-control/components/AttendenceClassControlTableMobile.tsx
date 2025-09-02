@@ -141,7 +141,7 @@ export default function AttendenceClassControlTableMobile({
                                 checked={classControl.class_control?.replacement!}
                                 onChange={(checked) => {
                                   // Handle replacement toggle
-                                  console.log('Replacement toggled:', checked);
+
                                 }}
                               />
                             </div>

@@ -269,19 +269,6 @@ export default function ClassControlTable() {
       return;
     }
 
-    console.log(`✅ Preparing to save ${records.length} new attendance record(s):`);
-    records.forEach((rec, index) => {
-      console.log(`📝 Record ${index + 1}:`, {
-        id: rec.id,
-        date: rec.date,
-        course_class_id: rec.course_class_id,
-        teacher_id: rec.teacher_id,
-        students: rec.students,
-        content: rec.content,
-        replacement: rec.replacement,
-      });
-    });
-
     try {
       await storeFrequencyClass(records);
 

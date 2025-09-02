@@ -1,7 +1,3 @@
-import { upstream } from '@/bff/http';
-import { z } from 'zod';
-import { UserSchema, type User } from '@/bff/schemas';
-import { PATHS } from '@/bff/paths';
 import UsersViews from './components/UsersViews';
 
 import { cookies } from 'next/headers';

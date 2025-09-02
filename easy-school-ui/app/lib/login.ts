@@ -1,6 +1,5 @@
 'use server'
-import { serialize } from 'cookie'
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { UserModel } from './definitions/user_definitions'
 import { generateJwtToken } from '@/sign';
 
@@ -30,28 +29,28 @@ export async function setUserInCookie(user: UserModel): Promise<NextResponse> {
   return response;
 }
 
-export async function setUserInCookieServer(user: UserModel): Promise<NextResponse> {
+export async function setUserInCookieServer(req: NextRequest, user: UserModel): Promise<NextResponse> {
 
-  
-  console.log(`setUserInCookieServer >  user ${JSON.stringify(user)}`);
+  const secure = req.nextUrl.protocol === 'https:'; // detects real scheme
 
-
-  
   const token = await generateJwtToken(user);
 
-  console.log(`Generated token ${token}`);
 
-  const response = NextResponse.json({ message: 'Login successful' });
-  
- response.cookies.set({
+
+  const response = NextResponse.json(user);
+
+  response.cookies.set({
     name: 'user',
     value: token,
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure,
+    //secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
     maxAge: 60 * 60 * 24 * 7,
   });
+
+
 
   return response;
 }

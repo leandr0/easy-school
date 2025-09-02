@@ -20,9 +20,9 @@ export default function ReportOperadora() {
         setLoading(true);
         setError(null);
         
-        console.log('Fetching language data...');
+
         const data = await getLanguageTotalStudents();
-        console.log('Language data received:', data);
+
         
         setReportOperadora(data);
       } catch (err) {

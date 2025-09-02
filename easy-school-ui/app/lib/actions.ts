@@ -42,7 +42,7 @@ export type State = {
 };
 
 export async function createInvoice(prevState: State, formData: FormData) {
-  console.log("createInvoice")
+
   // Validate form using Zod
   const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get('customerId'),
@@ -50,11 +50,11 @@ export async function createInvoice(prevState: State, formData: FormData) {
     status: formData.get('status'),
   });
 
-  console.log(validatedFields)
+
 
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
-    console.log(validatedFields.error)
+
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Create Invoice.',
@@ -85,7 +85,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
 }
 
 export async function createPrestador(prevState: State, formData: FormData) {
-  console.log("createPrestador")
+
   // Validate form using Zod
   const validatedFields = CreateInvoice.safeParse({
     empresaPrestadoraId: formData.get('empresaPrestadoraId'),
@@ -93,11 +93,11 @@ export async function createPrestador(prevState: State, formData: FormData) {
     status: formData.get('status'),
   });
 
-  console.log(validatedFields)
+
 
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
-    console.log(validatedFields.error)
+
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Create Invoice.',
@@ -138,10 +138,10 @@ export async function updateInvoice(
     status: formData.get('status'),
   });
 
-  console.log(formData.get('customerId'))
+
 
   if (!validatedFields.success) {
-    console.log(validatedFields.error)
+
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Update Invoice.',
@@ -424,7 +424,7 @@ export async function fetchEmpresasContratantes() {
 
 export async function createPropriedade(prevState: StatePropriedade, formData: FormData, solicitacao: SolicitacoesField) {
 
-  console.log("createPropriedade")
+
 
   
 
@@ -478,8 +478,8 @@ export async function createPropriedade(prevState: StatePropriedade, formData: F
   });
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
-    console.log('createPropriedade validation error');
-    console.log(validatedFields.error)
+
+
 
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -539,7 +539,7 @@ export async function createPropriedade(prevState: StatePropriedade, formData: F
 
 export async function updatePropriedade(prevState: StatePropriedade, formData: FormData, solicitacao: SolicitacoesField) {
 
-  console.log("updatePropriedade")
+
 
   
 
@@ -593,8 +593,8 @@ export async function updatePropriedade(prevState: StatePropriedade, formData: F
   });
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
-    console.log('createPropriedade validation error');
-    console.log(validatedFields.error)
+
+
 
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -651,7 +651,7 @@ export async function updatePropriedade(prevState: StatePropriedade, formData: F
 
 export async function createEnergia(prevState: StateSolicitacao, formData: FormData, propriedade_id: string, validatedFields:any) {
 
-  console.log("createEnergia")
+
   
   const { necessario_extensao, distancia_extensao, energia_provisoria, energia_ponto_emissao, distancia_medidor_energia, distancia_transformador, tensao_energia, concessionaria_energia } = validatedFields.data;
 
@@ -680,7 +680,7 @@ export async function createEnergia(prevState: StateSolicitacao, formData: FormD
 
 export async function updateEnergia(prevState: StateSolicitacao, formData: FormData, propriedade_id: string, validatedFields:any) {
 
-  console.log("updateEnergia")
+
   
   const { necessario_extensao, distancia_extensao, energia_provisoria, energia_ponto_emissao, distancia_medidor_energia, distancia_transformador, tensao_energia, concessionaria_energia } = validatedFields.data;
 
@@ -704,7 +704,7 @@ export async function updateEnergia(prevState: StateSolicitacao, formData: FormD
 
 export async function createAgua(prevState: StateSolicitacao, formData: FormData, propriedade_id: string, validatedFields:any) {
 
-  console.log("createAgua")
+
   
   const { agua_instalada,distancia_agua, rede_esgoto,distancia_rede_esgoto} = validatedFields.data;
 
@@ -724,7 +724,7 @@ export async function createAgua(prevState: StateSolicitacao, formData: FormData
 
 export async function updateAgua(prevState: StateSolicitacao, formData: FormData, propriedade_id: string, validatedFields:any) {
 
-  console.log("updateAgua")
+
   
   const { agua_instalada,distancia_agua, rede_esgoto,distancia_rede_esgoto} = validatedFields.data;
 
@@ -744,7 +744,7 @@ export async function updateAgua(prevState: StateSolicitacao, formData: FormData
 
 export async function createTelecomunicacao(prevState: StateSolicitacao, formData: FormData, propriedade_id: string, validatedFields:any) {
 
-  console.log("createTelecomunicacao")
+
   
   const { rede_telefone_fixo_movel,cobertura_celular, possui_fibra,localizacao_dgo} = validatedFields.data;
 
@@ -764,7 +764,7 @@ export async function createTelecomunicacao(prevState: StateSolicitacao, formDat
 
 export async function updateTelecomunicacao(prevState: StateSolicitacao, formData: FormData, propriedade_id: string, validatedFields:any) {
 
-  console.log("updateTelecomunicacao")
+
   
   const { rede_telefone_fixo_movel,cobertura_celular, possui_fibra,localizacao_dgo} = validatedFields.data;
 
@@ -784,7 +784,7 @@ export async function updateTelecomunicacao(prevState: StateSolicitacao, formDat
 
 export async function createCaracteristicaObra(prevState: StateSolicitacao, formData: FormData, propriedade_id: string, validatedFields:any) {
 
-  console.log("createCaracteristicaObra")
+
   
   const { topografia,sujeito_enchentes, necessario_extensao_acesso,metros_extensao,metros_melhoria,demolicao_remocao,
           demolicao_autoriazada,uso_guindaste,observacao_guindaste,descricao_acesso_propriedade,
@@ -811,7 +811,7 @@ export async function createCaracteristicaObra(prevState: StateSolicitacao, form
 
 export async function updateCaracteristicaObra(prevState: StateSolicitacao, formData: FormData, propriedade_id: string, validatedFields:any) {
 
-  console.log("updateCaracteristicaObra")
+
   
   const { topografia,sujeito_enchentes, necessario_extensao_acesso,metros_extensao,metros_melhoria,demolicao_remocao,
           demolicao_autoriazada,uso_guindaste,observacao_guindaste,descricao_acesso_propriedade,
@@ -844,8 +844,8 @@ export async function updateCaracteristicaObra(prevState: StateSolicitacao, form
 
 export async function createSolicitacao(prevState: StateSolicitacao, formData: FormData, message: User) {
 
-  console.log("createSolicitacao")
-  console.log("Empresa contratante : "+formData.get('empresa_contratante_id'));
+
+
   // Validate form using Zod
   const validatedFields = CreateSolicitacao.safeParse({
     prestador_id: message.id,         //formData.get('prestador_id'),fcfd4ce8-17d6-4a04-9b75-31722ad75b06
@@ -893,14 +893,14 @@ export async function createSolicitacao(prevState: StateSolicitacao, formData: F
   });
   /**
   formData.forEach((value, key) => {
-    console.log(key, value);
+
   });*/
 
 
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
-    console.log('createSolicitacao validation error');
-    console.log(validatedFields.error)
+
+
 
     console.error('Database operation failed:', validatedFields.error.flatten().fieldErrors); // Log the error
     throw new Error(); // Re-throw the original error
@@ -912,8 +912,8 @@ export async function createSolicitacao(prevState: StateSolicitacao, formData: F
   const date = new Date().toISOString().split('T')[0];
   const status = 'pending';
   const active = true;
-  console.log('Empresa Contratante :: ')
-  console.log(empresa_contratante_id);
+
+
 
   // Insert data into the database
   try {
@@ -938,11 +938,11 @@ export async function createSolicitacao(prevState: StateSolicitacao, formData: F
     RETURNING id `;
 
     const solicitacaoID = res.rows[0].id;
-    console.log('Solicitacao ID : ' + solicitacaoID);
+
     const coordenadaID = await createCoordenada(prevState, formData,validatedFields);
-    console.log('Coordenada ID : '+ coordenadaID);
+
     const relatorioCandidatoID = await createRelatorioCandidato(prevState, formData, solicitacaoID, coordenadaID,validatedFields);
-    console.log('Relatorio Candidato ID : '+ relatorioCandidatoID);
+
   } catch (error) {
     console.error('Database operation failed:', error); // Log the error
     throw error; // Re-throw the original error
@@ -953,8 +953,8 @@ export async function createSolicitacao(prevState: StateSolicitacao, formData: F
 
 export async function updateSolicitacao(prevState: StateSolicitacao, formData: FormData, message: User) {
 
-  console.log("updateSolicitacao")
-  console.log("Empresa contratante : "+formData.get('empresa_contratante_id'));
+
+
 
   let solicitacao_id = formData.get('solicitacao_id');
 
@@ -1010,14 +1010,14 @@ export async function updateSolicitacao(prevState: StateSolicitacao, formData: F
   });
   /**
   formData.forEach((value, key) => {
-    console.log(key, value);
+
   });*/
 
 
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
-    console.log('createSolicitacao validation error');
-    console.log(validatedFields.error)
+
+
 
     console.error('Database operation failed:', validatedFields.error.flatten().fieldErrors); // Log the error
     throw new Error(); // Re-throw the original error
@@ -1027,8 +1027,8 @@ export async function updateSolicitacao(prevState: StateSolicitacao, formData: F
   const { empresa_contratante_id, prestador_id, descricao, latitude, longitude, cidade, estado, codigo_empresa, codigo_prestadora, codigo_candidato, alt_soi, pre_comar, limite_ev, altura_edificacao, alt_max_ev_mastros } = validatedFields.data;
 
   const date = new Date().toISOString().split('T')[0];
-  console.log('Empresa Contratante :: ')
-  console.log(empresa_contratante_id);
+
+
 
   // Insert data into the database
   try {
@@ -1054,9 +1054,9 @@ export async function updateSolicitacao(prevState: StateSolicitacao, formData: F
 
     const solicitacaoID = res.rows[0].id;
     const coordenadaID = res.rows[0].coordenada_id;
-    console.log('Solicitacao ID : ' + solicitacaoID);
+
     await updateCoordenada(prevState, formData,validatedFields,coordenadaID);
-    console.log('Coordenada ID : '+ coordenadaID);
+
     await updateRelatorioCandidato(prevState, formData, solicitacaoID,validatedFields);
     
   } catch (error) {
@@ -1070,12 +1070,12 @@ export async function updateSolicitacao(prevState: StateSolicitacao, formData: F
 
 export async function createCoordenada(prevState: StateSolicitacao, formData: FormData,validatedFields:any) {
 
-  console.log("createCoordenada")
+
  
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
-    //console.log(validatedFields.error)
-    console.log('createCoordenada');
+
+
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Create Invoice.',
@@ -1124,7 +1124,7 @@ export async function createCoordenada(prevState: StateSolicitacao, formData: Fo
 
 export async function updateCoordenada(prevState: StateSolicitacao, formData: FormData,validatedFields:any,coordenadaID : string) {
 
-  console.log("updateCoordenada")
+
 
   // Prepare data for insertion into the database
   const {
@@ -1161,16 +1161,16 @@ export async function updateCoordenada(prevState: StateSolicitacao, formData: Fo
 
 export async function createRelatorioCandidato(prevState: StateSolicitacao, formData: FormData, solicitacao_id: string, coordenada_id: string,validatedFields:any) {
 
-  console.log("createRelatorioCandidato")
+
   // Validate form using Zod
 
 
-  //console.log(validatedFields)
+
 
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
-    console.log('createRelatorioCandidato');
-    //console.log(validatedFields.error)
+
+
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Create Invoice.',
@@ -1254,16 +1254,16 @@ export async function createRelatorioCandidato(prevState: StateSolicitacao, form
 
 export async function updateRelatorioCandidato(prevState: StateSolicitacao, formData: FormData, solicitacao_id: string, validatedFields:any) {
 
-  console.log("createRelatorioCandidato")
+
   // Validate form using Zod
 
 
-  //console.log(validatedFields)
+
 
   // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
-    console.log('createRelatorioCandidato');
-    //console.log(validatedFields.error)
+
+
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Missing Fields. Failed to Create Invoice.',

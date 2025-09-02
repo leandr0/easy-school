@@ -146,12 +146,12 @@ export default function AttendenceClassControlTable() {
 
         try {
             setLoading(true);
-            console.log(`🔍 Loading records for class ${selectedClassId} from ${dateRange.startDate} to ${dateRange.endDate}`);
+
 
             const records = await controlFilteringDataRange(dateRange.startDate, dateRange.endDate, Number(selectedClassId));
             setExistingRecords(records);
 
-            console.log(`📅 Found ${records.length} records in date range`);
+
 
         } catch (error) {
             console.error("Error filtering by date range:", error);
@@ -171,7 +171,7 @@ export default function AttendenceClassControlTable() {
             const startDate = format(weekStart, "yyyy-MM-dd");
             const endDate = format(weekEnd, "yyyy-MM-dd");
 
-            console.log(`🔍 Loading existing records for class ${classId} from ${startDate} to ${endDate}`);
+
 
             const records = await controlFilteringDataRange(startDate, endDate, Number(classId));
             setExistingRecords(records);

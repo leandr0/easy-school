@@ -107,7 +107,7 @@ const BRLCurrency: React.FC<BRLCurrencyProps> = ({
   // Handle input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let rawValue = e.target.value;
-    console.log(`Input changed - rawValue: "${rawValue}"`);
+
     
     // Allow empty value
     if (rawValue === '') {
@@ -118,7 +118,7 @@ const BRLCurrency: React.FC<BRLCurrencyProps> = ({
     
     // Remove everything except digits and comma
     let cleaned = rawValue.replace(/[^\d,]/g, '');
-    console.log(`Cleaned: "${cleaned}"`);
+
     
     // Handle multiple commas - keep only the first one
     if (cleaned.includes(',')) {
@@ -138,12 +138,12 @@ const BRLCurrency: React.FC<BRLCurrencyProps> = ({
       cleaned = cleaned.substring(1);
     }
     
-    console.log(`Final cleaned: "${cleaned}"`);
+
     setInputValue(cleaned);
     
     // Convert to number and notify parent
     const numericValue = parseValue(cleaned);
-    console.log(`Numeric value to send: ${numericValue}`);
+
     onChange?.(numericValue);
   };
 
@@ -151,26 +151,26 @@ const BRLCurrency: React.FC<BRLCurrencyProps> = ({
   useEffect(() => {
     if (!asInput) return;
     
-    console.log(`useEffect triggered - value: "${value}", isFocused: ${isFocused}, inputValue: "${inputValue}"`);
+
     
     // Only update when not focused to avoid interfering with user input
     if (!isFocused) {
       const numValue = parseValue(value);
-      console.log(`Parsed numValue: ${numValue}`);
+
       
       const formattedValue = numberToInputFormat(numValue);
-      console.log(`Formatted for input: "${formattedValue}"`);
+
       
       // Only update if the numeric values are actually different
       // This prevents the useEffect from running when the user is typing
       const currentNumValue = parseValue(inputValue);
-      console.log(`Current input numeric value: ${currentNumValue}`);
+
       
       if (Math.abs(numValue - currentNumValue) > 0.001) {
-        console.log(`Updating inputValue from "${inputValue}" to "${formattedValue}"`);
+
         setInputValue(formattedValue);
       } else {
-        console.log(`No update needed - values are the same`);
+
       }
     }
   }, [value, isFocused]); // Removed inputValue from dependencies
@@ -188,7 +188,7 @@ const BRLCurrency: React.FC<BRLCurrencyProps> = ({
     // Format to ensure 2 decimal places on blur
     const numValue = parseValue(inputValue);
     const formattedValue = numberToInputFormat(numValue);
-    console.log(`Blur - formatting "${inputValue}" (${numValue}) to "${formattedValue}"`);
+
     setInputValue(formattedValue);
     
     onBlur?.(e);

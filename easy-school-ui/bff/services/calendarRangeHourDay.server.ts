@@ -34,7 +34,7 @@ export async function fetchCalendarRangeHourDayByTeacher(teacher_id: any): Promi
 
 //const res = await fetch(`/api/calendar/range-hour-days/${teacher_id}`, { method: 'GET', cache: 'no-store' });
 
-  console.log(`/calendar/range-hour-days${pathParams.toString()}`);
+
 
   return await clientApi.get(pathParams.toString());
 }

@@ -18,9 +18,9 @@ export default function SolicitacaoMonthChart() {
         setLoading(true);
         setError(null);
         
-        console.log('Fetching growth data...');
+
         const data = await getGrowthData();
-        console.log('Growth data received:', data);
+
         
         setSolicitacaoMonth(data || []);
       } catch (err) {

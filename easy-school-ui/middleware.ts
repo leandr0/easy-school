@@ -15,14 +15,16 @@ export default async function middleware(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
+
   // Read the cookie from the request (Edge-compatible)
   const token = req.cookies.get('user')?.value;
 
-  //console.log(`Temos token ${token}`);
+
 
   //if (pathname === '/login') return NextResponse.next();
   // If there is no token, redirect to /login
   if (!token) {
+    console.error(`Token not found`)
     const url = req.nextUrl.clone();
     url.pathname = '/login';
     url.searchParams.set('from', pathname);
@@ -33,8 +35,9 @@ export default async function middleware(req: NextRequest) {
   try {
     //const secret = new TextEncoder().encode(JWT_SECRET);
     //const { payload, protectedHeader } = await jwtVerify(token, secret); // throws if invalid/expired
-     //console.log('JWT verified successfully:', payload);
+
   } catch {
+    
     const url = req.nextUrl.clone();
     url.pathname = '/login';
     url.searchParams.set('from', pathname);

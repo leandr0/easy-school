@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     if (e instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     if (e instanceof ForbiddenError) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     if (e instanceof HttpError && e.status === 404) {
-      console.log(`Cause : ${e.cause}, Message : ${e.message}`)
+
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
     const payload = await req.json();
 
-    console.log(`user to be saved ${JSON.stringify(payload)}`)  ;  
+
 
     const data = await clientApi.post<UserModel[]>(payload,{ headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', } });
 
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     if (e instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     if (e instanceof ForbiddenError) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     if (e instanceof HttpError && e.status === 404) {
-      console.log(`Cause : ${e.cause}, Message : ${e.message}`)
+
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
@@ -60,7 +60,7 @@ export async function PUT(req: NextRequest) {
 
     const payload = await req.json();
 
-    console.log(`user to be saved ${JSON.stringify(payload)}`)  ;  
+
 
     const data = await clientApi.put<UserModel[]>(payload,{ headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', } });
 
@@ -69,7 +69,7 @@ export async function PUT(req: NextRequest) {
     if (e instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     if (e instanceof ForbiddenError) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     if (e instanceof HttpError && e.status === 404) {
-      console.log(`Cause : ${e.cause}, Message : ${e.message}`)
+
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 

@@ -49,7 +49,7 @@ export async function callBff<T>(path: string, init: RequestInit = {}): Promise<
 
   const bearer = await bearerHeaders();
 
-  console.log(`Bearer ${JSON.stringify(bearer)}`);
+
 
   const h = new Headers(init.headers);
   const cookieHeader = nextHeaders().get('cookie');

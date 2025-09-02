@@ -1,12 +1,10 @@
 // app/actions/users.ts
 'use server';
 
-import { number, z } from 'zod';
+import { z } from 'zod';
 import bcrypt from 'bcryptjs';
-import { upstream } from 'bff/http';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { PATHS } from '@/bff/paths';
 
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
@@ -153,12 +151,6 @@ export async function updateUserAction(_prev: ActionState, formData: FormData): 
 
   try {
 
-    // Update basic fields
-    await upstream(`${PATHS.SECURITY.USERS}`, {
-      method: 'PUT', // adjust to PATCH if your API expects it
-      body: JSON.stringify(body),
-    });
-
     const user: UserModel = {
       id: id,
       username: email,
@@ -171,11 +163,6 @@ export async function updateUserAction(_prev: ActionState, formData: FormData): 
     }
 
     await updateUser(user);
-    /* Update role (if your API needs a separate call)
-    await upstream(`${PATHS.SECURITY.USERS}/${id}/roles`, {
-      method: 'PUT', // or POST depending on your backend
-      body: JSON.stringify({ role_id }),
-    });*/
 
     // clear edit cookie and go back to list
     cookies().delete(EDIT_COOKIE);

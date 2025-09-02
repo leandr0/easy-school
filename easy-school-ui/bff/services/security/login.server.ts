@@ -2,13 +2,16 @@ import { apiClient } from "@/app/config/api";
 import { UserModel } from "@/app/lib/definitions/user_definitions";
 
 import { bffApiClient } from '@/app/config/clientAPI';
+import { setUserInCookieServer } from "@/app/lib/login";
+import { NextResponse } from "next/server";
 
 const clientApi = bffApiClient.resource('/security/login');
 
-export async function login(login:string,password:string): Promise<UserModel> {
+export async function login(login: string, password: string): Promise<UserModel> {
 
-    const user: UserModel = await clientApi.post<UserModel>({"username" : login, "password":password});
+
+    const user: UserModel = await clientApi.post<UserModel>({ "username": login, "password": password });
 
     return user;
-  
+    
 }
