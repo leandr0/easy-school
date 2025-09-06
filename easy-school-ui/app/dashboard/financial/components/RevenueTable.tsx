@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { RevenueModel } from '@/app/lib/definitions/revenue_definitions';
 
-
 import RevenuesTableDesktop from "./desktop/RevenueTableDesktop";
 import RevenuesTableMobile from './mobile/RevenueTableMobile';
 
@@ -16,14 +15,21 @@ import RevenueMonthRangeFilter from "./RevenueMonthRangeFilter";
 
 import { RevenueCourseClassStudentModel } from "@/app/lib/definitions/revenue_course_class_student_definitons";
 
-
 import { getReminderMessage, getPaymentMessage } from "@/bff/services/revenueMessage.server";
 import { getRevenuesByRangeDate, sendPaymentMessage, sendReminderMessage, updatePaymentStatus } from '@/bff/services/revenue.server';
 import { fetchRevenueCourseClassStudentByStudentAndRevenue } from "@/bff/services/revenueCourseClass.server";
 import { HttpError } from "@/app/config/api";
 
-export default function RevenuesTable() {
+type Props = {
+  onSendReminderMessage: (revenueId: string) => Promise<void>;
+};
 
+type RangeFilter = {
+  startYm: string; // "YYYY-MM"
+  endYm: string; // "YYYY-MM"
+};
+
+export default function RevenuesTable({ onSendReminderMessage }: Props) {
   const [revenues, setRevenues] = useState<RevenueModel[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,37 +38,63 @@ export default function RevenuesTable() {
   const [studentId, setStudentId] = useState<string | null>(null);
   const [revenue, setRevenue] = useState<RevenueModel | null>(null);
 
-  const [isModalLoading, setIsModalLoading] = useState(false);
+  // Modal states - simplified
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [linkToDisplay, setLinkToDisplay] = useState<string | null>(null);
   const [showPaymentConfirmModal, setShowPaymentConfirmModal] = useState(false);
   const [revenueToConfirm, setRevenueToConfirm] = useState<RevenueModel | null>(null);
 
-  const loadRevenues = useCallback(async () => {
+  // Filter states
+  const now = new Date();
+  const defaultYm = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const [filter, setFilter] = useState<RangeFilter>({
+    startYm: defaultYm,
+    endYm: defaultYm,
+  });
+
+  // Helper functions
+  function ymToParts(ym: string) {
+    const [year, month] = ym.split("-");
+    return { month, year };
+  }
+
+  const handleApiError = useCallback((err: unknown): string => {
+    if (err instanceof Error) {
+      if (err.message.includes("is not valid JSON")) {
+        return `❌ The service returned an unexpected format.`;
+      }
+      return `❌ ${err.message}`;
+    }
+    return "❌ Unknown error occurred.";
+  }, []);
+
+  // Data loading functions
+  const loadRevenues = useCallback(async (rangeFilter?: RangeFilter) => {
     try {
       setLoading(true);
       setError(null);
 
-      const now = new Date();
-      const month = String(now.getMonth() + 1).padStart(2, '0'); // For real scenario
-      const year = String(now.getFullYear());                   // "2025"
+      const filterToUse = rangeFilter || filter;
+      const { startYm, endYm } = filterToUse;
 
-      const data = await getRevenuesByRangeDate(month, year, month, year);
+      if (endYm < startYm) {
+        throw new Error('Data final deve ser maior ou igual à data inicial.');
+      }
 
+      const { month: startMonth, year: startYear } = ymToParts(startYm);
+      const { month: endMonth, year: endYear } = ymToParts(endYm);
+
+      const data = await getRevenuesByRangeDate(startMonth, startYear, endMonth, endYear);
       setRevenues(data);
     } catch (err) {
-
       if (!(err instanceof HttpError)) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
         setError(errorMessage);
       }
-
-
     } finally {
       setLoading(false);
-      setIsModalLoading(false);
     }
-  }, []);
+  }, [filter]);
 
   const loadRevenueDetails = useCallback(async (studentId: string, revenueId: string): Promise<RevenueCourseClassStudentModel[]> => {
     try {
@@ -76,11 +108,11 @@ export default function RevenuesTable() {
     }
   }, []);
 
+  // Initial load
   useEffect(() => {
     loadRevenues();
-  }, [loadRevenues, isModalLoading]);
+  }, []); // Only run on mount
 
-  // FIX: Properly implement clearActionState to reset all action-related state
   const clearActionState = useCallback(() => {
     setActionType(null);
     setStudentId(null);
@@ -88,16 +120,7 @@ export default function RevenuesTable() {
     setMessage("");
   }, []);
 
-  const handleApiError = useCallback((err: unknown): string => {
-    if (err instanceof Error) {
-      if (err.message.includes("is not valid JSON")) {
-        return `❌ The service returned an unexpected format.`;
-      }
-      return `❌ ${err.message}`;
-    }
-    return "❌ Unknown error occurred.";
-  }, []);
-
+  // Handle actions - simplified
   useEffect(() => {
     const handleAction = async () => {
       if (!actionType || !studentId) return;
@@ -151,27 +174,28 @@ export default function RevenuesTable() {
     };
 
     handleAction();
-  }, [actionType, studentId, revenues, handleApiError, clearActionState, revenue, loadRevenueDetails]);
+  }, [actionType, studentId, revenues, handleApiError, revenue]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  };
+  // Filter handler
+  const handleFilterRange = useCallback(async () => {
+    await loadRevenues(filter);
+  }, [loadRevenues, filter]);
 
+  // Modal handlers
   const handleConfirmPayment = async (confirmedRevenueId: string) => {
     setShowPaymentConfirmModal(false);
     setRevenueToConfirm(null);
     setMessage("Confirmando pagamento...");
 
     try {
-      updatePaymentStatus(revenue!);
-      setShowPaymentConfirmModal(true);
-      setMessage("");
-      handleCloseLinkModal();
+      await updatePaymentStatus(revenue!);
+      setMessage("✅ Payment confirmed successfully!");
+      // Reload data after successful payment confirmation
+      await loadRevenues();
     } catch (err) {
       setMessage(handleApiError(err));
     } finally {
-      clearActionState(); // Clear state properly
-      setIsModalLoading(true);
+      clearActionState();
     }
   };
 
@@ -179,7 +203,7 @@ export default function RevenuesTable() {
     setShowPaymentConfirmModal(false);
     setRevenueToConfirm(null);
     setMessage("Ação de pagamento cancelada.");
-    clearActionState(); // This will now properly reset the action state
+    clearActionState();
   };
 
   const handleOpenLink = async () => {
@@ -187,28 +211,28 @@ export default function RevenuesTable() {
       window.open(linkToDisplay, '_blank');
     }
 
-
     if (revenue?.id) {
-
       try {
-
         if (actionType === "send_reminder_message") {
-          sendReminderMessage(revenue.id);
+          await onSendReminderMessage(revenue.id);
           setMessage("✅ Reminder message sent successfully!");
         } else if (actionType === "send_payment_message") {
-          sendPaymentMessage(revenue.id);
+          await sendPaymentMessage(revenue.id);
           setMessage("✅ Payment message sent successfully!");
         }
+        // Reload data after successful message sending
+        await loadRevenues();
       } catch (err) {
+        console.trace(`Error ${err}`);
         setMessage(handleApiError(err));
       } finally {
-        clearActionState(); // Clear state properly
+        clearActionState();
       }
     }
+
     setTimeout(() => {
       handleCloseLinkModal();
     }, 200);
-    setIsModalLoading(true);
   };
 
   const handleCloseLinkModal = () => {
@@ -217,76 +241,24 @@ export default function RevenuesTable() {
     clearActionState();
   };
 
-
-  type RangeFilter = {
-    startYm: string; // "YYYY-MM"
-    endYm: string; // "YYYY-MM"
-  };
-
-  const now = new Date();
-  const defaultYm = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-
-  const [filter, setFilter] = useState<RangeFilter>({
-    startYm: defaultYm,
-    endYm: defaultYm,
-  });
-
-  const [hasActiveFilter, setHasActiveFilter] = useState(false);
-
-  function ymToParts(ym: string) {
-    // ym = "YYYY-MM"
-    const [year, month] = ym.split("-");
-    return { month, year };
-  }
-  const handleFilterRange = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const { startYm, endYm } = filter;
-      if (endYm < startYm) throw new Error('Data final deve ser maior ou igual à data inicial.');
-
-      const { month: startMonth, year: startYear } = ymToParts(startYm);
-      const { month: endMonth, year: endYear } = ymToParts(endYm);
-
-      const data = await getRevenuesByRangeDate(startMonth, startYear, endMonth, endYear);
-      setRevenues(data);
-      setHasActiveFilter(true);
-    } catch (err) {
-      if (!(err instanceof HttpError)) {
-        const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
-        setError(errorMessage);
-      }
-    } finally {
-      setLoading(false);
-      setIsModalLoading(false);
-    }
-  }, [filter]);
-
-  useEffect(() => {
-    if (!hasActiveFilter) {
-      loadRevenues();
-    }
-  }, [loadRevenues, isModalLoading, hasActiveFilter]);
-
-
+  // Render loading/error states
   if (loading) return <p className="text-blue-500 text-center">Carregando receitas...</p>;
   if (error) return (
     <div className="text-center">
       <p className="text-red-500">Erro: {error}</p>
       <button
-        onClick={() => window.location.reload()}
+        onClick={() => loadRevenues()}
         className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
       >Tentar novamente</button>
     </div>
   );
 
-
-
   return (
     <div>
       {message && (
-        <p className={`text-center mt-2 ${message.includes('❌') ? 'text-red-500' : message.includes('✅') ? 'text-green-500' : 'text-blue-500'}`}>{message}</p>
+        <p className={`text-center mt-2 ${message.includes('❌') ? 'text-red-500' : message.includes('✅') ? 'text-green-500' : 'text-blue-500'}`}>
+          {message}
+        </p>
       )}
 
       <RevenueMonthRangeFilter
@@ -306,9 +278,6 @@ export default function RevenuesTable() {
                 setStudentId={setStudentId}
                 setRevenue={setRevenue}
                 loadRevenueDetails={loadRevenueDetails}
-                onFilterRange={handleFilterRange}
-                filter={filter}
-                setFilter={setFilter}
               />
             </div>
             <div className="md:hidden">
@@ -324,8 +293,18 @@ export default function RevenuesTable() {
         </div>
       </div>
 
-      <RevenuePaymentIdentifiedModal show={showPaymentConfirmModal} revenue={revenueToConfirm} onConfirm={handleConfirmPayment} onCancel={handleCancelPayment} />
-      <RevenueLinkModal show={showLinkModal} link={linkToDisplay} onOpenLink={handleOpenLink} onClose={handleCloseLinkModal} />
+      <RevenuePaymentIdentifiedModal
+        show={showPaymentConfirmModal}
+        revenue={revenueToConfirm}
+        onConfirm={handleConfirmPayment}
+        onCancel={handleCancelPayment}
+      />
+      <RevenueLinkModal
+        show={showLinkModal}
+        link={linkToDisplay}
+        onOpenLink={handleOpenLink}
+        onClose={handleCloseLinkModal}
+      />
       <RevenuePaymentIdentifiedModalMobile show={showPaymentConfirmModal} revenue={revenueToConfirm} onConfirm={handleConfirmPayment} onCancel={handleCancelPayment} />
       <RevenueLinkModalMobile show={showLinkModal} link={linkToDisplay} onOpenLink={handleOpenLink} onClose={handleCloseLinkModal} />
     </div>

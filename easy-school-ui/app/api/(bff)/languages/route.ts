@@ -9,7 +9,7 @@ const clientApi = externalApiClient.resource('/languages');
 export async function GET() {
   try {
 
-    await requireAuth(['ADMIN', 'TEACHER']);
+    //await requireAuth(['ADMIN', 'TEACHER']);
 
     const data = await clientApi.get('', { headers: await bearerHeaders() });
 

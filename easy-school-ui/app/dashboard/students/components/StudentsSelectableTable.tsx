@@ -1,7 +1,8 @@
 'use client';
 
-import React, { forwardRef, useImperativeHandle } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { StudentModel } from '@/app/lib/definitions/students_definitions';
+import { Pagination } from "../../components/Pagination";
 
 export type SelectableStudentsTableRef = {
   // If you need any methods to be called from parent, define them here
@@ -29,6 +30,8 @@ const SelectableStudentsTable = forwardRef<SelectableStudentsTableRef, Selectabl
 
       onSelectionChange(updatedSelected);
     };
+
+
 
     return (
       <div className="mt-6 flow-root">
@@ -103,7 +106,7 @@ const SelectableStudentsTable = forwardRef<SelectableStudentsTableRef, Selectabl
 
             </div>
           </div>
-        </div>
+        </div>        
       </div>
     );
   });

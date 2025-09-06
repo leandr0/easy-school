@@ -12,7 +12,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   try {
 
     const { id } = params;
-    
+  
     await requireAuth('ADMIN');
     
     const data = await clientApi.get<CourseModel>(id, {headers: await bearerHeaders() , cache: 'no-store' });

@@ -42,7 +42,6 @@ export async function GET(req: NextRequest, { params }: { params: { courseClassI
     if (e instanceof HttpError && e.status === 404) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
-
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 }

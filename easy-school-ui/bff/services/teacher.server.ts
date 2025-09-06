@@ -1,7 +1,9 @@
+'use server'
 import { TeacherModel } from '@/app/lib/definitions/teacher_definitions';
 import { bffApiClient } from '@/app/config/clientAPI';
 import { TeacherSchema } from '@/bff/schemas';
 import { UserModel } from '@/app/lib/definitions/user_definitions';
+import { bearerHeaders } from '@/app/lib/authz.server';
 
 
 const clientApi = bffApiClient.resource('/teachers');
@@ -32,22 +34,22 @@ export async function getAllTeachersAvailableByLanguageFromCourseClass(course_cl
   return clientApi.get<TeacherModel[]>('/available?' + params.toString(), {headers: await bearerHeaders() , cache: 'no-store' });
 }
 **/
-// Migrated
+
 export async function createTeacher(teacher: TeacherModel): Promise<void> {
 
-  return await clientApi.post<void>(teacher);
-}
-//Migrated
-export async function updateTeacher(teacher: TeacherModel): Promise<TeacherModel> {
-  return await clientApi.put(teacher);
+  return await clientApi.post<void>(teacher, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json'} });
 }
 
-//Migrate
+export async function updateTeacher(teacher: TeacherModel): Promise<TeacherModel> {
+  return await clientApi.put(teacher, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json'} });
+}
+
+
 export async function getAllTeachers(): Promise<TeacherModel[]> {
-  return await clientApi.get<TeacherModel[]>();
+  return await clientApi.get<TeacherModel[]>('', { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 }
 
 
 export async function getTeacherById(teacher_id: any): Promise<TeacherModel> {
-  return clientApi.get<TeacherModel>(teacher_id);
+  return clientApi.get<TeacherModel>(teacher_id, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 }

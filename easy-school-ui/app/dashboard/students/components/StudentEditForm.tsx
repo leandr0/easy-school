@@ -11,18 +11,10 @@ import { ConfirmUpdateModalDesktop } from './ConfirmUpdateModalDesktop';
 import { ConfirmUpdateModalMobile } from './ConfirmUpdateModalMobile';
 import { findByIdCoursePrice, updateStudentAndCoursePrice } from "@/bff/services/student.server";
 
-export default function StudentEditForm({ student_id }: { student_id: string }) {
+export default function StudentEditForm({ student }: { student: StudentCoursePriceModel }) {
   const router = useRouter();
 
-  const [formData, setFormData] = useState<StudentCoursePriceModel>({
-    name: "",
-    email: "",
-    phone_number: "",
-    due_date: "",
-    start_date: "",
-    status: true,
-    courses: [],
-  });
+  const [formData, setFormData] = useState<StudentCoursePriceModel>(student);
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -31,18 +23,6 @@ export default function StudentEditForm({ student_id }: { student_id: string }) 
   const [courseToEdit, setCourseToEdit] = useState<CoursePriceModel | null>(null);
   const [newCoursePriceInput, setNewCoursePriceInput] = useState<string>("");
   const [showConfirmUpdateModal, setShowConfirmUpdateModal] = useState(false);
-
-  useEffect(() => {
-    const fetchStudentData = async () => {
-      try {
-        const student = await findByIdCoursePrice(student_id);
-        setFormData(student);
-      } catch (err: any) {
-        setError(err.message);
-      }
-    };
-    fetchStudentData();
-  }, [student_id]);
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,6 +47,7 @@ export default function StudentEditForm({ student_id }: { student_id: string }) 
       await updateStudentAndCoursePrice(dataToSend);
       setMessage("✅ Student updated successfully!");
       router.push("/dashboard/students");
+      router.refresh();
 
     } catch (err: unknown) {
       if (err instanceof Error) {

@@ -1,29 +1,31 @@
+'use server';
 import { CourseClassCompleteModel, CourseClassEditForm, CourseClassModel, CourseClassTeacher, CourseClassTeacherModel, CreateCourseClassModel } from "@/app/lib/definitions/course_class_definitions";
 import { URLPathParam } from "@/app/lib/url_path_param";
 import { bffApiClient } from "@/app/config/clientAPI";
+import { bearerHeaders } from "@/app/lib/authz.server";
 
 const clientApi = bffApiClient.resource('/course-class');
 
 export async function getAllCourseClass(): Promise<CourseClassTeacherModel[]> {
-  return clientApi.get();
+  return clientApi.get('', { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 }
 
 export async function getAllCourseClassAvailable(): Promise<CourseClassCompleteModel[]> {
-  return clientApi.get("/available");
+  return clientApi.get("/available", { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 }
 
 
 export async function getCourseClassById(id:any): Promise<CourseClassCompleteModel> {
-  return clientApi.get("/"+id);
+  return clientApi.get("/"+id, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 }
 
 
 export async function createCourseClass(course: CreateCourseClassModel): Promise<void> {
-  clientApi.post(course);
+  clientApi.post(course, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json'} });
 }
 
 export async function updateCourseClass(course: CreateCourseClassModel): Promise<void> {
-  clientApi.put(course);
+  clientApi.put(course, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json'} });
 }
 
 export async function getCourseClassByTeacherId(teacherId: any): Promise<CourseClassTeacher[]> {
@@ -33,5 +35,5 @@ export async function getCourseClassByTeacherId(teacherId: any): Promise<CourseC
   pathParams.append(teacherId);
   
 
-  return clientApi.get(pathParams.toString());
+  return clientApi.get(pathParams.toString(), { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 }

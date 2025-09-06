@@ -3,8 +3,10 @@
 import { BookOpenIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
 import DeleteStudantFromCourseClassList from '@/app/dashboard/components/ui_buttons';
-import SelectableStudentsTable , { SelectableStudentsTableRef }from '../../students/components/StudentsSelectableTable';
+import SelectableStudentsTable, { SelectableStudentsTableRef } from '../../students/components/StudentsSelectableTable';
 import { AddStudentsCommonProps } from './CourseClassesAddStudentsForm';
+import { useEffect, useMemo, useState } from 'react';
+import { Pagination } from '../../components/Pagination';
 
 export default function AddStudentsMobile({
   formData,
@@ -19,6 +21,52 @@ export default function AddStudentsMobile({
   error,
   selectableRef,
 }: AddStudentsCommonProps) {
+
+
+
+
+  // 🔢 pagination state
+  const [studentsPage, setStudentsPage] = useState<number>(1);        // 1-based
+  const [studentsPageSize, setStudentsPageSize] = useState<number>(3);
+
+  // clamp current page if revenues length changes
+  const studentsTotalCount = students?.length ?? 0;
+  const studentsTotalPages = Math.max(1, Math.ceil(studentsTotalCount / Math.max(1, studentsPageSize)));
+
+  useEffect(() => {
+    if (studentsPage > studentsTotalPages) setStudentsPage(studentsTotalPages);
+  }, [studentsTotalPages, studentsPage]);
+
+  // slice current page
+  const currentStudents = useMemo(() => {
+    if (!students?.length) return [];
+    const start = (studentsPage - 1) * studentsPageSize;
+    const end = start + studentsPageSize;
+    return students.slice(start, end);
+  }, [students, studentsPage, studentsPageSize]);
+
+
+
+  const [availableStudentsPage, setAvailableStudentsPage] = useState<number>(1);        // 1-based
+  const [availableStudentsPageSize, setAvailableStudentsPageSize] = useState<number>(3);
+
+  // clamp current page if revenues length changes
+  const availableStudentsTotalCount = availableStudents?.length ?? 0;
+  const availableStudentsTotalPages = Math.max(1, Math.ceil(availableStudentsTotalCount / Math.max(1, availableStudentsPageSize)));
+
+  useEffect(() => {
+    if (availableStudentsPage > availableStudentsTotalPages) setAvailableStudentsPage(availableStudentsTotalPages);
+  }, [availableStudentsTotalPages, availableStudentsPage]);
+
+  // slice current page
+  const currentAvailableStudents = useMemo(() => {
+    if (!availableStudents?.length) return [];
+    const start = (availableStudentsPage - 1) * availableStudentsPageSize;
+    const end = start + availableStudentsPageSize;
+    return availableStudents.slice(start, end);
+  }, [availableStudents, availableStudentsPage, availableStudentsPageSize]);
+
+
   return (
     <div className="space-y-4 p-4">
       {/* Header card */}
@@ -40,9 +88,9 @@ export default function AddStudentsMobile({
       {/* Current students list (cards) */}
       <div className="rounded-lg border border-gray-200 overflow-hidden">
         <div className="bg-gray-100 px-4 py-2 text-sm font-medium">Alunos</div>
-        {students.length > 0 ? (
+        {currentStudents.length > 0 ? (
           <ul className="divide-y divide-gray-200 bg-white">
-            {students.map((s) => (
+            {currentStudents.map((s) => (
               <li key={s.id} className="px-4 py-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -67,6 +115,18 @@ export default function AddStudentsMobile({
             Nenhum aluno matriculado.
           </div>
         )}
+        <div className="mt-3">
+          <Pagination
+            totalCount={studentsTotalCount}
+            currentPage={studentsPage}
+            pageSize={studentsPageSize}
+            onPageChange={setStudentsPage}
+            onPageSizeChange={(s) => { setStudentsPageSize(s); setStudentsPage(1); }}
+            pageSizeOptions={[3, 5]}
+            // Optional: localized labels
+            labels={{ previous: 'Anterior', next: 'Próxima', of: 'de', perPage: 'página', page: 'Página', goTo: 'Ir para' }}
+          />
+        </div>
       </div>
 
       {/* Available students */}
@@ -74,10 +134,22 @@ export default function AddStudentsMobile({
         <div className="px-2 py-2 text-sm font-medium">Adicionar alunos</div>
         <SelectableStudentsTable
           ref={selectableRef as React.RefObject<SelectableStudentsTableRef>}
-          students={availableStudents}
+          students={currentAvailableStudents}
           selectedStudentIds={selectedStudentIds}
           onSelectionChange={setSelectedStudentIds}
         />
+        <div className="mt-3">
+          <Pagination
+            totalCount={availableStudentsTotalCount}
+            currentPage={availableStudentsPage}
+            pageSize={availableStudentsPageSize}
+            onPageChange={setAvailableStudentsPage}
+            onPageSizeChange={(s) => { setAvailableStudentsPageSize(s); setAvailableStudentsPage(1); }}
+            pageSizeOptions={[5, 10, 15]}
+            // Optional: localized labels
+            labels={{ previous: 'Anterior', next: 'Próxima', of: 'de', perPage: 'página', page: 'Página', goTo: 'Ir para' }}
+          />
+        </div>
       </div>
 
       {/* Sticky action bar */}

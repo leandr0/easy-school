@@ -1,7 +1,7 @@
 // RevenuesTableDesktop.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { RevenueModel } from '@/app/lib/definitions/revenue_definitions';
 import { Switch } from '@/app/dashboard/components/switch';
@@ -9,8 +9,8 @@ import RevenueStatus from '../RevenueStatus';
 import BRLCurrency from '@/app/dashboard/components/currency';
 import { MonthYearFormatter } from '@/app/dashboard/components/month_year_formatter';
 import { ActionType } from '@/app/lib/types/revenue';
-import { CourseClassStudentModel } from '@/app/lib/definitions/course_class_students_definitions';
 import { RevenueCourseClassStudentModel } from '@/app/lib/definitions/revenue_course_class_student_definitons';
+import { Pagination } from '@/app/dashboard/components/Pagination';
 
 
 interface RevenuesTableDesktopProps {
@@ -18,10 +18,7 @@ interface RevenuesTableDesktopProps {
   setActionType: React.Dispatch<React.SetStateAction<ActionType | null>>;
   setStudentId: React.Dispatch<React.SetStateAction<string | null>>;
   setRevenue: React.Dispatch<React.SetStateAction<RevenueModel | null>>;
-  loadRevenueDetails: (studentId: string,revenueId:string) => Promise<RevenueCourseClassStudentModel[]>;
-  onFilterRange: () => Promise<void> | void;
-  filter: { startYm: string; endYm: string }; // "YYYY-MM"
-  setFilter: React.Dispatch<React.SetStateAction<{ startYm: string; endYm: string }>>;
+  loadRevenueDetails: (studentId: string, revenueId: string) => Promise<RevenueCourseClassStudentModel[]>;
 }
 
 export default function RevenuesTableDesktop({
@@ -29,27 +26,32 @@ export default function RevenuesTableDesktop({
   setActionType,
   setStudentId,
   setRevenue,
-  loadRevenueDetails,
-  onFilterRange,
-  filter,
-  setFilter,
+  loadRevenueDetails
 }: RevenuesTableDesktopProps) {
 
   const [expandedRows, setExpandedRows] = useState<{ [id: string]: RevenueCourseClassStudentModel[] }>({});
   const [loadingRow, setLoadingRow] = useState<string | null>(null);
   const [localStudentId, setLocalStudentId] = useState<string | null>(null);
 
-  // --- Filter state
-  const now = new Date();
-  const pad2 = (n: number) => String(n).padStart(2, '0');
+  // 🔢 pagination state
+  const [page, setPage] = useState<number>(1);        // 1-based
+  const [pageSize, setPageSize] = useState<number>(5);
 
-  const [startMonth, setStartMonth] = useState<string>(pad2(now.getMonth() + 1));
-  const [startYear, setStartYear] = useState<string>(String(now.getFullYear()));
-  const [endMonth, setEndMonth] = useState<string>(pad2(now.getMonth() + 1));
-  const [endYear, setEndYear] = useState<string>(String(now.getFullYear()));
-  const [filterError, setFilterError] = useState("");
+  // clamp current page if revenues length changes
+  const totalCount = revenues?.length ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / Math.max(1, pageSize)));
 
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [totalPages, page]);
 
+  // slice current page
+  const currentItems = useMemo(() => {
+    if (!revenues?.length) return [];
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    return revenues.slice(start, end);
+  }, [revenues, page, pageSize]);
 
   useEffect(() => {
     setStudentId(localStudentId);
@@ -64,14 +66,12 @@ export default function RevenuesTableDesktop({
   const handleSendReminder = (studentId: string, revenue: RevenueModel) => {
     setActionType('send_reminder_message');
     setStudentId(studentId);
-
     setRevenue(revenue);
   };
 
   const handleSendPaymentRequest = (studentId: string, revenue: RevenueModel) => {
     setActionType('send_payment_message');
     setStudentId(studentId);
-
     setRevenue(revenue);
   };
 
@@ -85,7 +85,7 @@ export default function RevenuesTableDesktop({
     } else {
       try {
         setLoadingRow(revenueId);
-        const details = await loadRevenueDetails(studentId,revenueId);
+        const details = await loadRevenueDetails(studentId, revenueId);
         setExpandedRows(prev => ({ ...prev, [revenueId]: details }));
       } catch (error) {
         console.error("Erro ao carregar detalhes:", error);
@@ -95,20 +95,10 @@ export default function RevenuesTableDesktop({
     }
   };
 
-  const applyFilter = async () => {
-    setFilterError("");
-    if (filter.endYm < filter.startYm) {
-      setFilterError("Data final deve ser maior ou igual à data inicial.");
-      return;
-    }
-    await onFilterRange();
-  };
-
   return (
     <>
-    
-      {/* --- Existing header row --- */}
-      < div className="grid grid-cols-12 text-left text-sm font-normal bg-gray-50 text-center rounded-lg" >
+      {/* Header */}
+      <div className="grid grid-cols-12 text-left text-sm font-normal bg-gray-50 text-center rounded-lg">
         <div className="px-4 py-3 font-medium sm:pl-6 border-b col-span-3">Nome</div>
         <div className="px-3 py-3 font-medium border-b col-span-1">Mês/Ano</div>
         <div className="px-3 py-3 font-medium border-b col-span-2">Valor</div>
@@ -122,10 +112,11 @@ export default function RevenuesTableDesktop({
             <div className="border rounded p-1 bg-white">Cobrança</div>
           </div>
         </div>
-      </div >
+      </div>
 
+      {/* Rows (paginated) */}
       <div className="bg-white">
-        {revenues?.map((revenue) => {
+        {currentItems?.map((revenue) => {
           const isExpanded = !!expandedRows[revenue.id!];
           return (
             <div key={revenue.id}>
@@ -144,29 +135,52 @@ export default function RevenuesTableDesktop({
                     <ChevronDown size={16} className="text-blue-600" />
                   )}
                 </div>
+
                 <div className="py-3 pr-3 col-span-2 flex items-center gap-2">
                   <p className="truncate text-sm">{revenue.student?.name}</p>
                 </div>
+
                 <div className="py-1 col-span-1 text-center">
                   <MonthYearFormatter month={revenue.month} year={revenue.year} locale="pt-BR" />
                 </div>
+
                 <div className="text-center py-3 col-span-2">
                   <BRLCurrency value={revenue.amount ?? 0} />
                 </div>
+
                 <div className="px-3 py-3 col-span-1 text-center">
                   <p className="truncate text-xs md:text-sm">{revenue.due_date}</p>
                 </div>
+
                 <div className="text-center py-3 col-span-2">
                   <RevenueStatus status={revenue.status || ''} />
                 </div>
+
                 <div className="px-3 py-3 col-span-1 text-center">
-                  <Switch checked={Boolean(revenue.paid)} onChange={() => handleIdentifyPayment(revenue.student?.id!, revenue)} color="green" disabled={revenue.paid} />
+                  <Switch
+                    checked={Boolean(revenue.paid)}
+                    onChange={() => handleIdentifyPayment(revenue.student?.id!, revenue)}
+                    color="green"
+                    disabled={revenue.paid}
+                  />
                 </div>
+
                 <div className="px-3 py-3 col-span-1 text-center">
-                  <Switch checked={Boolean(revenue.reminder_message_sent)} onChange={() => handleSendReminder(revenue.student?.id!, revenue)} color="green" disabled={revenue.paid} />
+                  <Switch
+                    checked={Boolean(revenue.reminder_message_sent)}
+                    onChange={() => handleSendReminder(revenue.student?.id!, revenue)}
+                    color="green"
+                    disabled={revenue.paid}
+                  />
                 </div>
+
                 <div className="px-3 py-3 col-span-1 text-center">
-                  <Switch checked={Boolean(revenue.payment_message_sent)} onChange={() => handleSendPaymentRequest(revenue.student?.id!, revenue)} color="green" disabled={revenue.paid} />
+                  <Switch
+                    checked={Boolean(revenue.payment_message_sent)}
+                    onChange={() => handleSendPaymentRequest(revenue.student?.id!, revenue)}
+                    color="green"
+                    disabled={revenue.paid}
+                  />
                 </div>
               </div>
 
@@ -175,8 +189,12 @@ export default function RevenuesTableDesktop({
                   <div className="grid gap-2">
                     {expandedRows[revenue.id!].map((entry, index) => (
                       <div key={index} className="grid grid-cols-12 text-gray-700">
-                        <div className="col-span-5 whitespace-nowrap"><strong>Turma:</strong> {entry.course_class?.name ?? "N/A"}</div>
-                        <div className="col-span-3 whitespace-nowrap"><strong>Preço:</strong> <BRLCurrency value={entry.course_price ?? 0} /></div>
+                        <div className="col-span-5 whitespace-nowrap">
+                          <strong>Turma:</strong> {entry.course_class?.name ?? "N/A"}
+                        </div>
+                        <div className="col-span-3 whitespace-nowrap">
+                          <strong>Preço:</strong> <BRLCurrency value={entry.course_price ?? 0} />
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -185,6 +203,27 @@ export default function RevenuesTableDesktop({
             </div>
           );
         })}
+
+        {/* Empty state for current page */}
+        {!currentItems?.length && (
+          <div className="p-6 text-center text-sm text-gray-500">
+            Nenhum registro encontrado.
+          </div>
+        )}
+      </div>
+
+      {/* Pager */}
+      <div className="mt-3">
+        <Pagination
+          totalCount={totalCount}
+          currentPage={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
+          pageSizeOptions={[5, 10, 20, 50, 100]}
+          // Optional: localized labels
+          labels={{ previous: 'Anterior', next: 'Próxima', of: 'de', perPage: 'página', page: 'Página', goTo: 'Ir para' }}
+        />
       </div>
     </>
   );

@@ -1,44 +1,18 @@
 "use client"
 
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { TeacherModel } from '@/app/lib/definitions/teacher_definitions';
 import { UpdateTeacher } from '../../components/ui_buttons';
 import TeacherStatus from './TeacherStatus';
+import { Pagination } from "../../components/Pagination";
 
 interface TeacherTableMobileProps {
   teachers: TeacherModel[];
-  isLoading: boolean;
-  error: string | null;
 }
 
-export default function TeacherTableMobile({ 
-  teachers, 
-  isLoading, 
-  error 
+export default function TeacherTableMobile({
+  teachers
 }: TeacherTableMobileProps) {
-  
-  if (isLoading) {
-    return (
-      <div className="space-y-3">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="bg-white rounded-lg p-4 shadow-sm animate-pulse">
-            <div className="flex items-center justify-between">
-              <div className="h-4 bg-gray-200 rounded w-32"></div>
-              <div className="h-6 bg-gray-200 rounded-full w-16"></div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-        <p className="text-red-600 text-sm">Erro ao carregar professores: {error}</p>
-      </div>
-    );
-  }
 
   if (!teachers?.length) {
     return (
@@ -48,11 +22,33 @@ export default function TeacherTableMobile({
     );
   }
 
+
+
+  // 🔢 pagination state
+  const [page, setPage] = useState<number>(1);        // 1-based
+  const [pageSize, setPageSize] = useState<number>(3);
+
+  // clamp current page if revenues length changes
+  const totalCount = teachers?.length ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / Math.max(1, pageSize)));
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [totalPages, page]);
+
+  // slice current page
+  const currentItems = useMemo(() => {
+    if (!teachers?.length) return [];
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    return teachers.slice(start, end);
+  }, [teachers, page, pageSize]);
+
   return (
     <div className="space-y-3">
-      {teachers.map((teacher) => (
-        <div 
-          key={teacher.id} 
+      {currentItems.map((teacher) => (
+        <div
+          key={teacher.id}
           className="bg-white rounded-lg shadow-sm border border-gray-100"
         >
           {/* Content with name, status and actions */}
@@ -65,9 +61,9 @@ export default function TeacherTableMobile({
               </div>
               <div className="flex items-center gap-3">
                 <TeacherStatus status={teacher.status ? "Ativo" : "Inativo"} />
-                <UpdateTeacher 
-                  id={teacher.id as string} 
-                  disabled={false} 
+                <UpdateTeacher
+                  id={teacher.id as string}
+                  disabled={false}
                 />
               </div>
             </div>
@@ -78,6 +74,18 @@ export default function TeacherTableMobile({
       {/* Summary */}
       <div className="pt-2 text-center text-sm text-gray-500">
         {teachers.length} professor{teachers.length !== 1 ? 'es' : ''}
+      </div>
+      <div className="mt-3">
+        <Pagination
+          totalCount={totalCount}
+          currentPage={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
+          pageSizeOptions={[3, 5]}
+          // Optional: localized labels
+          labels={{ previous: 'Anterior', next: 'Próxima', of: 'de', perPage: 'página', page: 'Página', goTo: 'Ir para' }}
+        />
       </div>
     </div>
   );

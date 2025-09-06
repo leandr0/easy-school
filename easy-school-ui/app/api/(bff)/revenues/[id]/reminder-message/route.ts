@@ -13,17 +13,24 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
     const { id } = params;
 
-    await requireAuth('ADMIN');
+
+
+    const roles = await requireAuth('ADMIN');
+    console.log(`API roles ${JSON.stringify(roles)}`);
+
+    const auth = await bearerHeaders();
+    console.log(`API bearerHeaders ${JSON.stringify(auth)}`);
+
 
     const pathParams = new URLPathParam();
     pathParams.append(id);
     pathParams.append('reminder-message');
 
-    const data = await clientApi.put(pathParams.toString(),'{}',{ headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', } })
+    const data = await clientApi.put(pathParams.toString(), {}, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', } })
 
     return NextResponse.json(data);
   } catch (e: any) {
-    
+
     if (e instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     if (e instanceof ForbiddenError) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     if (e instanceof HttpError && e.status === 404) {

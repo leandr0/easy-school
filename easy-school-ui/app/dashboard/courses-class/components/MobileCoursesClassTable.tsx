@@ -1,8 +1,10 @@
 "use client"
 
 import { AddStudents, UpdateCourseClass } from '../../components/ui_buttons';
+import { Pagination } from '../../components/Pagination';
+
 import CourseStatus from './CourseClassesStatus';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { CourseClassTeacherModel } from '@/app/lib/definitions/course_class_definitions';
 import Image from 'next/image';
 interface MobileCoursesClassTableProps {
@@ -13,7 +15,7 @@ export default function MobileCoursesClassTable({
   courseClasses,
 }: MobileCoursesClassTableProps) {
 
-
+  
 
   return (
     <div className="mt-6">
@@ -116,5 +118,6 @@ export default function MobileCoursesClassTable({
         </div>
       )}
     </div>
+
   );
 }

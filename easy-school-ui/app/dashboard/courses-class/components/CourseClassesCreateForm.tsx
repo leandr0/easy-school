@@ -39,6 +39,7 @@ export default function CreateCourseClassForm() {
   const [weekDays, setWeekDays] = useState<CalendarWeekDayModel[]>([]);
   const [teacherCalendars, setTeacherCalendars] = useState<CalendarRangeHourDayModel[]>([]);
 
+  
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -56,7 +57,7 @@ export default function CreateCourseClassForm() {
 
     fetchInitialData();
   }, []);
-
+ 
   // When course changes: set language, and CLEAR teachers + calendars + selected teacher
   const handleCourseChange = useCallback(async (value: string) => {
     setIsLoading(true);

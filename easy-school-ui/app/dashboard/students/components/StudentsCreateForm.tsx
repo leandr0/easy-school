@@ -48,6 +48,7 @@ export default function CreateStudentForm() {
         status: true,
       });
       router.push('/dashboard/students');
+      router.refresh();
     } catch (err: unknown) {
       setMessage(err instanceof Error ? `❌ ${err.message}` : '❌ Unknown error occurred.');
     }

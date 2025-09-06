@@ -2,9 +2,19 @@ import Breadcrumbs from '@/app/dashboard/components/breadcrumbs';
 import React, { useEffect, useState } from "react";
 import AddStudentsCourseClassForm from '../../components/CourseClassesAddStudentsForm';
 
+import { getCourseClassById } from '@/bff/services/courseClass.server';
+import { getStudentsInCourseClass, getStudentsNotInCourseClass } from '@/bff/services/student.server';
+import { createCourseClassStudent, deleteByStudentAndCourseClass } from '@/bff/services/courseClassStudent.server';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const id = params.id;
+
+  const courseClass = await getCourseClassById(id);
+
+  const [students, availableStudents] = await Promise.all([
+          getStudentsInCourseClass(courseClass.id),
+          getStudentsNotInCourseClass(courseClass.id!),
+        ]);
 
 
   return (
@@ -19,7 +29,9 @@ export default async function Page({ params }: { params: { id: string } }) {
           },
         ]}
       />
-      <AddStudentsCourseClassForm course_class_id={id}/>
+      <AddStudentsCourseClassForm courseClass={courseClass} students={students} availableStudents={availableStudents}
+      fetchStudents={getStudentsInCourseClass} fetchAvailableStudents={getStudentsNotInCourseClass}
+      onDelete={deleteByStudentAndCourseClass} onUpdate={createCourseClassStudent}/>
     </main>
   );
 }

@@ -1,11 +1,23 @@
 import Breadcrumbs from '@/app/dashboard/components/breadcrumbs';
-import React, { useEffect, useState } from "react";
-import EditCourseClassForm from '../../components/CourseClassesEditForm'; 
 
+import React, { useEffect, useState } from "react";
+
+import EditCourseClassForm from '../../components/CourseClassesEditForm';
+
+import { getCourseClassById, updateCourseClass } from '@/bff/services/courseClass.server';
+import { getAllWeekDays, getWeekDaysByCourseClass } from '@/bff/services/calendarWeekDay.server';
+import { fetchAvailabilityTeacher } from '@/bff/services/calendarRangeHourDay.server';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const id = params.id;
 
+  const courseClass = await getCourseClassById(id);
+
+
+  const [allWeekDays, selectedlWeekDays] = await Promise.all([
+    getAllWeekDays(),
+    getWeekDaysByCourseClass(courseClass.id!),
+  ]);
 
   return (
     <main>
@@ -19,7 +31,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           },
         ]}
       />
-      <EditCourseClassForm />
+      <EditCourseClassForm courseClass={courseClass} onSave={updateCourseClass} allWeekDays={allWeekDays} selectedlWeekDays={selectedlWeekDays} searchTeacher={fetchAvailabilityTeacher} />
     </main>
   );
 }

@@ -17,6 +17,7 @@ import { getStudentsInCourseClass } from "@/bff/services/student.server";
 import { storeFrequencyClass, filteringDataRange } from "@/bff/services/classControl.server";
 
 
+
 type Participant = {
   id: string;
   name: string;
@@ -56,7 +57,7 @@ export default function ClassControlTable() {
       const startDate = format(weekStart, "yyyy-MM-dd");
       const endDate = format(weekEnd, "yyyy-MM-dd");
 
-      console.log(`🔍 Loading existing records for class ${classId} from ${startDate} to ${endDate}`);
+      
 
       const records = await filteringDataRange(startDate, endDate, Number(classId));
       setExistingRecords(records);
@@ -73,13 +74,12 @@ export default function ClassControlTable() {
       });
 
       setDisabledDates(disabledDatesSet);
-      console.log(`📅 Found ${records.length} existing records, disabled dates:`, Array.from(disabledDatesSet));
+      
 
       // Pre-populate attendance data from existing records
       populateAttendanceFromRecords(records);
 
-    } catch (error) {
-      console.error("Error loading existing records:", error);
+    } catch (error: any) {
       setExistingRecords([]);
       setDisabledDates(new Set());
     } finally {
@@ -144,7 +144,7 @@ export default function ClassControlTable() {
 
     const selectedClass = courseClassList.find((c) => String(c.id) === classId);
     if (!selectedClass) {
-      console.warn("Turma não encontrada:", classId);
+      
       return;
     }
 
@@ -173,7 +173,7 @@ export default function ClassControlTable() {
       }
     });
 
-    console.log("Participantes atualizados:", participants);
+    
     setParticipantList(participants);
 
     // Load existing records for the current week (now reset to current date)
@@ -215,11 +215,11 @@ export default function ClassControlTable() {
     }));
   };
 
- const onCancel = async () => {
-      setClassContent("");
-      setReplacement(false);
-      router.push('/dashboard');
- }
+  const onCancel = async () => {
+    setClassContent("");
+    setReplacement(false);
+    router.push('/dashboard');
+  }
 
   const saveAttendance = async () => {
     const selectedClass = courseClassList.find(c => String(c.id) === selectedClassId);
@@ -231,14 +231,12 @@ export default function ClassControlTable() {
     const records: any[] = [];
     const weekDates = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
 
-    console.log(`📅 Processing ${weekDates.length} days:`);
-
     for (const date of weekDates) {
       const dateStr = format(date, "yyyy-MM-dd");
 
       // Skip dates that are disabled (already have stored data)
       if (disabledDates.has(dateStr)) {
-        console.log(`⏭️ Skipping ${dateStr} - already has stored data`);
+        
         continue;
       }
 
@@ -264,8 +262,14 @@ export default function ClassControlTable() {
     }
 
     if (records.length === 0) {
-      console.warn("⚠️ No new attendance records to save.");
+      
       alert("Nenhuma presença nova foi marcada para salvar.");
+      return;
+    }
+
+    if (!classContent) {
+      
+      alert("O conteúdo da aula não foi preenchido.");
       return;
     }
 
@@ -279,7 +283,7 @@ export default function ClassControlTable() {
       // Reload existing records to update disabled dates
       await loadExistingRecords(selectedClassId, currentWeekStart);
     } catch (error) {
-      console.error("Error saving attendance:", error);
+      
       alert("Erro ao salvar presença. Tente novamente.");
     }
   };
@@ -314,6 +318,7 @@ export default function ClassControlTable() {
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg p-2 md:pt-0">
           <div className="hidden md:block">
+
             <ClassControlTableDesktop
               classes={courseClassList}
               selectedClassId={selectedClassId}

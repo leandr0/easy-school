@@ -1,4 +1,3 @@
-// CreateTeacherForm.tsx
 'use client';
 
 import { Button } from '@/app/ui/button';
@@ -195,6 +194,7 @@ export default function CreateTeacherForm() {
       });
 
       router.push('/dashboard/teachers');
+      router.refresh();
     } catch (err: any) {
       setMessage(`❌ ${err?.message || 'Unknown error occurred.'}`);
     }

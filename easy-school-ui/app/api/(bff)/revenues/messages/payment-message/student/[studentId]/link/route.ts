@@ -22,7 +22,7 @@ export async function GET(req: NextRequest, { params }: { params: { studentId: s
     pathParams.append(studentId);
     pathParams.append('link');
 
-    const data = await clientApi.get(pathParams.toString(), {headers: await bearerHeaders() , cache: 'no-store' });
+    const data = await clientApi.get(pathParams.toString(), { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 
     return NextResponse.json(data);
   } catch (e: any) {

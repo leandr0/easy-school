@@ -16,10 +16,7 @@ import { TeacherModel } from '@/app/lib/definitions/teacher_definitions';
 import { CalendarRangeHourDayModel } from '@/app/lib/definitions/calendat_range_hour_day_definitions';
 import { CalendarWeekDayModel } from '@/app/lib/definitions/calendar_week_day_definitions';
 
-
-import { getAllWeekDays, getWeekDaysByCourseClass } from '@/bff/services/calendarWeekDay.server';
-import { getCourseClassById, updateCourseClass } from '@/bff/services/courseClass.server';
-import { fetchAvailabilityTeacher } from '@/bff/services/calendarRangeHourDay.server';
+import { CourseClassCompleteModel, CreateCourseClassModel } from '@/app/lib/definitions/course_class_definitions';
 
 
 
@@ -28,10 +25,23 @@ type TeacherWithCalendars = {
   calendars: CalendarRangeHourDayModel[];
 };
 
-export default function EditCourseClassPage() {
-  // Supports routes like /dashboard/courses-class/[id]/edit OR /[course_class_id]/edit
-  const params = useParams<{ id?: string; course_class_id?: string }>();
-  const courseClassId = params?.id ?? params?.course_class_id ?? '';
+type Props = {
+  courseClass: CourseClassCompleteModel,
+  onSave(course: CreateCourseClassModel): Promise<void>,
+  searchTeacher(
+    calendar_week_day_ids: string[],
+    language_id: number,
+    start_hour: number,
+    start_minute: number,
+    end_hour: number,
+    end_minute: number
+  ): Promise<CalendarRangeHourDayModel[]>,
+  selectedlWeekDays: CalendarWeekDayModel[],
+  allWeekDays: CalendarWeekDayModel[]
+};
+
+export default function EditCourseClassPage({ courseClass, onSave, searchTeacher,selectedlWeekDays, allWeekDays }: Props) {
+
   const router = useRouter();
 
   // ---- Editable class fields
@@ -61,60 +71,54 @@ export default function EditCourseClassPage() {
 
   // ---- Load class, ALL weekdays, and SELECTED weekdays
   useEffect(() => {
-    if (!courseClassId) return;
+    if (!courseClass) return;
 
     (async () => {
       try {
         setError('');
 
-        // 1) Load class
-        const klass = await getCourseClassById(courseClassId);
-
         const cid = String(
-          (klass as any)?.course?.id ??
-          (klass as any)?.course_class?.course?.id ??
+          (courseClass as any)?.course?.id ??
+          (courseClass as any)?.course_class?.course?.id ??
           ''
         );
         setCourseId(cid);
 
         setCourseName(
           String(
-            (klass as any)?.course?.name ??
-            (klass as any)?.course_class?.course?.name ??
+            (courseClass as any)?.course?.name ??
+            (courseClass as any)?.course_class?.course?.name ??
             ''
           )
         );
 
-        setName(klass.name ?? '');
-        setStatus(Boolean(klass.status));
-        setStartHour((klass as any).start_hour ?? '00');
-        setStartMinute((klass as any).start_minute ?? '00');
-        setEndHour((klass as any).end_hour ?? '00');
-        setEndMinute((klass as any).end_minute ?? '00');
+        setName(courseClass.name ?? '');
+        setStatus(Boolean(courseClass.status));
+        setStartHour((courseClass as any).start_hour ?? '00');
+        setStartMinute((courseClass as any).start_minute ?? '00');
+        setEndHour((courseClass as any).end_hour ?? '00');
+        setEndMinute((courseClass as any).end_minute ?? '00');
 
         const langId = String(
-          (klass as any)?.language?.id ??
-          (klass as any)?.course?.language?.id ??
+          (courseClass as any)?.language?.id ??
+          (courseClass as any)?.course?.language?.id ??
           ''
         );
         setLanguageId(langId);
 
-        if (klass.teacher) {
-          setCurrentTeacherData({ teacher: klass.teacher, calendars: [] });
-          setSelectedTeacherId(klass.teacher.id ?? '');
+        if (courseClass.teacher) {
+          setCurrentTeacherData({ teacher: courseClass.teacher, calendars: [] });
+          setSelectedTeacherId(courseClass.teacher.id ?? '');
         } else {
           setCurrentTeacherData(null);
           setSelectedTeacherId('');
         }
 
         // 2) Load both: all weekdays + this class's selected weekdays
-        const [allWds, selectedWds] = await Promise.all([
-          getAllWeekDays(),
-          getWeekDaysByCourseClass(courseClassId),
-        ]);
 
-        setWeekDays(allWds || []);
-        const selectedIds = (selectedWds || [])
+
+        setWeekDays(allWeekDays || []);
+        const selectedIds = (selectedlWeekDays || [])
           .map(wd => wd?.id)
           .filter((id): id is string => Boolean(id))
           .map(String);
@@ -124,7 +128,7 @@ export default function EditCourseClassPage() {
         console.error(e);
       }
     })();
-  }, [courseClassId]);
+  }, [courseClass]);
 
   // ---- Search available teachers using current edited filters
   const searchTeachers = async () => {
@@ -141,7 +145,7 @@ export default function EditCourseClassPage() {
         return;
       }
 
-      const calendars = await fetchAvailabilityTeacher(
+      const calendars = await searchTeacher(
         weekDayIds,
         parseInt(languageId, 10),
         parseInt(startHour || '0', 10),
@@ -231,12 +235,12 @@ export default function EditCourseClassPage() {
   // ---- Save all (details + teacher)
   const saveAll = async () => {
     try {
-      if (!courseClassId) return;
+      if (!courseClass) return;
       setSaving(true);
       setError('');
 
-      await updateCourseClass({
-        id: courseClassId,
+      await onSave({
+        id: courseClass.id,
         course: courseId ? { id: courseId } : undefined,
         name,
         status,
@@ -249,6 +253,7 @@ export default function EditCourseClassPage() {
       } as any);
 
       router.push('/dashboard/courses-class');
+      router.refresh();
     } catch (e: any) {
       setError(e?.message || 'Erro ao salvar alterações');
       console.error(e);
@@ -257,7 +262,7 @@ export default function EditCourseClassPage() {
     }
   };
 
-  if (!courseClassId) return <div className="p-6">Carregando…</div>;
+  if (!courseClass) return <div className="p-6">Carregando…</div>;
 
   // ---------- Helpers for MOBILE teacher cards ----------
   const calendarsByTeacher = useMemo(() => {

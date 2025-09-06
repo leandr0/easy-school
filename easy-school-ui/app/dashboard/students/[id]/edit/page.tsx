@@ -1,12 +1,14 @@
 import Breadcrumbs from '@/app/dashboard/components/breadcrumbs';
 import StudentEditForm from '../../components/StudentEditForm';
 import React, { useEffect, useState } from "react";
+import { findByIdCoursePrice } from '@/bff/services/student.server';
 
 
 
 export default async function Page({ params }: { params: { id: string } }) {
   const id = params.id;
 
+  const student = await findByIdCoursePrice(id);
 
   return (
     <main>
@@ -20,7 +22,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           },
         ]}
       />
-      <StudentEditForm student_id={id}/>
+      <StudentEditForm student={student}/>
     </main>
   );
 }

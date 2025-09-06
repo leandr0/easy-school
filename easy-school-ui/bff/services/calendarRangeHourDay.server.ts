@@ -1,6 +1,8 @@
+'use server';
 import { CalendarRangeHourDayModel } from "@/app/lib/definitions/calendat_range_hour_day_definitions";
 import { URLPathParam } from "@/app/lib/url_path_param";
 import { bffApiClient } from "@/app/config/clientAPI";
+import { bearerHeaders } from "@/app/lib/authz.server";
 
 
 const clientApi = bffApiClient.resource('/calendar/range-hour-days');
@@ -23,8 +25,9 @@ export async function fetchAvailabilityTeacher(
   params.append("end_hour", end_hour.toString());
   params.append("end_minute", end_minute.toString());
 
-  return await clientApi.get(`/teacher/available?${params.toString()}`);
+  return await clientApi.get(`/teacher/available?${params.toString()}`, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 }
+
 
 export async function fetchCalendarRangeHourDayByTeacher(teacher_id: any): Promise<CalendarRangeHourDayModel[]> {
 
@@ -32,11 +35,8 @@ export async function fetchCalendarRangeHourDayByTeacher(teacher_id: any): Promi
   pathParams.append("teacher");
   pathParams.append(teacher_id);
 
-//const res = await fetch(`/api/calendar/range-hour-days/${teacher_id}`, { method: 'GET', cache: 'no-store' });
+  return await clientApi.get(pathParams.toString(), { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 
-
-
-  return await clientApi.get(pathParams.toString());
 }
 
 export async function deleteRangeHourDayList(ids: string[],): Promise<void> {
@@ -44,14 +44,15 @@ export async function deleteRangeHourDayList(ids: string[],): Promise<void> {
   const queryParams = new URLSearchParams();
   queryParams.set("ids", ids.join(','));
 
-  await clientApi.delete("/resources?"+queryParams.toString());
+  await clientApi.delete("/resources?" + queryParams.toString());
 }
 
-export async function createByTeacherId(teacher_id:any, body:CalendarRangeHourDayModel[]): Promise<CalendarRangeHourDayModel[]> {
-  
+export async function createByTeacherId(teacher_id: any, body: CalendarRangeHourDayModel[]): Promise<CalendarRangeHourDayModel[]> {
+
   const pathParams = new URLPathParam();
   pathParams.append("teacher");
   pathParams.append(teacher_id);
 
-  return await clientApi.post(pathParams.toString(),body);
+  return await clientApi.post(pathParams.toString(), body, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json' } });
 }
+

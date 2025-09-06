@@ -1,4 +1,3 @@
-import Pagination from '@/app/dashboard/components/pagination';
 import Search from '@/app/ui/search';
 import { CreateTeacher } from '@/app/dashboard/components/ui_buttons';
 import { lusitana } from '@/app/ui/fonts';
@@ -6,7 +5,8 @@ import { Suspense } from 'react';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { Metadata } from 'next';
 import TeacherTable from '@/app/dashboard/teachers/components/TeacherTable';
- 
+import { getAllTeachers } from '@/bff/services/teacher.server';
+
 export const metadata: Metadata = {
   title: 'Students',
 };
@@ -23,7 +23,9 @@ export default async function Page({
   const currentPage = Number(searchParams?.page) || 1;
 
   const totalPages = 1;
- 
+
+  const teachers = await getAllTeachers();
+
   return (
     <div className="w-full">
       <div className="flex w-full items-center justify-between">
@@ -34,11 +36,8 @@ export default async function Page({
         <CreateTeacher />
       </div>
       <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
-        <TeacherTable query={query} currentPage={currentPage} />
+        <TeacherTable query={query} currentPage={currentPage} teachers={teachers} />
       </Suspense>
-      <div className="mt-5 flex w-full justify-center">
-        { <Pagination totalPages={totalPages} /> }
-      </div>
     </div>
   );
 }

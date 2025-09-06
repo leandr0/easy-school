@@ -1,4 +1,6 @@
+'use server';
 import { bffApiClient } from "@/app/config/clientAPI";
+import { bearerHeaders } from "@/app/lib/authz.server";
 import { CalendarWeekDayModel } from "@/app/lib/definitions/calendar_week_day_definitions";
 import { URLPathParam } from "@/app/lib/url_path_param";
 
@@ -6,7 +8,7 @@ import { URLPathParam } from "@/app/lib/url_path_param";
 const clientApi = bffApiClient.resource('/week-days');
 
 export async function getAllWeekDays(): Promise<CalendarWeekDayModel[]> {
-    return clientApi.get();
+    return clientApi.get('', { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 }
 
 export async function getWeekDaysByCourseClass(courseClassId: string): Promise<CalendarWeekDayModel[]> {
@@ -15,5 +17,5 @@ export async function getWeekDaysByCourseClass(courseClassId: string): Promise<C
     pathParams.append("course-class");
     pathParams.append(courseClassId);
 
-    return clientApi.get(pathParams.toString());
+    return clientApi.get(pathParams.toString(), { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 }

@@ -1,8 +1,8 @@
-// TeacherWeekDayAvailabilityComponent.tsx
 'use client';
 
-import React from 'react';
+import React, { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { DeleteWeekDayAvailability } from '../../components/ui_buttons';
+import { Pagination } from '../../components/Pagination'; 
 
 type Item = {
   uddi?: string;
@@ -12,6 +12,26 @@ type Item = {
   end_hour?: string | number;
   end_minute?: string | number;
 };
+
+/** SSR-safe media query hook */
+function useMediaQuery(query: string) {
+  const getMql = () => (typeof window !== "undefined" ? window.matchMedia(query) : null);
+  const subscribe = (cb: () => void) => {
+    const mql = getMql();
+    if (!mql) return () => { };
+    mql.addEventListener("change", cb);
+    return () => mql.removeEventListener("change", cb);
+  };
+
+  const getSnapshot = () => {
+    const mql = getMql();
+    return mql ? mql.matches : false; // client snapshot
+  };
+
+  const getServerSnapshot = () => false; // ALWAYS false on server for deterministic SSR
+
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
 
 interface Props {
   teacherWeeDayAvailables: Item[];
@@ -28,6 +48,57 @@ export function TeacherWeekDayAvailabilityComponent({
   setActionType,
   setSelectedWeekDayUddi,
 }: Props) {
+
+
+  // Breakpoint (SSR-safe)
+  const isMdUp = useMediaQuery("(min-width: 768px)");
+
+  // Derive options from breakpoint (memoized)
+  const pageSizeOptions = useMemo(
+    () => (isMdUp ? [4, 8] : [3,6]),
+    [isMdUp]
+  );
+
+  // IMPORTANT: Use SSR-stable defaults on *initial* render.
+  // Never read matchMedia in the initializer — that causes client-first diff.
+  const [page, setPage] = useState<number>( 1); // 1-based
+  const [pageSize, setPageSize] = useState<number>(3);        // <-- SSR-stable default
+
+  // After hydration, reconcile pageSize with breakpoint/options
+  useEffect(() => {
+    // If current pageSize isn't valid for the new breakpoint, snap to first option
+    if (!pageSizeOptions.includes(pageSize)) {
+      setPageSize(pageSizeOptions[0]);  // e.g., 5 on desktop, 3 on mobile
+      setPage(1);
+    } else {
+      // Optional: if SSR default (3) but we’re desktop and your desired default is 5
+      if (isMdUp && pageSize === 3 && pageSizeOptions[0] !== 3) {
+        setPageSize(pageSizeOptions[0]); // move to 5 on desktop post-hydration
+        setPage(1);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMdUp, pageSizeOptions]);
+
+  const totalCount = teacherWeeDayAvailables.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / Math.max(1, pageSize)));
+
+  // Clamp page when data/size changes (after hydration)
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [totalPages, page]);
+
+
+  // Current slice
+  const currentItems = useMemo(() => {
+    if (!teacherWeeDayAvailables.length) return [];
+    const start = (page - 1) * pageSize;
+    return teacherWeeDayAvailables.slice(start, start + pageSize);
+  }, [teacherWeeDayAvailables, page, pageSize]);
+
+
+
+
   return (
     <section className="mx-auto w-full max-w-4xl pt-2">
       <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -44,7 +115,7 @@ export function TeacherWeekDayAvailabilityComponent({
             </div>
 
             <div className="divide-y divide-gray-200">
-              {teacherWeeDayAvailables?.map((row) => (
+              {currentItems?.map((row) => (
                 <div
                   key={row.uddi}
                   className="grid grid-cols-4 items-center px-4 py-3 hover:bg-gray-50"
@@ -77,7 +148,7 @@ export function TeacherWeekDayAvailabilityComponent({
 
         {/* Mobile list */}
         <div className="space-y-3 md:hidden">
-          {teacherWeeDayAvailables?.map((row) => (
+          {currentItems?.map((row) => (
             <div
               key={row.uddi}
               className="rounded-xl border border-gray-200 bg-white p-4 shadow-xs"
@@ -120,7 +191,29 @@ export function TeacherWeekDayAvailabilityComponent({
             </div>
           )}
         </div>
+        <div className="mt-3">
+          <Pagination
+            totalCount={totalCount}
+            currentPage={page}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            onPageSizeChange={(s) => {
+              setPageSize(s);
+              setPage(1);
+            }}
+            pageSizeOptions={pageSizeOptions}
+            labels={{
+              previous: "Anterior",
+              next: "Próxima",
+              of: "de",
+              perPage: "por página",
+              page: "Página",
+              goTo: "Ir para",
+            }}
+          />
+        </div>
       </div>
+
     </section>
   );
 }

@@ -1,33 +1,31 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { CustomerField } from '@/app/lib/definitions';  // Ensure this path is correct
-import CreateCourseForm from "@/app/dashboard/courses/components/CreateCourseForm";
 import Breadcrumbs from '@/app/dashboard/components/breadcrumbs';
 import EditCourseForm from "@/app/dashboard/courses/components/EditCourseForm";
+import { getAllLanguages } from '@/bff/services/language.server';
+import { createCourse, findCourse } from '@/bff/services/course.server';
 
 
-export default function Page({ params }: { params: { id: string } }) {
-  
+export default async function Page({ params }: { params: { id: string } }) {
+
+
   const id = params.id;
+  const [languages, course] = await Promise.all([
+    getAllLanguages(),
+    findCourse(id),
+  ]);
 
-  const [customers, setCustomers] = useState<CustomerField[] | null>(null);
-  const [isVertical, setIsVertical] = useState(true);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<null | string>(null); // Error can be a string
-  
   return (
     <main>
-    <Breadcrumbs
-      breadcrumbs={[
-        { label: 'Cursos', href: '/dashboard/courses' },
-        {
-          label: 'Editar Curso',
-          href: `/dashboard/courses/${id}/edit`,
-          active: true,
-        },
-      ]}
-    />
-    <EditCourseForm course_id={id}/>
-  </main>
+      <Breadcrumbs
+        breadcrumbs={[
+          { label: 'Cursos', href: '/dashboard/courses' },
+          {
+            label: 'Editar Curso',
+            href: `/dashboard/courses/${id}/edit`,
+            active: true,
+          },
+        ]}
+      />
+      <EditCourseForm languages={languages} course={course}  onSave={createCourse}/>
+    </main>
   );
 }

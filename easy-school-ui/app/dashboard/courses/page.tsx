@@ -1,10 +1,9 @@
-import Pagination from '@/app/dashboard/components/pagination';
 import Search from '@/app/ui/search';
 import { CreateCourse} from '@/app/dashboard/components/ui_buttons';
 import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
-
+import { getAllCourses } from "@/bff/services/course.server";
 
 import CoursesTable from '@/app/dashboard/courses/components/CoursesTable';
 
@@ -24,8 +23,7 @@ export default async function Page({
 }) {
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
-
-  const totalPages = 1;
+  const courses = await getAllCourses();
  
   return (
     <div className="w-full">
@@ -37,11 +35,8 @@ export default async function Page({
         <CreateCourse/>
       </div>
       <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
-        <CoursesTable query={query} currentPage={currentPage} />
+        <CoursesTable query={query} currentPage={currentPage} courses={courses}/>
       </Suspense>
-      <div className="mt-5 flex w-full justify-center">
-        { <Pagination totalPages={totalPages} /> }
-      </div>
     </div>
   );
 }

@@ -1,7 +1,9 @@
+'use server';
 import { RevenueModel } from "@/app/lib/definitions/revenue_definitions";
 import { URLPathParam } from "@/app/lib/url_path_param";
 
 import { bffApiClient } from "@/app/config/clientAPI";
+import { bearerHeaders, requireAuth } from "@/app/lib/authz.server";
 
 const clientApi = bffApiClient.resource('/revenues');
 
@@ -13,16 +15,18 @@ export async function getRevenuesByRangeDate(startMonth:string,startYear:string,
   queryParams.append("end_month",endMonth);
   queryParams.append("end_year",endYear);
   
-  return await clientApi.get<RevenueModel[]>(`/date-range?${queryParams.toString()}`);
+  return await clientApi.get<RevenueModel[]>(`/date-range?${queryParams.toString()}`, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 }
 
 export async function sendReminderMessage(revenueId: string): Promise<void> {
+
+  await requireAuth('ADMIN');
 
   const params = new URLPathParam();
   params.append(revenueId);
   params.append("reminder-message");
 
-  await clientApi.put<void>(params.toString());
+  await clientApi.put<void>(params.toString(),{} ,{ headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json'} });
 
 }
 
@@ -32,7 +36,7 @@ export async function sendPaymentMessage(revenueId: string): Promise<void> {
   params.append(revenueId);
   params.append("payment-message");
 
-  await clientApi.put<void>(params.toString());
+  await clientApi.put<void>(params.toString(), {},{ headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json'} });
 
 }
 
@@ -42,6 +46,6 @@ export async function updatePaymentStatus(revenue: RevenueModel): Promise<void> 
   params.append(revenue.id!);
   params.append("payment-status");
 
-  await clientApi.put<void>(params.toString(), { status: revenue.status });
+  await clientApi.put<void>(params.toString(),{ status: revenue.status }, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json' } });
 
 }

@@ -2,13 +2,14 @@
 
 import { ClassControlResponseModel } from "@/app/lib/definitions/class_control_definitions";
 import { Switch } from "@/app/dashboard/components/switch";
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp, Calendar, Users, BookOpen, User } from "lucide-react";
 import { CourseClassStudentModel } from "@/app/lib/definitions/course_class_students_definitions";
 import AttendenceDateRangeFilter from "./AttendenceDateRangeFilter";
 import { StudentModel } from "@/app/lib/definitions/students_definitions";
 import { CourseClassCompleteModel } from "@/app/lib/definitions/course_class_definitions";
 import { CancelButton } from "@/app/ui/button";
+import { Pagination } from "../../components/Pagination";
 
 export type DateRange = { startDate: string; endDate: string };
 
@@ -41,6 +42,28 @@ export default function AttendenceClassControlTableDesktop({
   loadingRow,
   onToggleRow
 }: AttendenceClassControlTableDesktopProps) {
+
+
+
+  // 🔢 pagination state
+  const [page, setPage] = useState<number>(1);        // 1-based
+  const [pageSize, setPageSize] = useState<number>(5);
+
+  // clamp current page if revenues length changes
+  const totalCount = existingRecords?.length ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / Math.max(1, pageSize)));
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [totalPages, page]);
+
+  // slice current page
+  const currentItems = useMemo(() => {
+    if (!existingRecords?.length) return [];
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    return existingRecords.slice(start, end);
+  }, [existingRecords, page, pageSize]);
 
   return (
     <div className="space-y-6">
@@ -117,18 +140,17 @@ export default function AttendenceClassControlTableDesktop({
 
             {/* Table Body */}
             <div className="divide-y divide-gray-200">
-              {existingRecords && existingRecords.length > 0 ? (
-                existingRecords.map((classControl) => {
+              {currentItems && currentItems.length > 0 ? (
+                currentItems.map((classControl) => {
                   const isExpanded = !!expandedRows[classControl.class_control?.id!];
                   const classControlId = String(classControl.class_control?.id!);
-                  
+
                   return (
                     <div key={classControlId}>
                       {/* Main Row */}
                       <div
-                        className={`grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer ${
-                          isExpanded ? 'bg-blue-50 border-l-4 border-blue-500' : ''
-                        }`}
+                        className={`grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer ${isExpanded ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                          }`}
                         onClick={() => onToggleRow(classControlId, classControlId)}
                       >
                         {/* Expand/Collapse Button */}
@@ -141,7 +163,7 @@ export default function AttendenceClassControlTableDesktop({
                             <ChevronDown className="w-4 h-4 text-gray-400" />
                           )}
                         </div>
-                        
+
                         {/* Class Name */}
                         <div className="col-span-5 flex items-center">
                           <div>
@@ -153,21 +175,20 @@ export default function AttendenceClassControlTableDesktop({
                             </p>
                           </div>
                         </div>
-                        
+
                         {/* Date */}
                         <div className="col-span-3 flex items-center">
                           <p className="text-sm text-gray-900">
-                            {`${classControl.class_control?.day?.toString().padStart(2, '0')}/${
-                              classControl.class_control?.month?.toString().padStart(2, '0')
-                            }/${classControl.class_control?.year}`}
+                            {`${classControl.class_control?.day?.toString().padStart(2, '0')}/${classControl.class_control?.month?.toString().padStart(2, '0')
+                              }/${classControl.class_control?.year}`}
                           </p>
                         </div>
-                        
+
                         {/* Replacement Toggle */}
                         <div className="col-span-3 flex items-center justify-center">
-                          <Switch 
-                            checked={classControl.class_control?.replacement!} 
-                            onChange={() => {}} 
+                          <Switch
+                            checked={classControl.class_control?.replacement!}
+                            onChange={() => { }}
                           />
                         </div>
                       </div>
@@ -176,7 +197,7 @@ export default function AttendenceClassControlTableDesktop({
                       {isExpanded && (
                         <div className="bg-gray-50 border-t border-gray-200">
                           <div className="px-6 py-6 space-y-6">
-                            
+
                             {/* Teacher Information */}
                             <div className="bg-white rounded-lg p-4 border border-gray-200">
                               <div className="flex items-center mb-3">
@@ -215,8 +236,8 @@ export default function AttendenceClassControlTableDesktop({
                                 {classControl.students && classControl.students.length > 0 ? (
                                   <div className="space-y-2 max-h-60 overflow-y-auto">
                                     {classControl.students.map((student, index) => (
-                                      <div 
-                                        key={index} 
+                                      <div
+                                        key={index}
                                         className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200"
                                       >
                                         <div className="flex-1 min-w-0">
@@ -257,7 +278,7 @@ export default function AttendenceClassControlTableDesktop({
                               <div className="pl-7">
                                 <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                                   <p className="text-gray-700 whitespace-pre-wrap text-sm leading-relaxed">
-                                    {classControl.class_control?.content || 
+                                    {classControl.class_control?.content ||
                                       <span className="text-gray-400 italic">Nenhum conteúdo registrado</span>
                                     }
                                   </p>
@@ -281,17 +302,30 @@ export default function AttendenceClassControlTableDesktop({
               )}
             </div>
           </div>
+
+          <div className="mt-3">
+            <Pagination
+              totalCount={totalCount}
+              currentPage={page}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
+              pageSizeOptions={[5, 10, 15, 20]}
+              // Optional: localized labels
+              labels={{ previous: 'Anterior', next: 'Próxima', of: 'de', perPage: 'página', page: 'Página', goTo: 'Ir para' }}
+            />
+          </div>
         </>
       )}
 
-            <div className="mt-6 flex justify-end gap-4">
-      
-                <CancelButton
-                  type="button"
-                  onClick={onCancel}>
-                  Voltar
-                </CancelButton>
-              </div>
+      <div className="mt-6 flex justify-end gap-4">
+
+        <CancelButton
+          type="button"
+          onClick={onCancel}>
+          Voltar
+        </CancelButton>
+      </div>
     </div>
   );
 }

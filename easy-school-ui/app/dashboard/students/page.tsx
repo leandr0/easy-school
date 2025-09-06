@@ -1,4 +1,3 @@
-import Pagination from '@/app/dashboard/components/pagination';
 import Search from '@/app/ui/search';
 import { CreateStudent } from '@/app/dashboard/components/ui_buttons';
 import { lusitana } from '@/app/ui/fonts';
@@ -7,6 +6,7 @@ import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import StudentsTable from './components/StudentsTable';
 
 import { Metadata } from 'next';
+import { getAllStudents } from '@/bff/services/student.server';
  
 export const metadata: Metadata = {
   title: 'Students',
@@ -22,8 +22,7 @@ export default async function Page({
 }) {
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
-
-  const totalPages = 1;
+  const students = await getAllStudents();
  
   return (
     <div className="w-full">
@@ -35,11 +34,8 @@ export default async function Page({
         <CreateStudent />
       </div>
       <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
-        <StudentsTable query={query} currentPage={currentPage} />
+        <StudentsTable query={query} currentPage={currentPage} students={students}/>
       </Suspense>
-      <div className="mt-5 flex w-full justify-center">
-        { <Pagination totalPages={totalPages} /> }
-      </div>
     </div>
   );
 }

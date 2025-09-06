@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { RevenueModel } from '@/app/lib/definitions/revenue_definitions';
 import { CourseClassStudentModel } from '@/app/lib/definitions/course_class_students_definitions';
@@ -10,6 +10,7 @@ import BRLCurrency from '@/app/dashboard/components/currency';
 import { MonthYearFormatter } from '@/app/dashboard/components/month_year_formatter';
 import { ActionType } from '@/app/lib/types/revenue';
 import { RevenueCourseClassStudentModel } from '@/app/lib/definitions/revenue_course_class_student_definitons';
+import { Pagination } from '@/app/dashboard/components/Pagination';
 
 interface RevenuesTableMobileProps {
   revenues: RevenueModel[];
@@ -28,6 +29,26 @@ export default function RevenuesTableMobile({
 }: RevenuesTableMobileProps) {
   const [expanded, setExpanded] = useState<{ [key: string]: CourseClassStudentModel[] }>({});
   const [loadingRow, setLoadingRow] = useState<string | null>(null);
+
+    // 🔢 pagination state
+    const [page, setPage] = useState<number>(1);        // 1-based
+    const [pageSize, setPageSize] = useState<number>(3);
+  
+    // clamp current page if revenues length changes
+    const totalCount = revenues?.length ?? 0;
+    const totalPages = Math.max(1, Math.ceil(totalCount / Math.max(1, pageSize)));
+  
+    useEffect(() => {
+      if (page > totalPages) setPage(totalPages);
+    }, [totalPages, page]);
+  
+    // slice current page
+    const currentItems = useMemo(() => {
+      if (!revenues?.length) return [];
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      return revenues.slice(start, end);
+    }, [revenues, page, pageSize]);
 
   const handleIdentifyPayment = (studentId: string, revenue: RevenueModel) => {
     setActionType('payment_confirmation');
@@ -69,7 +90,7 @@ export default function RevenuesTableMobile({
 
   return (
     <div className="space-y-4 mt-6">
-      {revenues?.map((revenue) => {
+      {currentItems?.map((revenue) => {
         const isExpanded = !!expanded[revenue.id!];
         return (
           <div key={revenue.id} className="bg-white shadow rounded-lg p-4 border text-sm space-y-3">
@@ -153,6 +174,19 @@ export default function RevenuesTableMobile({
           </div>
         );
       })}
+
+       <div className="mt-3">
+              <Pagination
+                totalCount={totalCount}
+                currentPage={page}
+                pageSize={pageSize}
+                onPageChange={setPage}
+                onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
+                pageSizeOptions={[3, 5, 10]}
+                // Optional: localized labels
+                labels={{ previous: 'Anterior', next: 'Próxima', of: 'de', perPage: 'página', page: 'Página', goTo: 'Ir para' }}
+              />
+            </div>
     </div>
   );
 }

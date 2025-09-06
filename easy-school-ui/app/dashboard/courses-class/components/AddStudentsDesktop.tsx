@@ -3,8 +3,10 @@
 import { BookOpenIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
 import DeleteStudantFromCourseClassList from '@/app/dashboard/components/ui_buttons';
-import SelectableStudentsTable , { SelectableStudentsTableRef }from '../../students/components/StudentsSelectableTable';
+import SelectableStudentsTable, { SelectableStudentsTableRef } from '../../students/components/StudentsSelectableTable';
 import { AddStudentsCommonProps } from './CourseClassesAddStudentsForm';
+import { useEffect, useMemo, useState } from 'react';
+import { Pagination } from '../../components/Pagination';
 
 export default function AddStudentsDesktop({
   formData,
@@ -19,6 +21,50 @@ export default function AddStudentsDesktop({
   error,
   selectableRef,
 }: AddStudentsCommonProps) {
+
+
+  // 🔢 pagination state
+  const [studentsPage, setStudentsPage] = useState<number>(1);        // 1-based
+  const [studentsPageSize, setStudentsPageSize] = useState<number>(5);
+
+  // clamp current page if revenues length changes
+  const studentsTotalCount = students?.length ?? 0;
+  const studentsTotalPages = Math.max(1, Math.ceil(studentsTotalCount / Math.max(1, studentsPageSize)));
+
+  useEffect(() => {
+    if (studentsPage > studentsTotalPages) setStudentsPage(studentsTotalPages);
+  }, [studentsTotalPages, studentsPage]);
+
+  // slice current page
+  const currentStudents = useMemo(() => {
+    if (!students?.length) return [];
+    const start = (studentsPage - 1) * studentsPageSize;
+    const end = start + studentsPageSize;
+    return students.slice(start, end);
+  }, [students, studentsPage, studentsPageSize]);
+
+
+
+  const [availableStudentsPage, setAvailableStudentsPage] = useState<number>(1);        // 1-based
+  const [availableStudentsPageSize, setAvailableStudentsPageSize] = useState<number>(5);
+
+  // clamp current page if revenues length changes
+  const availableStudentsTotalCount = availableStudents?.length ?? 0;
+  const availableStudentsTotalPages = Math.max(1, Math.ceil(availableStudentsTotalCount / Math.max(1, availableStudentsPageSize)));
+
+  useEffect(() => {
+    if (availableStudentsPage > availableStudentsTotalPages) setAvailableStudentsPage(availableStudentsTotalPages);
+  }, [availableStudentsTotalPages, availableStudentsPage]);
+
+  // slice current page
+  const currentAvailableStudents = useMemo(() => {
+    if (!availableStudents?.length) return [];
+    const start = (availableStudentsPage - 1) * availableStudentsPageSize;
+    const end = start + availableStudentsPageSize;
+    return availableStudents.slice(start, end);
+  }, [availableStudents, availableStudentsPage, availableStudentsPageSize]);
+
+
   return (
     <div className="space-y-6">
       {/* Course name */}
@@ -91,7 +137,7 @@ export default function AddStudentsDesktop({
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {students.map((s) => (
+                {currentStudents.map((s) => (
                   <tr key={s.id} className="w-full border-b py-3 text-sm last-of-type:border-none">
                     <td className="whitespace-nowrap py-3 pl-6 pr-3">{s.name}</td>
                     <td className="whitespace-nowrap px-3 py-3">{s.phone_number}</td>
@@ -114,16 +160,40 @@ export default function AddStudentsDesktop({
             </table>
           </div>
         </div>
+        <div className="mt-3">
+          <Pagination
+            totalCount={studentsTotalCount}
+            currentPage={studentsPage}
+            pageSize={studentsPageSize}
+            onPageChange={setStudentsPage}
+            onPageSizeChange={(s) => { setStudentsPageSize(s); setStudentsPage(1); }}
+            pageSizeOptions={[5, 10, 15]}
+            // Optional: localized labels
+            labels={{ previous: 'Anterior', next: 'Próxima', of: 'de', perPage: 'página', page: 'Página', goTo: 'Ir para' }}
+          />
+        </div>
       </div>
 
       {/* Available students */}
       <div className="rounded-lg bg-gray-50 p-2">
         <SelectableStudentsTable
           ref={selectableRef as React.RefObject<SelectableStudentsTableRef>}
-          students={availableStudents}
+          students={currentAvailableStudents}
           selectedStudentIds={selectedStudentIds}
           onSelectionChange={setSelectedStudentIds}
         />
+        <div className="mt-3">
+          <Pagination
+            totalCount={availableStudentsTotalCount}
+            currentPage={availableStudentsPage}
+            pageSize={availableStudentsPageSize}
+            onPageChange={setAvailableStudentsPage}
+            onPageSizeChange={(s) => { setAvailableStudentsPageSize(s); setAvailableStudentsPage(1); }}
+            pageSizeOptions={[5, 10, 15]}
+            // Optional: localized labels
+            labels={{ previous: 'Anterior', next: 'Próxima', of: 'de', perPage: 'página', page: 'Página', goTo: 'Ir para' }}
+          />
+        </div>
         <Button className="hover:bg-purple-500" onClick={onAddSelected}>
           Adicionar Alunos
         </Button>

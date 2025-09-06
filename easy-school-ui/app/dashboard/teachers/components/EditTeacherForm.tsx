@@ -14,20 +14,12 @@ import { getTeacherById, updateTeacher } from "@/bff/services/teacher.server";
 import { HttpError } from "@/app/config/api";
 import { getAllWeekDays } from "@/bff/services/calendarWeekDay.server";
 
-export default function TeacherEditForm({ teacher_id }: { teacher_id: string }) {
+export default function TeacherEditForm({ teacher, languages, calendars }: { teacher: TeacherModel, languages: LanguageModel[], calendars: CalendarRangeHourDayModel[] }) {
   const router = useRouter();
 
-  const [formData, setFormData] = useState<TeacherModel>({
-    name: "",
-    email: "",
-    phone_number: "",
-    compensation: "",
-    start_date: "",
-    status: true,
-    languages: [],
-    language_ids: [],
-    calendar_range_hour_days: []
-  });
+  teacher.languages = languages;
+
+  const [formData, setFormData] = useState<TeacherModel>(teacher || {});
 
   // Availabilities shown in the editor
   const [calendarRangeHourDayModels, setCalendarRangeHourDayModels] = useState<CalendarRangeHourDayModel[]>([]);
@@ -52,21 +44,6 @@ export default function TeacherEditForm({ teacher_id }: { teacher_id: string }) 
   const [error, setError] = useState<string | null>(null);
   const [actionType, setActionType] = useState<string | null>(null);
 
-  const getLanguages = useCallback(async (): Promise<LanguageModel[]> => {
-    setError(null);
-    const data: LanguageModel[] = await getAllLanguages();
-    return data;
-  }, []);
-
-  const fetchCalendarByTeacher = useCallback(
-    async (teacher_id: string): Promise<CalendarRangeHourDayModel[]> => {
-      setError(null);
-      const data: CalendarRangeHourDayModel[] = await fetchCalendarRangeHourDayByTeacher(teacher_id);
-      return data;
-    },
-    []
-  );
-
 
   const deleteTeacherRangeHourDayList = useCallback(async (ids: string[]) => {
     setError(null);
@@ -83,7 +60,7 @@ export default function TeacherEditForm({ teacher_id }: { teacher_id: string }) 
     setError(null);
 
     try {
-      return await createByTeacherId(teacher_id,payload);
+      return await createByTeacherId(teacher_id, payload);
     } catch (err: any) {
       if (err.name !== 'AbortError') setError(err.message || 'Erro desconhecido');
     }
@@ -103,30 +80,14 @@ export default function TeacherEditForm({ teacher_id }: { teacher_id: string }) 
   useEffect(() => {
     const fetchTeacherData = async () => {
       try {
-        // Try to fetch calendar data first
-        const calendars = await fetchCalendarByTeacher(teacher_id);
 
         if (calendars.length > 0 && calendars[0].teacher) {
           const calendarsWithUddi = calendars.map(c => ({ ...c, uddi: uuidv4() }));
           setCalendarRangeHourDayModels(calendarsWithUddi);
 
-          const firstTeacher = calendars[0].teacher;
-          const languages = await getLanguages();
-
-          setFormData(prev => ({
-            ...prev,
-            id: firstTeacher.id || "",
-            name: firstTeacher.name || "",
-            email: firstTeacher.email || "",
-            phone_number: firstTeacher.phone_number || "",
-            compensation: firstTeacher.compensation?.toString() || "",
-            start_date: firstTeacher.start_date || "",
-            status: firstTeacher.status ?? true,
-            languages: languages || [],
-            language_ids: firstTeacher.languages?.map(lang => lang.id!.toString()) || [],
-            calendar_range_hour_days: prev.calendar_range_hour_days
-          }));
-        } 
+        } else {
+          setCalendarRangeHourDayModels([]);
+        }
 
         setCalendarRangeHour({
           end_hour: "",
@@ -135,56 +96,14 @@ export default function TeacherEditForm({ teacher_id }: { teacher_id: string }) 
           start_minute: "",
         });
 
-      } 
-      catch (err: any) {
-
-
-        if (err instanceof HttpError && err.status === 404) {
-
-        
-        try {
-          // Fallback to getting teacher by ID
-
-          const teacher = await getTeacher(teacher_id);
-          const languages = await getLanguages();
-
-          setFormData(prev => ({
-            ...prev,
-            id: teacher.id || "",
-            name: teacher.name || "",
-            email: teacher.email || "",
-            phone_number: teacher.phone_number || "",
-            compensation: teacher.compensation?.toString() || "",
-            start_date: teacher.start_date || "",
-            status: teacher.status ?? true,
-            languages: languages || [],
-            language_ids: teacher.languages?.map(lang => lang.id!.toString()) || [],
-            calendar_range_hour_days: prev.calendar_range_hour_days
-          }));
-          
-          // Set empty calendar data since there's no calendar
-          setCalendarRangeHourDayModels([]);
-          setCalendarRangeHour({
-            end_hour: "",
-            end_minute: "",
-            start_hour: "",
-            start_minute: "",
-          });
-          
-        } catch (teacherErr: any) {
-          console.error("Error fetching teacher by ID:", teacherErr);
-          setError(teacherErr.message);
-        }
-      } else {
-        // Handle other errors
-        console.error("Non-404 error:", err);
-        setError(err.message);
       }
+      catch (err: any) {
+        setError(err.message);
       }
     };
 
     fetchTeacherData();
-  }, [teacher_id]);
+  }, [teacher]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -349,10 +268,8 @@ export default function TeacherEditForm({ teacher_id }: { teacher_id: string }) 
           return toAdd;
         });
 
-        if (calendarRangeHourDayModels) {
-
-
-          createByTeacher(teacher_id, calendarRangeHourDayModels);
+        if (calendarRangeHourDayModels && calendarRangeHourDayModels.length > 0) {
+          createByTeacher(teacher.id!, calendarRangeHourDayModels);
         }
 
         saveTeacher(updatedFormData);

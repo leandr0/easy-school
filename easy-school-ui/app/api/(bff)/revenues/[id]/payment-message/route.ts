@@ -13,8 +13,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
     const { id } = params;
 
-    await requireAuth('ADMIN');
-
     const pathParams = new URLPathParam();
     pathParams.append(id);
     pathParams.append('payment-message');

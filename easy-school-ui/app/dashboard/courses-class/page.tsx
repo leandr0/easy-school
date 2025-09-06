@@ -1,12 +1,13 @@
-import Pagination from '@/app/dashboard/components/pagination';
 import Search from '@/app/ui/search';
-import { CreateCourse, CreateCourseClass, CreateStudent } from '@/app/dashboard/components/ui_buttons';
+import {  CreateCourseClass } from '@/app/dashboard/components/ui_buttons';
 import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 
 import { Metadata } from 'next';
 import CoursesClassTable from './components/CourseClassesTable';
+
+import { getAllCourseClass } from "@/bff/services/courseClass.server"; 
  
 export const metadata: Metadata = {
   title: 'Turmas',
@@ -23,6 +24,8 @@ export default async function Page({
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
 
+  const courseClasses = await getAllCourseClass();
+
   const totalPages = 1;
  
   return (
@@ -35,11 +38,8 @@ export default async function Page({
         <CreateCourseClass/>
       </div>
       <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
-        <CoursesClassTable query={query} currentPage={currentPage} />
+        <CoursesClassTable query={query} currentPage={currentPage} courseClasses={courseClasses}/>
       </Suspense>
-      <div className="mt-5 flex w-full justify-center">
-        { <Pagination totalPages={totalPages} /> }
-      </div>
     </div>
   );
 }

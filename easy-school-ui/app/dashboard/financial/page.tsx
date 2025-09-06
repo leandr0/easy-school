@@ -3,13 +3,16 @@ import { lusitana } from '@/app/ui/fonts';
 import { Metadata } from 'next';
 import RevenuesTable from './components/RevenueTable';
 import Link from 'next/link';
- 
+import { getRevenuesByRangeDate, sendPaymentMessage, sendReminderMessage, updatePaymentStatus } from '@/bff/services/revenue.server';
+
 export const metadata: Metadata = {
   title: 'Financial',
 };
 
 export default async function Page() {
   
+
+
  
   return (
     <div className="w-full">
@@ -17,7 +20,7 @@ export default async function Page() {
         <h1 className={`${lusitana.className} text-2xl`}>Financial</h1>
       </div>
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-        <RevenuesTable/>
+        <RevenuesTable onSendReminderMessage={sendReminderMessage}/>
       </div>
            <div className="mt-6 flex justify-end gap-4">
                 <Link

@@ -2,7 +2,7 @@
 
 import { ClassControlResponseModel } from "@/app/lib/definitions/class_control_definitions";
 import { Switch } from "@/app/dashboard/components/switch";
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ChevronDown,
   ChevronUp,
@@ -21,6 +21,7 @@ import AttendenceDateRangeFilter from "./AttendenceDateRangeFilter";
 import { StudentModel } from "@/app/lib/definitions/students_definitions";
 import { CourseClassCompleteModel } from "@/app/lib/definitions/course_class_definitions";
 import { CancelButton } from "@/app/ui/button";
+import { Pagination } from "../../components/Pagination";
 
 export type DateRange = { startDate: string; endDate: string };
 
@@ -53,6 +54,27 @@ export default function AttendenceClassControlTableMobile({
   loadingRow,
   onToggleRow
 }: AttendenceClassControlTableMobileProps) {
+
+
+    // 🔢 pagination state
+    const [page, setPage] = useState<number>(1);        // 1-based
+    const [pageSize, setPageSize] = useState<number>(3);
+  
+    // clamp current page if revenues length changes
+    const totalCount = existingRecords?.length ?? 0;
+    const totalPages = Math.max(1, Math.ceil(totalCount / Math.max(1, pageSize)));
+  
+    useEffect(() => {
+      if (page > totalPages) setPage(totalPages);
+    }, [totalPages, page]);
+  
+    // slice current page
+    const currentItems = useMemo(() => {
+      if (!existingRecords?.length) return [];
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      return existingRecords.slice(start, end);
+    }, [existingRecords, page, pageSize]);
 
   return (
     <div className="space-y-4 p-4">
@@ -110,8 +132,8 @@ export default function AttendenceClassControlTableMobile({
 
           {/* Records Cards */}
           <div className="space-y-3">
-            {existingRecords && existingRecords.length > 0 ? (
-              existingRecords.map((classControl) => {
+            {currentItems && currentItems.length > 0 ? (
+              currentItems.map((classControl) => {
                 const isExpanded = !!expandedRows[classControl.class_control?.id!];
                 const classControlId = String(classControl.class_control?.id!);
 
@@ -175,8 +197,8 @@ export default function AttendenceClassControlTableMobile({
                       {/* Quick Status Indicators */}
                       <div className="flex items-center space-x-2 mt-3">
                         <div className={`flex items-center px-2 py-1 rounded-full text-xs font-medium ${classControl.teacher?.name
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
                           }`}>
                           {classControl.teacher?.name ? (
                             <>
@@ -307,6 +329,19 @@ export default function AttendenceClassControlTableMobile({
                 </p>
               </div>
             )}
+          </div>
+
+          <div className="mt-3">
+            <Pagination
+              totalCount={totalCount}
+              currentPage={page}
+              pageSize={pageSize}
+              onPageChange={setPage}
+              onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
+              pageSizeOptions={[3,6]}
+              // Optional: localized labels
+              labels={{ previous: 'Anterior', next: 'Próxima', of: 'de', perPage: 'página', page: 'Página', goTo: 'Ir para' }}
+            />
           </div>
         </>
       )}

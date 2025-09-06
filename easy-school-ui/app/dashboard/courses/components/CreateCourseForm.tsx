@@ -11,35 +11,37 @@ import { BookOpenIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
 import { LanguageModel } from '@/app/lib/definitions/language_definitions';
 
 import BRLCurrency from '../../components/currency';
+import { useFormStatus } from 'react-dom';
 
-import { createCourse } from '@/bff/services/course.server';
-import { getAllLanguages } from '@/bff/services/language.server';
+type Props = {
+  languages: LanguageModel[];
+onSave: (c: CourseModel) => Promise<CourseModel>;
+};
 
-export default function CreateCourseForm() {
+function SubmitButton({ disabled }: { disabled: boolean }) {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" disabled={disabled || pending}>
+      {pending ? 'Criando...' : 'Criar Curso'}
+    </Button>
+  );
+}
+
+
+export default function CreateCourseForm({ languages, onSave }: Props) {
   const router = useRouter();
 
-  const [languages, setLanguages] = useState<LanguageModel[]>([]);
+
   const [formData, setFormData] = useState<CourseModel>({
     name: '',
     status: true,
   });
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    getAllLanguages()
-      .then((langs) => {
-        const updated = [
-          { id: '', name: 'Selecione um idioma ... ', status: true },
-          ...langs,
-        ];
-        setLanguages(updated);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -62,15 +64,16 @@ export default function CreateCourseForm() {
     setFormData((prev) => ({ ...prev, price: numericValue }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (submitting) return;
     try {
       setSubmitting(true);
       setToast(null);
-      await createCourse(formData);
+      await onSave(formData);
       setToast('✅ Curso criado com sucesso!');
       router.push('/dashboard/courses');
+      router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown error occurred.';
       setToast(`❌ ${msg}`);
@@ -78,10 +81,8 @@ export default function CreateCourseForm() {
       setSubmitting(false);
     }
   };
-
-  const disableSubmit = submitting || loading || !formData.name || !formData.language?.id;
-
-  return (
+  const disableSubmit = submitting || !formData.name || !formData.language?.id || !formData.price;
+return (
     <form onSubmit={handleSubmit} className="w-full">
       {/* Header */}
       <div className="px-4 pt-2 md:px-0 md:pt-4">
@@ -124,8 +125,8 @@ export default function CreateCourseForm() {
                   value={formData.language?.id ?? ''}
                   onChange={handleLanguageChange}
                   className="block w-full cursor-pointer rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 text-sm outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400"
-                  disabled={loading}
                 >
+                  <option value="">Selecione um idioma ...</option>
                   {languages.map((l) => (
                     <option key={l.id} value={l.id}>
                       {l.name}

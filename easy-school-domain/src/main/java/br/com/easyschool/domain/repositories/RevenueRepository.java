@@ -21,7 +21,8 @@ public interface RevenueRepository extends JpaRepository<Revenue, Integer> {
     @Query("""
             SELECT r FROM Revenue r
             WHERE ( r.month >= :start_month AND r.year >= :start_year )
-            AND (r.month <= :end_month AND r.year <= :end_year )""")
+            AND (r.month <= :end_month AND r.year <= :end_year )
+            ORDER BY r.student.name ASC""")
     List<Revenue> fetchByRangeData(@Param("start_month") Integer startMonth,
                                    @Param("start_year") Integer startYear,
                                    @Param("end_month") Integer endMonth,

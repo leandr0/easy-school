@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/app/ui/button';
 import { TeacherModel, TeacherUpdateModel, TeacherWeekDayAvailableModel } from '@/app/lib/definitions/teacher_definitions';
 import { TeacherInfoComponent } from './TeacherInfoComponent';
@@ -11,6 +11,7 @@ import { CalendarWeekDaySelectComponent } from './CalendarWeekDaySelectComponent
 import { TeacherAvailabilityInputComponent } from './TeacherAvailabilityInputComponent';
 import { CalendarWeekDayModel } from '@/app/lib/definitions/calendar_week_day_definitions';
 import { CreateCourseClassModel } from '@/app/lib/definitions/course_class_definitions';
+import { Pagination } from '../../components/Pagination';
 
 interface Props {
   formData: TeacherModel;
@@ -55,6 +56,10 @@ export default function TeacherEditDesktop({
   calendarRangeHour,
   selectedWeekDay
 }: Props) {
+
+
+
+
   return (
     <form onSubmit={onSubmit} className="p-4">
 
@@ -82,7 +87,7 @@ export default function TeacherEditDesktop({
             setActionType={setActionType}
             setSelectedWeekDayUddi={setSelectedWeekDayUddi}
           />
-
+      
           {message && (
             <div className={`mb-4 p-3 rounded-md text-center ${message.startsWith("✅") ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
               {message}
