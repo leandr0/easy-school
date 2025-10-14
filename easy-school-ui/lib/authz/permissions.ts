@@ -3,14 +3,16 @@ export type Permission =
   | 'students.read' | 'students.write'
   | 'courses.read'  | 'courses.write'
   | 'revenues.read' | 'revenues.write'
+  | 'classes.read'  | 'classes.write'
+  | 'teachers.read' | 'teachers.write'
+  | 'class_controls.read' | 'class_controls.write'
+  | 'financial.read'
   | 'admin.all';
-
-export type Role = 'ADMIN' | 'MANAGER' | 'TEACHER' | 'ASSISTANT' | 'STUDENT';
+  
+export type Role = 'ADMIN' | 'TEACHER' | 'STUDENT';
 
 export const RolePermissions: Record<Role, Permission[]> = {
   ADMIN: ['admin.all'],
-  MANAGER: ['dashboard.view','students.read','students.write','courses.read','courses.write','revenues.read','revenues.write'],
-  TEACHER: ['dashboard.view','students.read','courses.read'],
-  ASSISTANT: ['dashboard.view','students.read','courses.read','revenues.read'],
-  STUDENT: ['dashboard.view'],
+  TEACHER: ['dashboard.view','students.read','courses.read','class_controls.read' ,'class_controls.write','teachers.read'],
+  STUDENT: ['dashboard.view' , 'class_controls.read'],
 };

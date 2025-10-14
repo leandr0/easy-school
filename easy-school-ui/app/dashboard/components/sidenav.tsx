@@ -1,79 +1,45 @@
-'use client';
+// app/dashboard/components/SideNav.tsx
 import Link from 'next/link';
-import NavLinks from '@/app/dashboard/components/nav-links';
-import NavLinksMobile from './NavLinksMobile';
 import AcmeLogo from '@/app/ui/acme-logo';
-import { PowerIcon } from '@heroicons/react/24/outline';
-import { useRouter } from 'next/navigation';
-import React from 'react';
+import NavLinks from '@/app/dashboard/components/nav-links';
+import NavLinksMobile from '@/app/dashboard/components/NavLinksMobile';
+import SignOutButton from '@/app/dashboard/components/SignOutButton';
 
-export default function SideNav() {
-  const router = useRouter();
+import { getAbility } from '@/lib/authz/session';
+import { links as ALL_LINKS, filterNav } from '@/lib/nav/menu';
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const payload = { cookieName: 'user' };
-
-    const response = await fetch('/api/security/cookies', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Note: you generally don't need to set Cookie header manually in the browser;
-        // 'credentials: include' will send cookies automatically if same-site is configured.
-        // 'Cookie': `user=${document.cookie}`,
-      },
-      credentials: 'include',
-      body: JSON.stringify(payload),
-    });
-
-    if (response.ok) {
-      router.push('/login');
-    }
-  };
+export default async function SideNav() {
+  const ability = await getAbility();
+  const userPerms = ability?.list ?? [];
+  const items = filterNav(ALL_LINKS, userPerms);
 
   return (
     <div className="flex h-full flex-col px-3 py-4 md:px-2">
       {/* Header / Logo */}
-      <Link
-        className="mb-2 flex h-16 items-end justify-start rounded-md bg-purple-400 p-4 md:h-40"
-        href="/"
-      >
+      <Link className="mb-2 flex h-16 items-end justify-start rounded-md bg-purple-400 p-4 md:h-40" href="/">
         <div className="w-32 text-white md:w-40">
           <AcmeLogo />
         </div>
       </Link>
 
-      {/* Mobile layout */}
+      {/* Mobile 
       <div className="md:hidden w-full">
-        {/* Mobile accordion nav */}
-        <NavLinksMobile />
-
-        {/* Sign out button (mobile) */}
-        <form onSubmit={handleSubmit} className="mt-3">
-          <button
-            className="w-full flex h-[48px] items-center justify-center gap-2 rounded-md bg-gray-50 p-3
-                       text-sm font-medium hover:bg-sky-100 hover:text-red-400"
-          >
-            <PowerIcon className="w-6" />
-            <span>Sign Out</span>
-          </button>
-        </form>
+        <NavLinksMobile items={items} />
+        <div className="mt-3">
+          <SignOutButton />
+        </div>
       </div>
+      */}
 
-      {/* Desktop layout */}
+      {/* Desktop */}
       <div className="hidden md:flex md:grow md:flex-col md:space-y-2">
-        <NavLinks />
+        <NavLinks items={items} />
         <div className="h-auto grow rounded-md bg-gray-50" />
-        <form onSubmit={handleSubmit}>
-          <button
-            className="w-full flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3
-                       text-sm font-medium hover:bg-sky-100 hover:text-red-400 md:justify-start md:p-2 md:px-3"
-          >
-            <PowerIcon className="w-6 " />
-            <div className="hidden md:block ">Sign Out</div>
-          </button>
-        </form>
+        
+        <SignOutButton full />
+        <p>{ability?.username}</p>
+        <p>{JSON.stringify(ability?.list)}</p>
+        <p>{ability?.roles}</p>
       </div>
     </div>
   );

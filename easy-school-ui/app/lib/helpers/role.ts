@@ -1,24 +1,23 @@
 import { RoleModel } from "../definitions/role_definitions";
 import { UserModel } from "../definitions/user_definitions";
 
-// helpers/roles.ts
+
 export function extractRoleNames(user: UserModel): string[] {
-  const names =
-    Array.isArray(user.roles)
-      ? user.roles
-          .map(r => r?.role)                       // pick the name
-          .filter((s): s is string => !!s && s.trim().length > 0)
-          .map(s => s.toUpperCase())               // optional: normalize
-      : [];
+  const fromArray = (user.roles ?? []).flatMap((r) => {
+    if (typeof r === "string") return [r];
+    if (r && typeof r === "object") {
+      const val =
+        (r as any).name ??
+        (r as any).role ??
+        (r as any).code ??
+        undefined;
+      return typeof val === "string" && val.trim() ? [val] : [];
+    }
+    return [];
+  });
 
-  // optional: also support old shape user.role?.role
-  const single = (user as any)?.role?.role as string | undefined;
-  if (single) names.push(single.toUpperCase());
-
-  // dedupe
-  return Array.from(new Set(names));
+  return Array.from(new Set([...fromArray].map((s) => s.toUpperCase())));
 }
-
 
 // Normalize roles to an array of uppercase names
 function normalizeRoleNames(

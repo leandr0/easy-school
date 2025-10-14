@@ -16,7 +16,3 @@ export async function getAllLanguages(): Promise<LanguageModel[]> {
 export async function createLanguage(course: LanguageModel): Promise<void> {
   clientApi.post(course);
 }
-
-export async function getLanguageTotalStudents(): Promise<DashBoardTotalCardsLanguageModel[]> {
-  return clientApi.get("/total-students", { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', } });
-}

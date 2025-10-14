@@ -1,20 +1,27 @@
-'use server'
+//'use server'
 import { NextRequest, NextResponse } from 'next/server';
 import { UnauthorizedError, ForbiddenError } from '@/app/lib/errors';
 import { externalApiClient } from '@/app/config/clientAPI';
 import { bearerHeaders, requireAuth } from '@/app/lib/authz.server';
 import { StudentModel } from '@/app/lib/definitions/students_definitions';
 
+
+import { withAuthZ } from '@/lib/authz/api-guard';
+import { getAbility, getSessionUser } from '@/lib/authz/session';
+
+export const dynamic = 'force-dynamic';
+
 const clientApi = externalApiClient.resource('/students');
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
 
-    await requireAuth('ADMIN');
+    const handler = withAuthZ(['students.read', 'admin.all'], async () => {
+      const data = await clientApi.get<StudentModel[]>('', { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
+      return NextResponse.json(data);
+    }, { mode: 'any' });
 
-    const data = await clientApi.get<StudentModel[]>('', { headers: await bearerHeaders(), cache: 'no-store' });
-
-    return NextResponse.json(data);
+    return handler(req, {} as any);
 
   } catch (e: any) {
 

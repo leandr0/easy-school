@@ -44,4 +44,15 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
             """,nativeQuery = true)
     Integer totalStudentAvailable();
 
+    @Query(value = """
+            SELECT s.* FROM student s
+            INNER JOIN course_class_students ccs
+            ON s.id = ccs.student_id
+            INNER JOIN course_class cc
+            ON ccs.course_class_id = cc.id
+            WHERE cc.teacher_id = :teacher_id
+            ORDER BY s.name ASC
+            """,nativeQuery = true)
+    List<Student> fetchStudentsByTeacher(@Param("teacher_id") Integer teacherId);
+
 }

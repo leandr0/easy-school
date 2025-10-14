@@ -298,5 +298,23 @@ CREATE TABLE IF NOT EXISTS role_paths (
     UNIQUE (role_id, path)
 );
 
+-- 1. Add the new columns (with temporary defaults if table already has data)
+ALTER TABLE users
+    ADD COLUMN name TEXT,
+    ADD COLUMN phone_number TEXT;
 
-curl -d '{"username" : "ht@target.com.br", "password" : "123456"}' -H "Content-Type: application/json" -X POST http://192.168.15.51:3000/api/security/login
+ALTER TABLE teacher
+    ADD COLUMN user_id UUID,
+	ADD FOREIGN KEY (user_id) REFERENCES users (id);
+
+ALTER TABLE student
+    ADD COLUMN user_id UUID,
+	ADD FOREIGN KEY (user_id) REFERENCES users (id);
+
+ALTER TABLE users
+    ALTER COLUMN name SET NOT NULL,
+    ALTER COLUMN phone_number SET NOT NULL;
+
+ALTER TABLE users
+    ADD CONSTRAINT uq_users_username UNIQUE (username),
+    ADD CONSTRAINT uq_users_phone_number UNIQUE (phone_number);

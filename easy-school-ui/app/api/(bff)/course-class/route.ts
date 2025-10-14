@@ -10,9 +10,7 @@ const clientApi = externalApiClient.resource('/course-classes');
 export async function GET() {
   try {
 
-    await requireAuth('ADMIN');
-
-    const data = await clientApi.get<CourseClassModel[]>('', { headers: await bearerHeaders(), cache: 'no-store' });
+    const data = await clientApi.get<CourseClassModel[]>('', { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 
     return NextResponse.json(data);
 

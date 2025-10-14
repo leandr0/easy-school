@@ -15,6 +15,7 @@ export async function verifyJwt(token: string): Promise<AuthUser> {
     issuer: 'easy-school',
     audience: 'web',
   });
+  
   return {
     id: String(payload.sub),
     username: String(payload.username ?? ''),

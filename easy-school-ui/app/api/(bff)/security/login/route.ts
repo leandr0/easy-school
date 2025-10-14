@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { setUserInCookieServer } from '@/app/lib/login';
 import { externalApiClient } from '@/app/config/clientAPI';
-import { UserModel } from '@/app/lib/definitions/user_definitions';
+import { UserLoginModel, UserModel } from '@/app/lib/definitions/user_definitions';
 import { PATHS } from '@/bff/paths';
 
 export async function POST(req: NextRequest) {
@@ -13,12 +13,10 @@ export async function POST(req: NextRequest) {
 
   const authApi = externalApiClient.resource(PATHS.SECURITY.LOGIN);
 
-  let user: UserModel;
+  let user: UserLoginModel;
   try {
 
-
-    user = await authApi.post<UserModel>({ username, password });
-
+    user = await authApi.post<UserLoginModel>({ username, password });
 
   } catch (e) {
     
@@ -40,7 +38,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
   }
-
 
   const reponse = await setUserInCookieServer(req,user);
 

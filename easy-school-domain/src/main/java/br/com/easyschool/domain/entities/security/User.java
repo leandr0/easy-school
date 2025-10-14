@@ -1,5 +1,8 @@
 package br.com.easyschool.domain.entities.security;
 
+import br.com.easyschool.domain.dto.UserDTO;
+import br.com.easyschool.domain.entities.Student;
+import br.com.easyschool.domain.entities.Teacher;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,6 +11,8 @@ import lombok.Setter;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 @Entity
 @Table(name = "users",
         uniqueConstraints = {@UniqueConstraint( columnNames = {"username"})})
@@ -65,4 +70,32 @@ public class User {
     )
     @Getter @Setter
     private List<Role> roles;
+
+    @Getter @Setter
+    private String name;
+
+    @Getter @Setter
+    @JsonProperty("phone_number")
+    private String phoneNumber;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @Getter @Setter
+    private Student student;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @Getter @Setter
+    private Teacher teacher;
+
+
+
+    public static UserDTO toDto(User u) {
+        return new UserDTO(
+                u.getId(),
+                u.getUsername(),
+                u.getName(),
+                u.getStudent() != null ? u.getStudent().getId() : (u.getTeacher() != null ? u.getTeacher().getId() : -1),
+                u.getStudent() != null ? "student" :  (u.getTeacher() != null ? "teacher" : "admin"),
+                u.getRoles().stream().map(Role::getRole).collect(Collectors.toSet())
+        );
+    }
 }

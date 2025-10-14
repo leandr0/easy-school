@@ -3,6 +3,7 @@ package br.com.easyschool.service.gateways;
 import br.com.easyschool.domain.entities.CalendarRangeHourDay;
 import br.com.easyschool.domain.entities.Teacher;
 import br.com.easyschool.domain.repositories.CalendarRangeHourDayRepository;
+import br.com.easyschool.domain.repositories.TeacherRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +25,10 @@ import java.util.stream.Collectors;
 public class CalendarRangeHourDayGateway {
 
     private final CalendarRangeHourDayRepository repository;
+
+    private final TeacherSkillGateway teacherSkillGateway;
+
+    private final TeacherRepository teacherRepository;
 
     @GetMapping("teacher/available")
     public List<CalendarRangeHourDay> fetchAvailabilityTeacher(@RequestParam(value = "calendar_week_day_ids", required = true) List<Integer> calendarWeekDayIds,
@@ -45,10 +51,17 @@ public class CalendarRangeHourDayGateway {
     @GetMapping("/teacher/{id}")
     public ResponseEntity<List<CalendarRangeHourDay>> fetchByTeacherId(@PathVariable(value = "id", required = true) Integer teacherId) {
 
-        List<CalendarRangeHourDay> result = null;
+        List<CalendarRangeHourDay> queryResult = new LinkedList<>();
+
+        List<CalendarRangeHourDay> result = new LinkedList<>();
 
         try {
-            result = repository.findCalendarRangeHourDayByTeacherId(teacherId);
+            queryResult = repository.findCalendarRangeHourDayByTeacherId(teacherId);
+
+            for (CalendarRangeHourDay calendarRangeHourDay : queryResult) {
+                calendarRangeHourDay.getTeacher().setUser(null);
+                result.add(calendarRangeHourDay);
+            }
 
             if(result.isEmpty())
                 return ResponseEntity.notFound().build();

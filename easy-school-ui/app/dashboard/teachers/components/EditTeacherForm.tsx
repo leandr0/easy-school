@@ -56,11 +56,11 @@ export default function TeacherEditForm({ teacher, languages, calendars }: { tea
   }, []);
 
 
-  const createByTeacher = useCallback(async (teacher_id: string, payload: CalendarRangeHourDayModel[]) => {
+  const createByTeacher = useCallback(async (teacher_id: string, calendarRangeHourDays: CalendarRangeHourDayModel[]) => {
     setError(null);
 
     try {
-      return await createByTeacherId(teacher_id, payload);
+      return await createByTeacherId(teacher_id, calendarRangeHourDays);
     } catch (err: any) {
       if (err.name !== 'AbortError') setError(err.message || 'Erro desconhecido');
     }
@@ -261,18 +261,16 @@ export default function TeacherEditForm({ teacher, languages, calendars }: { tea
           deleteTeacherRangeHourDayList(ids);
         }
 
-        // Keep only the items WITHOUT id (new ones to add),
-        // and log the result *inside* the updater (ensures the log sees the filtered list).
         setCalendarRangeHourDayModels(prev => {
           const toAdd = prev.filter(item => !item.id);
           return toAdd;
-        });
+        });        
 
         if (calendarRangeHourDayModels && calendarRangeHourDayModels.length > 0) {
-          createByTeacher(teacher.id!, calendarRangeHourDayModels);
+          createByTeacher(teacher.id!,calendarRangeHourDayModels);
         }
 
-        saveTeacher(updatedFormData);
+        await saveTeacher(updatedFormData);
         setMessage("✅ Teacher updated successfully!");
         router.push("/dashboard/teachers");
         router.refresh();

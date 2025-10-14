@@ -16,10 +16,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
 
     const roles = await requireAuth('ADMIN');
-    console.log(`API roles ${JSON.stringify(roles)}`);
+    
 
     const auth = await bearerHeaders();
-    console.log(`API bearerHeaders ${JSON.stringify(auth)}`);
+    
 
 
     const pathParams = new URLPathParam();

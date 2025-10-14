@@ -1,13 +1,13 @@
 package br.com.easyschool.service.gateways.security;
 
 
+import br.com.easyschool.domain.dto.UserDTO;
 import br.com.easyschool.domain.entities.security.User;
 import br.com.easyschool.domain.repositories.security.RolePathRepository;
 import br.com.easyschool.domain.repositories.security.RoleRepository;
 import br.com.easyschool.domain.repositories.security.UserRepository;
 import br.com.easyschool.domain.repositories.security.UserRolesRepository;
 import br.com.easyschool.service.requests.security.LoginRequest;
-import br.com.easyschool.service.response.security.UserResponse;
 import br.com.easyschool.service.security.PasswordService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class SecurityGateway {
 
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(@RequestBody LoginRequest request){
+    public ResponseEntity<UserDTO> login(@RequestBody LoginRequest request){
 
         try{
 
@@ -64,7 +64,7 @@ public class SecurityGateway {
 
             lastLogin(user);
 
-            return ResponseEntity.ok(new UserResponse(user));
+            return ResponseEntity.ok(User.toDto(user));
 
         }catch (Throwable t){
             log.error(t.getMessage());

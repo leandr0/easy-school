@@ -10,9 +10,9 @@ const clientApi = externalApiClient.resource('/teachers');
 export async function GET() {
   try {
 
-    await requireAuth('ADMIN');
+    await requireAuth(['ADMIN', 'TEACHER']);
 
-    const data = await clientApi.get<TeacherModel[]>('', { headers: await bearerHeaders(), cache: 'no-store' });
+    const data = await clientApi.get<TeacherModel[]>('', { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 
     return NextResponse.json(data);
 
@@ -49,8 +49,9 @@ export async function PUT(req: NextRequest) {
   try {
     const json = await req.json();
 
-    await requireAuth('ADMIN');
+    await requireAuth(['ADMIN', 'TEACHER']);
 
+    console.log(`update teacher payload ${JSON.stringify(json)}`);
     const data = await clientApi.put(json, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', } })
     return NextResponse.json(data);
 

@@ -3,16 +3,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { UnauthorizedError, ForbiddenError } from '@/app/lib/errors';
 import { externalApiClient } from '@/app/config/clientAPI';
 import { bearerHeaders, requireAuth } from '@/app/lib/authz.server';
-import { CourseClassModel } from '@/app/lib/definitions/course_class_definitions';
+import { CourseModel } from '@/app/lib/definitions/courses_definitions';
 
 const clientApi = externalApiClient.resource('/courses');
 
+/**
+ * {}
+ * [GET]
+ * <host><port>/api/courses
+ * @returns {CourseModel[]}
+ */
 export async function GET() {
   try {
 
-    await requireAuth('ADMIN');
+    await requireAuth(['ADMIN','TEACHER']);
 
-    const data = await clientApi.get<CourseClassModel[]>('', { headers: await bearerHeaders(), cache: 'no-store' });
+    const data = await clientApi.get<CourseModel[]>('', { headers: await bearerHeaders(), cache: 'no-store' });
 
     return NextResponse.json(data);
 
@@ -24,14 +30,18 @@ export async function GET() {
   }
 }
 
-
+/**
+ * [POST]
+ * <host><port>/api/courses
+ * @returns {void}
+ */
 export async function POST(req: NextRequest) {
   try {
     const json = await req.json();
 
     await requireAuth('ADMIN');
 
-    const data = clientApi.post<void>(json, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', } });
+    const data = await clientApi.post<void>(json, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', } });
 
     return NextResponse.json(data);
 
@@ -46,7 +56,11 @@ export async function POST(req: NextRequest) {
   }
 }
 
-
+/**
+ * [PUT]
+ * <host><port>/api/courses
+ * @returns {void}
+ */
 export async function PUT(req: NextRequest) {
   try {
     const json = await req.json();

@@ -3,6 +3,7 @@ import { CalendarRangeHourDayModel } from "@/app/lib/definitions/calendat_range_
 import { URLPathParam } from "@/app/lib/url_path_param";
 import { bffApiClient } from "@/app/config/clientAPI";
 import { bearerHeaders } from "@/app/lib/authz.server";
+import { LanguageModel } from "@/app/lib/definitions/language_definitions";
 
 
 const clientApi = bffApiClient.resource('/calendar/range-hour-days');
@@ -47,12 +48,12 @@ export async function deleteRangeHourDayList(ids: string[],): Promise<void> {
   await clientApi.delete("/resources?" + queryParams.toString());
 }
 
-export async function createByTeacherId(teacher_id: any, body: CalendarRangeHourDayModel[]): Promise<CalendarRangeHourDayModel[]> {
+export async function createByTeacherId(teacher_id: any, payload: CalendarRangeHourDayModel[]): Promise<CalendarRangeHourDayModel[]> {
 
   const pathParams = new URLPathParam();
   pathParams.append("teacher");
   pathParams.append(teacher_id);
 
-  return await clientApi.post(pathParams.toString(), body, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json' } });
+  return await clientApi.post(pathParams.toString(), payload, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json' } });
 }
 

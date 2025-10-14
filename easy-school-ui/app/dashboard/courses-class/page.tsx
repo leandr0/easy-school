@@ -7,7 +7,7 @@ import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { Metadata } from 'next';
 import CoursesClassTable from './components/CourseClassesTable';
 
-import { getAllCourseClass } from "@/bff/services/courseClass.server"; 
+import { getAllCourseClass, getAllCourseClassAvailable } from "@/bff/services/courseClass.server"; 
  
 export const metadata: Metadata = {
   title: 'Turmas',
@@ -24,7 +24,7 @@ export default async function Page({
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
 
-  const courseClasses = await getAllCourseClass();
+  const courseClasses = await getAllCourseClassAvailable();
 
   const totalPages = 1;
  

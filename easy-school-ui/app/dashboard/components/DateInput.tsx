@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 export default function DateInput(props:any) {
-  const { value, onChange, name, className } = props;
+  const { value, onChange, name, className,readonly } = props;
   
   // State to hold the displayed value (DD/MM/YYYY)
   const [displayValue, setDisplayValue] = useState('');
@@ -79,6 +79,7 @@ export default function DateInput(props:any) {
     <input
       type="text"
       name={name}
+      readOnly={readonly}
       value={displayValue}
       onChange={handleInputChange}
       placeholder="DD/MM/YYYY"

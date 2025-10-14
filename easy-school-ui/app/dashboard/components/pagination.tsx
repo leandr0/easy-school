@@ -93,7 +93,7 @@ export const Pagination: React.FC<PaginationProps> = ({
             </label>
             <select
               id="page-size"
-              className="rounded-md border bg-background px-2 py-1 text-sm"
+              className="rounded-md border bg-background pr-6 py-1 text-sm text-left"
               value={pageSize}
               onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
             >

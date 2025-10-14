@@ -23,9 +23,19 @@ public interface CourseClassRepository extends JpaRepository<CourseClass, Intege
             """, nativeQuery = true)
     List<CoursePriceDTO> findStudentsCourseClassPrice(@Param("student_id") Integer studentId);
 
-    @Query("SELECT cc FROM CourseClass cc WHERE cc.status = true")
+    @Query("""
+            SELECT cc FROM CourseClass cc
+            WHERE cc.status = true
+            """)
     List<CourseClass> findAllCourseClassesAvailable();
 
+
+    @Query("""
+            SELECT cc FROM CourseClass cc
+            WHERE cc.status = true
+            AND cc.teacher.id = :teacher_id
+            """)
+    List<CourseClass> findAllCourseClassesAvailableByTeacher(@Param("teacher_id") Integer teacherId);
 
     @Query(value = """
             SELECT

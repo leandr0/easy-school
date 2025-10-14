@@ -9,9 +9,9 @@ const clientApi = externalApiClient.resource('/languages');
 export async function GET() {
   try {
 
-    //await requireAuth(['ADMIN', 'TEACHER']);
+    await requireAuth(['ADMIN', 'TEACHER']);
 
-    const data = await clientApi.get('', { headers: await bearerHeaders() });
+    const data = await clientApi.get('',{ headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 
     return NextResponse.json(data);
   } catch (e: any) {

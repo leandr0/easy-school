@@ -8,7 +8,8 @@ type Handler = (req: NextRequest, ctx: any) => Promise<Response>;
 export function withAuth(handler: Handler, roles?: string[] | string): Handler {
   return async (req, ctx) => {
     try {
-      await requireAuth(roles);
+      const rls = await requireAuth(roles);
+      
       return handler(req, ctx);
     } catch (e) {
       if (e instanceof UnauthorizedError) {

@@ -5,6 +5,7 @@ import { formatDateToLocal } from '@/app/lib/utils';
 import { StudentModel } from '@/app/lib/definitions/students_definitions';
 import React, { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { Pagination } from '../../components/Pagination';
+import { Can } from '@/components/Can';
 
 /** SSR-safe media query hook */
 function useMediaQuery(query: string) {
@@ -113,7 +114,9 @@ export default function StudentsTable({
                         <p className="text-sm">{student.phone_number}</p>
                       </div>
                       <div className="flex justify-end">
-                        <UpdateBase id={student.id as string} link='/dashboard/students/${id}/edit' disabled={false} />
+                        <Can perm='admin.all'>
+                          <UpdateBase id={student.id as string} link='/dashboard/students/${id}/edit' disabled={false} />
+                        </Can>
                       </div>
                     </div>
                     <div className="flex flex-col">
@@ -188,7 +191,9 @@ export default function StudentsTable({
                   </div>
                   <div className="py-3 pr-3 col-span-1 flex justify-center">
                     <div className="flex justify-center">
-                      <UpdateBase id={student.id as string} link='/dashboard/students/${id}/edit' disabled={false} />
+                       <Can perm='admin.all'>
+                          <UpdateBase id={student.id as string} link='/dashboard/students/${id}/edit' disabled={false} />
+                        </Can>
                     </div>
                   </div>
                 </div>

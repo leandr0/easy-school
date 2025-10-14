@@ -5,6 +5,8 @@ import { getAllLanguages } from '@/bff/services/language.server';
 import { fetchCalendarRangeHourDayByTeacher } from '@/bff/services/calendarRangeHourDay.server';
 import { TeacherModel } from '@/app/lib/definitions/teacher_definitions';
 import { HttpError } from '@/app/config/api';
+import { CanProvider } from '@/components/Can';
+import { getAbility } from '@/lib/authz/session';
 
 
 
@@ -12,7 +14,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   const id = params.id;
 
   let teacher: TeacherModel = {};
-  let calendars:any = [];
+  let calendars: any = [];
   let teacherFound = false;
 
   try {
@@ -22,7 +24,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     if (calendars.length > 0 && calendars[0].teacher) {
       teacher = calendars[0].teacher;
       teacherFound = true;
-    } 
+    }
 
 
   } catch (err: any) {
@@ -31,13 +33,14 @@ export default async function Page({ params }: { params: { id: string } }) {
     }
   }
 
-  if(!teacherFound){
+  if (!teacherFound) {
     teacher = await getTeacherById(id);
   }
 
   teacher.language_ids = teacher.languages?.map(lang => lang.id!.toString()) || [];
 
   const languages = await getAllLanguages();
+  const ability = await getAbility();
 
   return (
     <main>
@@ -51,7 +54,9 @@ export default async function Page({ params }: { params: { id: string } }) {
           },
         ]}
       />
-      <TeacherEditForm teacher={teacher} languages={languages} calendars={calendars} />
+      <CanProvider perms={ability?.list ?? []}>
+        <TeacherEditForm teacher={teacher} languages={languages} calendars={calendars} />
+      </CanProvider>
     </main>
   );
 }

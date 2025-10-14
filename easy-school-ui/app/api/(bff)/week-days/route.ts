@@ -11,7 +11,7 @@ const clientApi = externalApiClient.resource('/week-days');
 export async function GET(req: NextRequest,) {
   try {
     
-    await requireAuth('ADMIN');
+    await requireAuth(['ADMIN','TEACHER']);
     
     const data = await clientApi.get<CalendarWeekDayModel>('', {headers: await bearerHeaders() , cache: 'no-store' });
 

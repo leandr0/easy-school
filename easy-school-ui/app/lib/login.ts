@@ -1,10 +1,10 @@
 'use server'
 import { NextRequest, NextResponse } from 'next/server';
-import { UserModel } from './definitions/user_definitions'
+import { UserLoginModel, UserModel } from './definitions/user_definitions'
 import { generateJwtToken } from '@/sign';
 
 
-export async function setUserInCookie(user: UserModel): Promise<NextResponse> {
+export async function setUserInCookie(user: UserLoginModel): Promise<NextResponse> {
   if (!user) {
     throw new Error('User is undefined');
   }
@@ -29,10 +29,11 @@ export async function setUserInCookie(user: UserModel): Promise<NextResponse> {
   return response;
 }
 
-export async function setUserInCookieServer(req: NextRequest, user: UserModel): Promise<NextResponse> {
+export async function setUserInCookieServer(req: NextRequest, user: UserLoginModel): Promise<NextResponse> {
 
   const secure = req.nextUrl.protocol === 'https:'; // detects real scheme
 
+  
   const token = await generateJwtToken(user);
 
 

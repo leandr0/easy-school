@@ -2,9 +2,9 @@ package br.com.easyschool.service.gateways;
 
 import br.com.easyschool.domain.dto.CollectionFormDTO;
 import br.com.easyschool.domain.entities.Revenue;
+import br.com.easyschool.domain.vo.DataParam;
 import br.com.easyschool.service.implementations.RevenueService;
 import br.com.easyschool.service.requests.CreateRevenueRequest;
-import br.com.easyschool.domain.vo.DataParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +32,21 @@ public class RevenueGateway {
                                                                 @RequestParam(value = "end_year", required = true) Integer endYear) {
 
         try {
-            return ResponseEntity.ok(service.fetchByDataRange(new DataParam(startMonth,startYear),new DataParam(endMonth,endYear)));
+
+            List<Revenue> result = service.fetchByDataRange(new DataParam(startMonth,startYear),new DataParam(endMonth,endYear));
+
+            result.forEach(rev -> {
+                if (rev.getStudent() != null && rev.getStudent().getCourseClasses() != null) {
+                    rev.getStudent().getCourseClasses().forEach(courseClass -> {
+                        courseClass.setTeacher(null);
+                        if (courseClass.getCourse() != null) {
+                            courseClass.getCourse().setLanguage(null);
+                        }
+                    });
+                }
+            });
+
+            return ResponseEntity.ok(result);
         }catch (Throwable t){
             log.error("Find revenues {}",t.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -68,6 +82,7 @@ public class RevenueGateway {
     @GetMapping("/collection-form/student/{id}")
     public ResponseEntity<List<CollectionFormDTO>> fetchCollectionFormByStudent(@PathVariable Integer id) {
         try {
+
 
             return ResponseEntity.ok(service.fetchCollectionFormByStudent(id));
 

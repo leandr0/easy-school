@@ -5,6 +5,7 @@ import { verifyJwt, type AuthUser } from '@/app/lib/authz';
 import { UnauthorizedError, ForbiddenError } from '@/app/lib/errors';
 
 export async function requireAuth(requiredRoles?: string | string[]): Promise<AuthUser> {
+
   const cookieToken = nextCookies().get('user')?.value || '';
   const auth = nextHeaders().get('authorization') || '';
   const bearer = auth.startsWith('Bearer ') ? auth.slice(7) : '';
@@ -15,8 +16,10 @@ export async function requireAuth(requiredRoles?: string | string[]): Promise<Au
   if (!user) throw new UnauthorizedError();
 
   if (requiredRoles) {
+    
     const need = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles];
     const ok = (user.roles ?? []).some(r => need.includes(r));
+    
     if (!ok) throw new ForbiddenError();
   }
   return user;

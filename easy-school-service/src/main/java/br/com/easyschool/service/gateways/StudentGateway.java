@@ -6,6 +6,8 @@ import br.com.easyschool.domain.entities.Student;
 import br.com.easyschool.domain.repositories.CourseClassRepository;
 import br.com.easyschool.domain.repositories.CourseClassStudentRepository;
 import br.com.easyschool.domain.repositories.StudentRepository;
+import br.com.easyschool.service.gateways.security.JwtUser;
+import br.com.easyschool.service.gateways.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,12 +32,30 @@ public class StudentGateway {
 
     private final CourseClassStudentRepository courseClassStudentRepository;
 
+    private final JwtUtils jwtUtils;
+
     @GetMapping
-    public ResponseEntity<List<Student>> getStudents() {
+    public ResponseEntity<List<Student>> getStudents(@RequestHeader(value = "Authorization", required = false) String auth) {
 
         try {
 
-            List<Student> result = repository.findAll();
+            JwtUser user = jwtUtils.parseBearer(auth);
+
+            List<Student> queryResult = new LinkedList<>();
+
+            if (user.hasRole("ADMIN")) {
+                queryResult =  repository.findAll();
+            } else if (user.hasRole("TEACHER")) {
+                queryResult = repository.fetchStudentsByTeacher(user.profileId());
+            }
+
+            List<Student> result = new LinkedList<>();
+
+            for (Student student : queryResult) {
+                student.setUser(null);
+                student.setCourseClasses(null);
+                result.add(student);
+            }
 
             if(result.isEmpty())
                 return ResponseEntity.notFound().build();
@@ -53,7 +74,9 @@ public class StudentGateway {
 
         try {
 
-            List<Student> result = repository.findStudentsInCourseClass(courseClassId);
+            List<Student> result =  repository.findStudentsInCourseClass(courseClassId);
+
+            result.forEach(student -> student.setCourseClasses(null));
 
             if(result.isEmpty())
                 return ResponseEntity.notFound().build();

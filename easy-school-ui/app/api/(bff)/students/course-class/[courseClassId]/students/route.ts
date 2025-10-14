@@ -13,8 +13,6 @@ export async function GET(req: NextRequest, { params }: { params: { courseClassI
   try {
 
     const { courseClassId } = params;
-    
-    await requireAuth('ADMIN');
 
     const pathParams = new URLPathParam();
     pathParams.append("course-class");

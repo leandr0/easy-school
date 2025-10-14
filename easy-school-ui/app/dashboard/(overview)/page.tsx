@@ -12,14 +12,18 @@ import {
   GrowthSkeleton,
   LanguagesSkeleton,
 } from './components/skeletons';
-import { getLanguageTotalStudents } from '@/bff/services/language.server';
+import { getLanguageTotalStudents } from '@/bff/services/dashboard.server'; 
 import { Suspense } from 'react';
 import { lusitana } from '@/app/ui/fonts';
 
 // If you want to always SSR and avoid caching surprises:
 export const dynamic = 'force-dynamic';
 
-export default function Page() {
+import { authorizePage } from '@/lib/authz/page-guard';
+
+
+export default async function Page() {
+  await authorizePage('dashboard.view');
   // kick off all fetches in parallel (DON’T await)
   const cardsPromise = getTeacherCourseClassLanguageStudent();
   const growthPromise = getGrowthData();

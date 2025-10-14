@@ -1,10 +1,12 @@
-// TeacherInfoComponent.tsx
 'use client';
 
 import React from 'react';
 import DateInput from '@/app/dashboard/components/DateInput';
 import BRLCurrency from '@/app/dashboard/components/currency';
 import { Switch } from '@/app/dashboard/components/switch';
+
+import { Can } from '@/components/Can';
+
 
 type Props = {
   formData: any;
@@ -73,14 +75,32 @@ export function TeacherInfoComponent({
             <label className="mb-1 block text-sm font-medium text-gray-700">
               Email
             </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email || ''}
-              onChange={handleInputChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
-              placeholder="email@exemplo.com"
-            />
+            <Can
+              perm="admin.all"
+              fallback={
+
+                <Can perm="teachers.read">
+                  <input
+                    type="email"
+                    name="email"
+                    readOnly={true}
+                    value={formData.email || ''}
+                    onChange={handleInputChange}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
+                    placeholder="email@exemplo.com"
+                  />
+                </Can>
+              }
+            >
+              <input
+                type="email"
+                name="email"
+                value={formData.email || ''}
+                onChange={handleInputChange}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
+                placeholder="email@exemplo.com"
+              />
+            </Can>
           </div>
 
           {/* Hora/Aula */}
@@ -88,13 +108,31 @@ export function TeacherInfoComponent({
             <label className="mb-1 block text-sm font-medium text-gray-700">
               Hora/Aula
             </label>
-            <BRLCurrency
-              asInput
-              name="compensation"
-              value={formData.compensation ?? ''}
-              onChange={onCompensationChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
-            />
+            <Can
+              perm="admin.all"
+              fallback={
+
+                <Can perm="teachers.read">
+                  <BRLCurrency
+                    asInput
+                    name="compensation"
+                    readonly={true}
+                    value={formData.compensation ?? ''}
+                    onChange={onCompensationChange}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
+                  />
+                </Can>
+              }
+            >
+              <BRLCurrency
+                asInput
+                name="compensation"
+                value={formData.compensation ?? ''}
+                onChange={onCompensationChange}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
+              />
+            </Can>
+
           </div>
 
           {/* Data de início */}
@@ -102,12 +140,30 @@ export function TeacherInfoComponent({
             <label className="mb-1 block text-sm font-medium text-gray-700">
               Data de início
             </label>
-            <DateInput
-              name="start_date"
-              value={formData.start_date || ''}
-              onChange={handleInputChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
-            />
+            <Can
+              perm="admin.all"
+              fallback={
+
+                <Can perm="teachers.read">
+                  <DateInput
+                    name="start_date"
+                    readonly={true}
+                    value={formData.start_date || ''}
+                    onChange={handleInputChange}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
+                  />
+                </Can>
+              }
+            >
+              <DateInput
+                name="start_date"
+                value={formData.start_date || ''}
+                onChange={handleInputChange}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
+              />
+
+            </Can>
+
           </div>
         </div>
       </div>

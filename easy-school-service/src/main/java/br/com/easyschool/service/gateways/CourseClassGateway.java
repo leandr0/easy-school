@@ -6,6 +6,8 @@ import br.com.easyschool.domain.repositories.CourseClassCalendarRepository;
 import br.com.easyschool.domain.repositories.CourseClassRepository;
 import br.com.easyschool.domain.repositories.CourseRepository;
 import br.com.easyschool.domain.repositories.TeacherRepository;
+import br.com.easyschool.service.gateways.security.JwtUser;
+import br.com.easyschool.service.gateways.security.JwtUtils;
 import br.com.easyschool.service.requests.CreateCourseClassRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,31 +34,50 @@ public class CourseClassGateway {
 
     private final CourseClassCalendarRepository courseClassCalendarRepository;
 
+    private final JwtUtils jwtUtils;
+
     @GetMapping
-    public List<CourseClass> getAll(){
+    public List<CourseClass> getAll() {
+
         return repository.findAll();
     }
 
     @GetMapping("/available")
-    public List<CourseClass> getAllAvailable(){
-        return repository.findAllCourseClassesAvailable();
+    public ResponseEntity<List<CourseClass>> getAllAvailable(@RequestHeader(value = "Authorization", required = false) String auth) {
+        try {
+            JwtUser user = jwtUtils.parseBearer(auth);
+
+            List<CourseClass> queryResult = new LinkedList<>();
+
+            if (user.hasRole("ADMIN")) {
+                queryResult = repository.findAllCourseClassesAvailable();
+            } else if (user.hasRole("TEACHER")) {
+                queryResult = repository.findAllCourseClassesAvailableByTeacher(user.profileId());
+            }
+
+            return ResponseEntity.ok(queryResult);
+
+        } catch (Throwable t) {
+            log.error(t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
 
     @GetMapping("/{id}")
-    public Optional<CourseClass> getCourseClassById(@PathVariable final Integer id){
+    public Optional<CourseClass> getCourseClassById(@PathVariable final Integer id) {
         return repository.findById(id);
     }
 
 
     @GetMapping("/teacher/{id}")
-    public ResponseEntity<List<CourseClassTeacherDTO>> getCourseClassByTeacherId(@PathVariable("id") Integer teacherId){
+    public ResponseEntity<List<CourseClassTeacherDTO>> getCourseClassByTeacherId(@PathVariable("id") Integer teacherId) {
 
         List<CourseClassTeacherDTO> result = null;
 
         try {
-           result =  repository.fetchCourseClassByTeacher(teacherId);
-        }catch (Throwable t){
+            result = repository.fetchCourseClassByTeacher(teacherId);
+        } catch (Throwable t) {
             log.info(t.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -64,7 +86,7 @@ public class CourseClassGateway {
     }
 
     @PostMapping
-    public CourseClass create(@RequestBody CreateCourseClassRequest request){
+    public CourseClass create(@RequestBody CreateCourseClassRequest request) {
 
         Course course = courseRepository.findById(request.getCourseId())
                 .orElseThrow(() -> new RuntimeException("Course not found"));
@@ -74,10 +96,10 @@ public class CourseClassGateway {
 
         CourseClass entity = new CourseClass();
 
-        if(request.getId() != null && request.getId() > 0){
+        if (request.getId() != null && request.getId() > 0) {
             entity.setId(request.getId());
             entity.setStatus(request.getStatus());
-        }else{
+        } else {
             entity.setStatus(true);
         }
 
@@ -91,7 +113,7 @@ public class CourseClassGateway {
 
         entity = repository.save(entity);
 
-        for(int weekDayId : request.getWeekDays()){
+        for (int weekDayId : request.getWeekDays()) {
 
             CalendarWeekDay calendarWeekDay = new CalendarWeekDay();
             calendarWeekDay.setId(weekDayId);
@@ -108,7 +130,7 @@ public class CourseClassGateway {
     }
 
     @PostMapping("/{id}/teacher/{teacherId}")
-    public CourseClass addTeacher(@PathVariable Integer id,@PathVariable Integer teacherId){
+    public CourseClass addTeacher(@PathVariable Integer id, @PathVariable Integer teacherId) {
 
         Teacher teacher = teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new RuntimeException("Teacher not found"));
@@ -123,7 +145,7 @@ public class CourseClassGateway {
     }
 
     @PutMapping
-    public CourseClass updateCourseClass(@RequestBody CourseClass request){
+    public CourseClass updateCourseClass(@RequestBody CourseClass request) {
 
         return repository.save(request);
     }

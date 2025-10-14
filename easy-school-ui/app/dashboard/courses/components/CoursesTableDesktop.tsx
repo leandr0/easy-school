@@ -6,6 +6,7 @@ import CourseStatus from "./CourseStatus";
 import { CourseModel } from "@/app/lib/definitions/courses_definitions";
 import Image from 'next/image';
 import { Pagination } from "../../components/Pagination";
+import { Can } from "@/components/Can";
 type Props = {
   courses: CourseModel[];
 };
@@ -83,12 +84,14 @@ export default function CoursesTableDesktop({ courses }: Props) {
 
               <td className="whitespace-nowrap py-3 pl-6 pr-3">
                 <div className="flex justify-end gap-3">
-                  <UpdateBase
-                    id={String(course.id)}
-                    // fix: ensure proper template interpolation
-                    link={`/dashboard/courses/${course.id}/edit`}
-                    disabled={false}
-                  />
+                  <Can perm="admin.all">
+                    <UpdateBase
+                      id={String(course.id)}
+                      // fix: ensure proper template interpolation
+                      link={`/dashboard/courses/${course.id}/edit`}
+                      disabled={false}
+                    />
+                  </Can>
                 </div>
               </td>
             </tr>
@@ -103,7 +106,7 @@ export default function CoursesTableDesktop({ courses }: Props) {
           pageSize={pageSize}
           onPageChange={setPage}
           onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
-          pageSizeOptions={[5, 10, 20, 50, 100]}
+          pageSizeOptions={[5, 10, 20]}
           // Optional: localized labels
           labels={{ previous: 'Anterior', next: 'Próxima', of: 'de', perPage: 'página', page: 'Página', goTo: 'Ir para' }}
         />

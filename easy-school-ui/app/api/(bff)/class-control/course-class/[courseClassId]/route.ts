@@ -14,9 +14,6 @@ export async function GET(req: NextRequest, { params }: { params: { courseClassI
 
     const { courseClassId } = params;
 
-    await requireAuth('ADMIN');
-
-
     const reqQueryParams = new URL(req.url).searchParams;
 
 

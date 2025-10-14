@@ -327,3 +327,43 @@ on u.id = ur.user_id;
 INSERT INTO roles (role, code) VALUES ('ADMIN',100);
 INSERT INTO roles (role, code) VALUES ('TEACHER',200);
 INSERT INTO roles (role, code) VALUES ('STUDENT',300);
+
+
+/**
+--STUDENT
+--id name phone_number email status due_date start_date user_id
+2	"Tygra"	"11 77665-3355"	"tygra@esyschool.com.br"	true	20	"2024-03-11 21:00:00"
+3	"Cheetara"	"11 88776-9977"	"cheetara@esyschool.com.br"	true	5	"2025-03-11 21:00:00"
+4	"Willy Kat"	"11 66778-4455"	"wkat@esyschool.com.br"	true	10	"2013-11-10 21:00:00"
+5	"Willy Kit"	"11 66775-0099"	"wkit@esyschool.com.br"	true	5	"2025-03-11 21:00:00"
+6	"Lion-O"	"11 99876-58765"	"lion@esyschool.com.br"	true	5	"2013-01-14 21:00:00"
+7	"Lynx-O"	"11 88776-4453"	"lynx@easyschool.com.br"	true	10	"2013-11-10 21:00:00"
+8	"Bengali"	"11 77665-9900"	"bengali@easyschool.com.br"	true	20	"2025-05-01 21:00:00"
+9	"Pumyra"	"11 33445-1235"	"pumyra@easyschool.com.br"	true	20	"2025-03-11 21:00:00"
+10	"Jaga"	"11 77665-8877"	"jaga@easyschool.com.br"	true	20	"2013-01-14 21:00:00"
+11	"Snarf"	"11 77665-5678"	"snarf@easyschool.com.br"	true	5	"2025-05-01 21:00:00"
+12	"Snarfinho"	"11 33442-7864"	"snarfinho@easyschool.com.br"	true	5	"2025-05-01 21:00:00"
+13	"Claud-Us"	"11 55431-8753"	"claud@easyschool.com.br"	true	20	"2024-03-11 21:00:00"
+14	"Mumm-Ra"	"11 944553-7756"	"mummra@easyschool.com.br"	true	5	"2013-11-10 21:00:00"
+15	"Escamoso"	"90088-6612"	"escamoso@easyschool.com.br"	true	5	"2025-05-01 21:00:00"
+16	"Abutre"	"11 95533-7564"	"abutre@easyschool.com.br"	true	5	"2013-11-10 21:00:00"
+17	"Simiano"	"11 95566-3412"	"simiano@easyschool.com.br"	true	10	"2025-05-01 21:00:00"
+1	"Panthro"	"11 67898-8765"	"panthro@esyschool.com.br"	true	20	"2025-03-11 21:00:00"
+21	"Berenice Berê Felinus"	"39 351 382 4833"	"berenice@easyschool.com.br"	true	5	"2024-03-12 00:00:00"
+22	"Aluno Testado"	"44 93456-8765"	"aluno@teste.com.br"	true	10	"2025-03-12 00:00:00"
+19	"Student Test"	"11 97873-7845"	"student@easyschool.com.br"	true	10	"2013-01-14 23:00:00"	"2e999f20-4f38-4023-b877-524ffcdf3ac3"
+**/
+
+/**
+--TEACHER
+--id name phone_number email status compensation start_date user_id
+19	"Professor Teste"	"55 95674-0987"	"teacher@easyschool.com.br"	true	22.15	"2025-03-12 00:00:00"	"aa734b9c-5bd8-4824-9862-37e809d91c21"
+2	"Fred Jones"	"1199876-4321"	"fred@easyschool.com.br"	true	77.75	"2025-08-04 21:00:00"	"f4c096cf-457b-44a8-bde8-88193e340203"
+1	"Velma Dinkley"	"11 98765-1234"	"velma@easyschool.com"	true	80.33	"2025-07-31 21:00:00"
+3	"Salsicha Rogers"	"1189765-7869"	"salsicha@easyschool.com.br"	true	33.57	"2025-07-06 21:00:00"
+5	"Scooby Doo"	"1199987-7599"	"scoob@easyschool.com.br"	true	77.75	"2025-05-14 21:00:00"
+4	"Daphne Blake"	"1178907-6543"	"daphne@easyschool.com"	true	80.33	"2024-03-11 21:00:00"
+13	"Teste A"	"11 98800-5533"	"test@teste.com.br"	false	80.33	"2013-01-14 23:00:00"
+14	"Carmela Stellantis"	"39 351 382 4833"	"carmela@easyschool.com.br"	true	43.35	"2024-03-12 00:00:00"
+20	"Professor sem Availability"	"77 98765-1234"	"prof@availability.com.br"	true	23.54	"2013-11-10 23:00:00"
+**/

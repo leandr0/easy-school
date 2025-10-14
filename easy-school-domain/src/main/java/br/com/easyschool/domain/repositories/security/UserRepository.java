@@ -11,10 +11,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
 
     @Query(value = """
-            SELECT *
-            FROM users
-            WHERE status = true
-            AND username = :username
+            SELECT u.* FROM users u
+            LEFT JOIN student s
+            ON u.id = s.user_id
+            LEFT JOIN teacher t
+            ON u.id = t.user_id
+            WHERE u.username = :username
             """, nativeQuery = true)
     User findByUsername(@Param("username") String username);
 

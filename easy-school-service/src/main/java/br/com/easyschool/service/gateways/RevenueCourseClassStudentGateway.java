@@ -26,8 +26,18 @@ public class RevenueCourseClassStudentGateway {
 
             List<RevenueCourseClassStudent> result = repository.fetchByStudentAndRevenue(revenueId,studentId);
 
-            if(result.isEmpty())
+            if (result.isEmpty()) {
                 return ResponseEntity.notFound().build();
+            }
+
+            result.forEach(rev -> {
+                if (rev.getStudent() != null && rev.getStudent().getCourseClasses() != null) {
+                    rev.getStudent().getCourseClasses().forEach(courseClass ->
+                            courseClass.setTeacher(null)
+                    );
+                }
+                rev.getCourseClass().setTeacher(null);
+            });
 
             return ResponseEntity.ok(result);
 

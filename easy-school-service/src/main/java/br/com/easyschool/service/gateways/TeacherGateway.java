@@ -2,13 +2,13 @@ package br.com.easyschool.service.gateways;
 
 import br.com.easyschool.domain.entities.Teacher;
 import br.com.easyschool.domain.repositories.TeacherRepository;
+import br.com.easyschool.service.gateways.security.JwtUser;
+import br.com.easyschool.service.gateways.security.JwtUtils;
 import br.com.easyschool.service.requests.CreateLTeacherSkillListRequest;
 import br.com.easyschool.service.requests.CreateTeacherRequest;
 import br.com.easyschool.service.response.TeacherResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -23,21 +23,44 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TeacherGateway {
 
-    private final Log LOG = LogFactory.getLog(this.getClass());
-
     private final TeacherRepository repository;
 
     private final TeacherSkillGateway teacherSkillGateway;
 
     private final CalendarRangeHourDayGateway calendarRangeHourDayGateway;
 
+    private final JwtUtils jwtUtils;
 
 
-    @PreAuthorize( "hasRole('ADMIN')")
+    @PreAuthorize( "hasRole('ADMIN') or hasRole('TEACHER')")
     @GetMapping
-    public List<Teacher> getAll() {
+    public ResponseEntity<List<Teacher>> getAll(@RequestHeader(value = "Authorization", required = false) String auth) {
 
-        return repository.findAll();
+        try{
+
+            JwtUser user = jwtUtils.parseBearer(auth);
+
+            List<Teacher> queryResult = new LinkedList<>();
+
+            if (user.hasRole("ADMIN")) {
+                queryResult =  repository.findAll();
+            } else if (user.hasRole("TEACHER")) {
+                queryResult.add(repository.findById(user.profileId()).orElseThrow());
+            }
+
+            List<Teacher> result = new LinkedList<>();
+
+            for (Teacher teacher : queryResult) {
+                teacher.setUser(null);
+                result.add(teacher);
+            }
+
+            return ResponseEntity.ok(result);
+
+        }catch (Throwable t){
+            log.error(t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PreAuthorize( "hasRole('ADMIN')")
@@ -65,7 +88,6 @@ public class TeacherGateway {
         try {
 
             teacher = repository.findById(teacherId).orElseThrow(() -> new RuntimeException("Teacher not found"));
-            ;
 
         } catch (Throwable t) {
             return ResponseEntity.notFound().build();
@@ -75,7 +97,7 @@ public class TeacherGateway {
         return ResponseEntity.ok(teacher);
     }
 
-    @PreAuthorize( "hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @PostMapping
     public Teacher create(@RequestBody CreateTeacherRequest request) {
 

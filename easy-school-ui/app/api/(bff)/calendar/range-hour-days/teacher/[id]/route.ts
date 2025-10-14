@@ -18,7 +18,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     pathParams.append("teacher");
     pathParams.append(id);
   
-    const data = await clientApi.get(pathParams.toString(), { headers: await bearerHeaders() });
+    const data = await clientApi.get(pathParams.toString(), { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
 
     return NextResponse.json(data);
   } catch (e: any) {
