@@ -23,6 +23,12 @@ public class Role {
     @Getter @Setter
     private Integer code;
 
+    public Role(){}
+
+    public  Role(final Integer id){
+        this.id = id;
+    }
+
     /**
     @ManyToMany
     @JoinTable(

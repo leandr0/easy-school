@@ -1,4 +1,3 @@
-// app/adm/user/edit/page.tsx
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import jwt from 'jsonwebtoken';
@@ -29,21 +28,19 @@ export default async function Page() {
   }
 
   // load user + roles
-  const [userRaw, rolesRaw] = await Promise.all([
-    findUser(id),
-    fetchRoles(),
-  ]);
-
+  const [userRaw, rolesRaw] = await Promise.all([findUser(id), fetchRoles()]);
   const roles: Role[] = z.array(RoleSchema).parse(rolesRaw);
 
-  // try to infer current role id from common shapes
-  const currentRoleId =
-    String(
-      (userRaw as any)?.role_id ??
-      (userRaw as any)?.role?.id ??
-      (userRaw as any)?.roles?.[0]?.id ??
-      ''
-    ) || '';
+  // infer current role ids from common shapes -> always string[]
+  const roleIds: string[] = (() => {
+    const r1 = (userRaw as any)?.role_id;
+    const r2 = (userRaw as any)?.role?.id;
+    const rArr = (userRaw as any)?.roles;
+    if (Array.isArray(rArr) && rArr.length) return rArr.map((r: any) => String(r?.id ?? '')).filter(Boolean);
+    if (r1 != null) return [String(r1)];
+    if (r2 != null) return [String(r2)];
+    return [];
+  })();
 
   const initial = {
     username: String((userRaw as any)?.username ?? ''),
@@ -51,7 +48,7 @@ export default async function Page() {
       typeof (userRaw as any)?.status === 'boolean'
         ? (userRaw as any).status
         : String((userRaw as any)?.status ?? '').toLowerCase() !== 'false',
-    roleId: currentRoleId,
+    roleIds,
   };
 
   return (

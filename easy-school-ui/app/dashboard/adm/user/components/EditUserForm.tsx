@@ -5,7 +5,8 @@ import { useFormState, useFormStatus } from 'react-dom';
 import { updateUserAction, endEditUser } from '@/app/actions/users';
 import type { Role } from '@/bff/schemas';
 import { Switch } from '@/app/dashboard/components/switch';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import RolesSelect from '@/app/dashboard/adm/user/components/RolesSelect';
 
 function SubmitBtn() {
   const { pending } = useFormStatus();
@@ -39,10 +40,42 @@ export default function EditUserForm({
   initial,
 }: {
   roles: Role[];
-  initial: { username: string; status: boolean; roleId: string };
+  initial: { username: string; status: boolean; roleIds: string[] };
 }) {
   const [state, action] = useFormState(updateUserAction, null);
   const [active, setActive] = useState<boolean>(initial.status);
+
+  // Build ID-based conflicts (ADMIN ↔ STUDENT, TEACHER ↔ STUDENT)
+  const conflictsById = useMemo(() => {
+    const up = (v: unknown) => String(v ?? '').trim().toUpperCase();
+    const map = new Map<string, string>();
+    roles.forEach((r) => {
+      const id = String(r.id);
+      const code = up((r as any)?.code);
+      const name = up((r as any)?.role);
+      if (code) map.set(code, id);
+      if (name) map.set(name, id);
+    });
+
+    const ADMIN   = map.get('ADMIN');
+    const STUDENT = map.get('STUDENT');
+    const TEACHER = map.get('TEACHER');
+
+    const out: Record<string, string[]> = {};
+    const add = (a?: string, b?: string) => {
+      if (!a || !b) return;
+      out[a] = [...(out[a] ?? []), b];
+    };
+
+    // Teacher ↔ Student
+    add(TEACHER, STUDENT);
+    add(STUDENT, TEACHER);
+    // Student ↔ Admin
+    add(STUDENT, ADMIN);
+    add(ADMIN, STUDENT);
+
+    return out;
+  }, [roles]);
 
   return (
     <div className="bg-white rounded-lg shadow p-4">
@@ -78,28 +111,15 @@ export default function EditUserForm({
           )}
         </div>
 
-        {/* Role */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Perfil</label>
-          <select
-            name="roleId"
-            required
-            defaultValue={initial.roleId || ''}
-            className="mt-1 w-full rounded-md border px-3 py-2 bg-white"
-          >
-            <option value="" disabled>
-              Selecione um perfil…
-            </option>
-            {roles.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.role}
-              </option>
-            ))}
-          </select>
-          {state?.errors?.roleId && (
-            <p className="mt-1 text-sm text-red-600">{state.errors.roleId[0]}</p>
-          )}
-        </div>
+        {/* Roles (multi-select with chips) */}
+        <RolesSelect
+          roles={roles as any}
+          name="roleIds"
+          required
+          defaultSelectedIds={initial.roleIds}
+          error={state?.errors?.roleIds?.[0] ?? null}
+          conflictsById={conflictsById}
+        />
 
         {/* Status toggle (with hidden input for form value) */}
         <div className="flex items-center justify-between">
