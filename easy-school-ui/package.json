@@ -5,7 +5,7 @@
     "dev": "next dev -H 0.0.0.0 -p 3000",
     "prettier": "prettier --write --ignore-unknown .",
     "prettier:check": "prettier --check --ignore-unknown .",
-    "start": "next start -p ${PORT:-80}",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {

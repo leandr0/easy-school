@@ -27,9 +27,14 @@ WORKDIR /ui
 # context (see .dockerignore, since they also carry JWT_SECRET), so without
 # these ARGs the app would silently build with these URLs undefined and fall
 # back to whatever default is hardcoded in app/config/clientAPI.ts.
-# Defaults below assume backend + frontend run in the same container (as this
-# image's start.sh does); override with --build-arg for other topologies.
-ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:3000/api
+# NEXT_PUBLIC_API_BASE_URL is used by the BROWSER (bffApiClient) to call this
+# app's own /api routes - a relative path is correct here, since the browser
+# always loads this app from whatever host/port serves the page, so this
+# keeps working regardless of IP, domain, or protocol (http vs https).
+# NEXT_PUBLIC_API_BASE_EXT_URL is used SERVER-SIDE (route handlers) to reach
+# the Spring backend, which runs alongside this app in the same container -
+# localhost:8080 is correct for that topology; only override for other setups.
+ARG NEXT_PUBLIC_API_BASE_URL=/api
 ARG NEXT_PUBLIC_API_BASE_EXT_URL=http://localhost:8080
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
 ENV NEXT_PUBLIC_API_BASE_EXT_URL=$NEXT_PUBLIC_API_BASE_EXT_URL
@@ -95,8 +100,8 @@ EXPOSE 8080 3000
 ENV PORT=3000
 # Next.js standalone output binds to `process.env.HOSTNAME || 'localhost'` by
 # default. Without this, the UI process only listens on the container's
-# loopback interface, so Docker's -p 3000:3000 mapping can't reach it from
-# the host even though the process is "running" fine inside the container.
+# loopback interface, so Docker's -p mapping can't reach it from the host
+# even though the process is "running" fine inside the container.
 ENV HOSTNAME=0.0.0.0
 # Note: NEXT_PUBLIC_* vars can't be set here - they're already baked into the
 # compiled bundle at build time (see the ui-build stage's ARGs above).
