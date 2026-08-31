@@ -39,7 +39,7 @@ export default function TeacherCalendarListMobile({
       const aSel = String(a.id) === String(selectedTeacherId) ? -1 : 0;
       const bSel = String(b.id) === String(selectedTeacherId) ? -1 : 0;
       if (aSel !== bSel) return aSel - bSel;
-      return (a.teacher.name || '').localeCompare(b.teacher.name || '');
+      return (a.teacher.user?.name || '').localeCompare(b.teacher.user?.name || '');
     });
 
   const toggle = (id: string) => {
@@ -72,7 +72,7 @@ export default function TeacherCalendarListMobile({
             ].join(' ')}
           >
             <div className="flex items-center justify-between">
-              <div className="font-medium">{teacher?.name}</div>
+              <div className="font-medium">{teacher?.user?.name}</div>
               {selected && (
                 <span className="text-xs text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
                   Selecionado
@@ -80,9 +80,9 @@ export default function TeacherCalendarListMobile({
               )}
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              {teacher?.phone_number}
-              {teacher?.phone_number && teacher?.email ? ' • ' : ''}
-              {teacher?.email}
+              {teacher?.user?.phone_number}
+              {teacher?.user?.phone_number && teacher?.user?.username ? ' • ' : ''}
+              {teacher?.user?.username}
             </div>
 
             {/* Availability chips */}

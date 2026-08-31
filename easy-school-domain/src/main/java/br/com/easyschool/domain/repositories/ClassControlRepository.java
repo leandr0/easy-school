@@ -41,37 +41,59 @@ public interface ClassControlRepository extends JpaRepository<ClassControl, Inte
 
 
     @Query(value = """
-               SELECT
-                 ccl.id         AS classControlId,
-                 ccl.day        AS day,
-                 ccl.month      AS month,
-                 ccl.year       AS year,
-                 ccl.content    AS content,
-                 ccl.replacement AS replacement,
-                       
-                 cc.id          AS courseClassId,
-                 cc.name        AS courseClassName,
-                 cc.status      AS courseClassStatus,
-                 cc.start_hour  AS courseClassStartHour,
-                 cc.start_minute AS courseClassStartMinute,
-                 cc.end_hour    AS courseClassEndHour,
-                 cc.end_minute  AS courseClassEndMinute,
-                       
-                 cct.teacher_id AS teacherId,
-                 t.name         AS teacherName,
-                 ccs.student_id AS studentId,
-                 s.name         AS studentName
+            SELECT
+                ccl.id            AS classControlId,
+                ccl.day           AS day,
+                ccl.month         AS month,
+                ccl.year          AS year,
+                ccl.content       AS content,
+                ccl.replacement   AS replacement,
+
+                cc.id             AS courseClassId,
+                cc.name           AS courseClassName,
+                cc.status         AS courseClassStatus,
+                cc.start_hour     AS courseClassStartHour,
+                cc.start_minute   AS courseClassStartMinute,
+                cc.end_hour       AS courseClassEndHour,
+                cc.end_minute     AS courseClassEndMinute,
+
+                cct.teacher_id    AS teacherId,
+                tu.name           AS teacherName,
+                ccs.student_id    AS studentId,
+                su.name           AS studentName,
+
+                b.id              AS bookId,
+                b.name            AS bookName,
+                ch.id             AS chapterId,
+                ch.name           AS chapterName
             FROM class_control ccl
-            JOIN course_class cc ON ccl.course_class_id = cc.id
-            LEFT JOIN class_control_teacher cct ON ccl.id = cct.class_control_id
-            LEFT JOIN teacher t ON cct.teacher_id = t.id
-            LEFT JOIN class_control_student ccs ON ccl.id = ccs.class_control_id
-            LEFT JOIN student s ON ccs.student_id = s.id
+            JOIN course_class cc
+              ON ccl.course_class_id = cc.id
+
+            LEFT JOIN class_control_teacher cct
+              ON ccl.id = cct.class_control_id
+            LEFT JOIN teacher t
+              ON t.id = cct.teacher_id
+            LEFT JOIN users tu
+              ON tu.id = t.user_id
+
+            LEFT JOIN class_control_student ccs
+              ON ccl.id = ccs.class_control_id
+            LEFT JOIN student s
+              ON s.id = ccs.student_id
+            LEFT JOIN users su
+              ON su.id = s.user_id
+
+            LEFT JOIN book b
+              ON b.id = ccl.book_id
+            LEFT JOIN chapter ch
+              ON ch.id = ccl.chapter_id
+
             WHERE make_date(ccl.year, ccl.month, ccl.day)
-            BETWEEN make_date(CAST(:startYear AS int), CAST(:startMonth AS int), CAST(:startDay AS int))
-            AND make_date(CAST(:endYear   AS int), CAST(:endMonth   AS int), CAST(:endDay   AS int))
-            AND cc.id = :courseClassId
-            ORDER BY make_date(ccl.year, ccl.month, ccl.day) ASC
+                  BETWEEN make_date(CAST(:startYear AS int), CAST(:startMonth AS int), CAST(:startDay AS int))
+                      AND make_date(CAST(:endYear   AS int), CAST(:endMonth   AS int), CAST(:endDay   AS int))
+              AND cc.id = :courseClassId
+            ORDER BY make_date(ccl.year, ccl.month, ccl.day) ASC;
                       """, nativeQuery = true)
     List<ClassControlRow> fetchByCourseClassAndDateRange(
             @Param("courseClassId") Integer courseClassId,

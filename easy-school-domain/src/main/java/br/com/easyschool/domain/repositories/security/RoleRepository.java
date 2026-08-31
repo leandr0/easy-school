@@ -10,6 +10,7 @@ public interface RoleRepository  extends JpaRepository<Role, Integer> {
 
     @Query(value = """
                SELECT COUNT(*) FROM roles
+               WHERE id in ( :ids )
             """,nativeQuery = true)
     long countAllByIdIn(Collection<Integer> ids);
 }

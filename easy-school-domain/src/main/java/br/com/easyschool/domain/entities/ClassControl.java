@@ -35,6 +35,18 @@ public class ClassControl implements EntityBase {
     @JsonProperty("course_class")
     private CourseClass courseClass;
 
+    @ManyToOne
+    @JoinColumn(name = "book_id")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("book")
+    private Book book;
+
+    @ManyToOne
+    @JoinColumn(name = "chapter_id")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("chapter")
+    private Chapter chapter;
+
     @Override
     public Integer getId() {
         return id;
@@ -91,5 +103,21 @@ public class ClassControl implements EntityBase {
 
     public void setCourseClass(CourseClass courseClass) {
         this.courseClass = courseClass;
+    }
+
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
+
+    public Chapter getChapter() {
+        return chapter;
+    }
+
+    public void setChapter(Chapter chapter) {
+        this.chapter = chapter;
     }
 }

@@ -43,7 +43,7 @@ export default function StudentEditMobileForm({
         <input
           id="name"
           name="name"
-          value={formData.name}
+          value={formData.user?.name || ''}
           onChange={onChange}
           className="w-full border rounded px-3 py-2"
         />
@@ -54,7 +54,7 @@ export default function StudentEditMobileForm({
         <input
           id="phone_number"
           name="phone_number"
-          value={formData.phone_number}
+          value={formData.user?.phone_number || ''}
           onChange={onChange}
           className="w-full border rounded px-3 py-2"
         />
@@ -66,7 +66,7 @@ export default function StudentEditMobileForm({
           id="email"
           name="email"
           type="email"
-          value={formData.email}
+          value={formData.user?.username || ''}
           onChange={onChange}
           className="w-full border rounded px-3 py-2"
         />
@@ -78,7 +78,7 @@ export default function StudentEditMobileForm({
           id="due_date"
           name="due_date"
           type="number"
-          value={formData.due_date}
+          value={formData.due_date || ''}
           onChange={onChange}
           className="w-full border rounded px-3 py-2"
         />
@@ -88,7 +88,7 @@ export default function StudentEditMobileForm({
         <label htmlFor="start_date" className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
         <DateInput
           name="start_date"
-          value={formData.start_date}
+          value={formData.user?.created_at || ''}
           onChange={onChange}
           className="w-full border rounded px-3 py-2"
         />
@@ -96,8 +96,8 @@ export default function StudentEditMobileForm({
 
       <div>
         <Switch
-          label={formData.status ? 'Active' : 'Inactive'}
-          checked={formData.status!}
+          label={formData.user?.status ? 'Active' : 'Inactive'}
+          checked={Boolean(formData.user?.status)}
           onChange={onSwitchStatus}
         />
       </div>

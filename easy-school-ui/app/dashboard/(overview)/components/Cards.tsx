@@ -5,15 +5,15 @@ import {
   AcademicCapIcon,
   UserGroupIcon,
   BookOpenIcon,
+  LanguageIcon,
 } from '@heroicons/react/24/outline';
-import LanguageIcon from '@heroicons/react/24/outline'; // adjust if you have a custom LanguageIcon
 import { lusitana } from '@/app/ui/fonts';
 
 const iconMap = {
   teacher: AcademicCapIcon,
   student: UserGroupIcon,
   course_class: BookOpenIcon,
-  language: (LanguageIcon as any) ?? AcademicCapIcon, // fallback if missing
+  language: (LanguageIcon as any) ?? LanguageIcon, // fallback if missing
 };
 
 export default function Cards({

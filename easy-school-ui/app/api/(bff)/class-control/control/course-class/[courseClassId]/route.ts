@@ -32,7 +32,7 @@ export async function GET(req: NextRequest, { params }: { params: { courseClassI
     queryParams.append("end_year", end_year!);
 
 
-    await requireAuth(['ADMIN','TEACHER']);
+    //await requireAuth(['ADMIN','TEACHER']);
 
     const pathParams = new URLPathParam();
     pathParams.append('control');

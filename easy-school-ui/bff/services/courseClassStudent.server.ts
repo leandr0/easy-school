@@ -7,7 +7,7 @@ import { URLPathParam } from "@/app/lib/url_path_param";
 const clientApi = bffApiClient.resource('/course-class-students');
 
 export async function createCourseClassStudent(model: CreateCourseClassStudentModel): Promise<void> {
-  clientApi.post("/student-list",model, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json'} });
+  await clientApi.post("/student-list", model, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json'} });
 }
 
 export async function deleteByStudentAndCourseClass(student_id: any, course_class_id: any): Promise<void> {

@@ -1,12 +1,10 @@
 package br.com.easyschool.service.gateways.security;
 
 
+import br.com.easyschool.domain.dto.LoginDTO;
 import br.com.easyschool.domain.dto.UserDTO;
 import br.com.easyschool.domain.entities.security.User;
-import br.com.easyschool.domain.repositories.security.RolePathRepository;
-import br.com.easyschool.domain.repositories.security.RoleRepository;
-import br.com.easyschool.domain.repositories.security.UserRepository;
-import br.com.easyschool.domain.repositories.security.UserRolesRepository;
+import br.com.easyschool.domain.repositories.security.*;
 import br.com.easyschool.service.requests.security.LoginRequest;
 import br.com.easyschool.service.security.PasswordService;
 import lombok.RequiredArgsConstructor;
@@ -31,26 +29,20 @@ public class SecurityGateway {
 
     private final UserRepository userRepository;
 
-    private final RoleRepository roleRepository;
-
-    private final UserRolesRepository userRolesRepository;
-
-    private final RolePathRepository rolePathRepository;
-
-
     @PostMapping("/login")
     public ResponseEntity<UserDTO> login(@RequestBody LoginRequest request){
 
         try{
 
-            User user = userRepository.findByUsername(request.getUsername());
+            LoginDTO login = userRepository.login(request.getUsername());
 
-            if(user == null)
+            if(login == null)
                return ResponseEntity.notFound().build();
 
-            if(isLocked(user)) {
+            User user = userRepository.findById(login.getId()).orElseThrow();
+
+            if(isLocked(user))
                 return ResponseEntity.status(HttpStatus.LOCKED).build();
-            }
 
             if(!passwordService.matches(request.getPassword(),user.getPasswordHash())) {
                 user = updateWrongAttempt(user);

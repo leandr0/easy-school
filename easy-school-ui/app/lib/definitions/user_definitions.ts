@@ -5,6 +5,8 @@ import { TeacherModel } from "./teacher_definitions";
 export type UserModel = {
     id?: string;
     username: string;
+    name: string;
+    phone_number: string;
     roles: RoleModel[];
     status?: boolean;
     password_hash?:string;

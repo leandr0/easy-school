@@ -3,6 +3,7 @@ package br.com.easyschool.service.implementations;
 import br.com.easyschool.domain.dto.ClassControlCreateDTO;
 import br.com.easyschool.domain.dto.ClassControlTeacherStudentDTO;
 import br.com.easyschool.domain.entities.*;
+import br.com.easyschool.domain.entities.security.User;
 import br.com.easyschool.domain.jpa.ClassControlRow;
 import br.com.easyschool.domain.repositories.ClassControlRepository;
 import br.com.easyschool.domain.repositories.ClassControlStudentRepository;
@@ -55,6 +56,18 @@ public class ClassControlService {
                 classControl.setCourseClass(courseClass);
 
                 classControl.setContent(dto.getContent());
+
+                if (dto.getBookId() != null) {
+                    Book book = new Book();
+                    book.setId(dto.getBookId());
+                    classControl.setBook(book);
+                }
+
+                if (dto.getChapterId() != null) {
+                    Chapter chapter = new Chapter();
+                    chapter.setId(dto.getChapterId());
+                    classControl.setChapter(chapter);
+                }
 
                 LocalDate now = LocalDate.parse(dto.getDate());
                 Integer year = now.getYear();
@@ -224,6 +237,8 @@ public class ClassControlService {
         classControl.setContent(row.getContent());
         classControl.setMonth(row.getMonth());
         classControl.setCourseClass(buildCourseClass(row));
+        classControl.setBook(buildBook(row));
+        classControl.setChapter(buildChapter(row));
         return classControl;
     }
 
@@ -243,12 +258,39 @@ public class ClassControlService {
     }
 
     /**
+     * Builds Book object from row data (may be absent for older records)
+     */
+    private Book buildBook(ClassControlRow row) {
+        if (row.getBookId() == null) {
+            return null;
+        }
+        Book book = new Book();
+        book.setId(row.getBookId());
+        book.setName(row.getBookName());
+        return book;
+    }
+
+    /**
+     * Builds Chapter object from row data (may be absent for older records)
+     */
+    private Chapter buildChapter(ClassControlRow row) {
+        if (row.getChapterId() == null) {
+            return null;
+        }
+        Chapter chapter = new Chapter();
+        chapter.setId(row.getChapterId());
+        chapter.setName(row.getChapterName());
+        return chapter;
+    }
+
+    /**
      * Builds Teacher object from row data
      */
     private Teacher buildTeacher(ClassControlRow row) {
         Teacher teacher = new Teacher();
+        teacher.setUser(new User());
         teacher.setId(row.getTeacherId());
-        teacher.setName(row.getTeacherName());
+        teacher.getUser().setName(row.getTeacherName());
         return teacher;
     }
 
@@ -257,8 +299,9 @@ public class ClassControlService {
      */
     private Student buildStudent(ClassControlRow row) {
         Student student = new Student();
+        student.setUser(new User());
         student.setId(row.getStudentId());
-        student.setName(row.getStudentName());
+        student.getUser().setName(row.getStudentName());
         return student;
     }
 

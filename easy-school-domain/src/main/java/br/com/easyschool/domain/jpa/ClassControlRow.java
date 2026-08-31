@@ -40,4 +40,14 @@ public interface ClassControlRow {
 
     @JsonProperty("student_name")
     String getStudentName();
+
+    @JsonProperty("book_id")
+    Integer getBookId();
+    @JsonProperty("book_name")
+    String getBookName();
+
+    @JsonProperty("chapter_id")
+    Integer getChapterId();
+    @JsonProperty("chapter_name")
+    String getChapterName();
 }

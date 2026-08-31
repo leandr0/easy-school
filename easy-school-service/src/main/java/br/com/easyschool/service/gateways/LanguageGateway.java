@@ -44,9 +44,6 @@ public class LanguageGateway {
 
             List<DashBoardStudentLanguageDTO> result = repository.totalStudentsLanguage();
 
-            if(result.isEmpty())
-                return ResponseEntity.notFound().build();
-
             return ResponseEntity.ok(result);
 
         }catch (Throwable t){

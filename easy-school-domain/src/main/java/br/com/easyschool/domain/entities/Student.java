@@ -8,17 +8,16 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 @Entity
 @Table(name = "student")
-public class Student implements EntityBase {
+public class Student {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter @Setter
     private Integer id;
-
+/**
     @Getter @Setter
     private String name;
 
@@ -34,19 +33,19 @@ public class Student implements EntityBase {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Getter @Setter
     private Boolean status;
-
+*/
     @Column(name = "due_date")
     @JsonProperty("due_date")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Getter @Setter
     private Integer dueDate;
-
+/**
     @Column(name = "start_date")
     @JsonProperty("start_date")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Getter @Setter
     private LocalDateTime startDate;
-
+*/
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "course_class_students",
@@ -57,7 +56,7 @@ public class Student implements EntityBase {
     @Getter @Setter
     private Set<CourseClass> courseClasses;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @Getter @Setter
     private User user;

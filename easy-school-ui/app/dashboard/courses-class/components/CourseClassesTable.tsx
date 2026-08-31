@@ -5,6 +5,7 @@ import { CourseClassTeacherModel } from "@/app/lib/definitions/course_class_defi
 import DesktopCoursesClassTable from "./DesktopCoursesClassTable";
 import MobileCoursesClassTable from "./MobileCoursesClassTable";
 import { Pagination } from "../../components/Pagination";
+import { matchesQuery, sortItems, nextSort, SortDirection } from "@/app/dashboard/components/tableUtils";
 
 /** SSR-safe media query hook */
 function useMediaQuery(query: string) {
@@ -27,6 +28,19 @@ function useMediaQuery(query: string) {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
+export type CourseClassSortKey = "name" | "status" | "teacher";
+
+function sortValue(courseClass: CourseClassTeacherModel, key: CourseClassSortKey) {
+  switch (key) {
+    case "status":
+      return courseClass.status;
+    case "teacher":
+      return courseClass.teacher?.user?.name;
+    default:
+      return courseClass.name;
+  }
+}
+
 export default function CoursesClassTable({
   query,
   currentPage,
@@ -38,17 +52,23 @@ export default function CoursesClassTable({
 }) {
   const [error] = useState<string | null>(null);
 
-  // Filter
+  const [sortKey, setSortKey] = useState<CourseClassSortKey>("name");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+
+  const handleSort = (key: CourseClassSortKey) => {
+    const next = nextSort(sortKey, sortDirection, key);
+    setSortKey(next.key);
+    setSortDirection(next.direction);
+  };
+
+  // Filter + sort
   const filteredCourses = useMemo(() => {
     const safe = courseClasses ?? [];
-    const q = query?.trim().toLowerCase();
-    if (!q) return safe;
-    return safe.filter(
-      (c) =>
-        c.name?.toLowerCase().includes(q) ||
-        c.teacher?.name?.toLowerCase().includes(q)
+    const filtered = safe.filter(
+      (c) => matchesQuery(query, c.name, c.teacher?.user?.name)
     );
-  }, [courseClasses, query]);
+    return sortItems(filtered, (c) => sortValue(c, sortKey), sortDirection);
+  }, [courseClasses, query, sortKey, sortDirection]);
 
   // Breakpoint (SSR-safe)
   const isMdUp = useMediaQuery("(min-width: 768px)");
@@ -105,10 +125,20 @@ export default function CoursesClassTable({
         <div className="rounded-lg p-2 md:pt-0">
           {/* Render both; CSS handles visibility. This is SSR-stable. */}
           <div className="md:hidden">
-            <MobileCoursesClassTable courseClasses={currentItems} />
+            <MobileCoursesClassTable
+              courseClasses={currentItems}
+              sortKey={sortKey}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
           </div>
           <div className="hidden md:block">
-            <DesktopCoursesClassTable courseClasses={currentItems} />
+            <DesktopCoursesClassTable
+              courseClasses={currentItems}
+              sortKey={sortKey}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
           </div>
         </div>
       </div>

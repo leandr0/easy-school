@@ -72,6 +72,7 @@ export default function TeacherEditDesktop({
               handleInputChange={handleInputChange}
               onCompensationChange={handleCompensationChange}
               onSwitchStatus={onSwitchStatus}
+              hideCompensation
             />
           </div>
           <LanguageSelectListComponent

@@ -11,6 +11,7 @@ import br.com.easyschool.domain.repositories.StudentRepository;
 import br.com.easyschool.domain.types.RevenueType;
 import br.com.easyschool.domain.vo.DataParam;
 import br.com.easyschool.service.requests.CreateRevenueRequest;
+import br.com.easyschool.service.requests.CreateRevenuesFromCollectionForm;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,10 +68,17 @@ public class RevenueService {
     }
 
     @Transactional(readOnly = true)
-    public List<CollectionFormDTO> fetchCollectionForm() throws Exception {
+    public List<CollectionFormDTO> fetchCollectionForm(LocalDate date) throws Exception {
         try {
 
-            return repository.fetchCollectionForms();
+
+            if(date != null) {
+                LocalDate lastDayOfMonth = date.with(TemporalAdjusters.lastDayOfMonth());
+                return repository.fetchCollectionFormsByDate(lastDayOfMonth);
+            }
+            else
+                return repository.fetchCollectionForms();
+
 
         }catch (Throwable t){
             log.error("Fetch collection form {}",t.getMessage());
@@ -131,18 +140,30 @@ public class RevenueService {
     }
 
     @Transactional
-    public List<Revenue> createRevenuesFromCollectionForm(List<CollectionFormDTO> request) {
-        if (request == null || request.isEmpty()) {
+    public List<Revenue> createRevenuesFromCollectionForm(CreateRevenuesFromCollectionForm request) {
+
+        if (request == null || request.getCollection().isEmpty()) {
             return List.of();
         }
 
         // Group items by student once (removes O(n^2) loop)
-        Map<Integer, List<CollectionFormDTO>> byStudent = request.stream()
+        Map<Integer, List<CollectionFormDTO>> byStudent = request.getCollection().stream()
                 .collect(Collectors.groupingBy(CollectionFormDTO::getStudentId, LinkedHashMap::new, Collectors.toList()));
 
-        LocalDate now = LocalDate.now();
-        final int year = now.getYear();
-        final int monthNumber = now.getMonthValue();
+        int yearHandle = 0;
+        int monthNumberHandle = 0;
+
+        if(request.getDate() != null){
+            yearHandle = request.getDate().getYear();
+            monthNumberHandle = request.getDate().getMonthValue();
+        }else {
+            LocalDate now = LocalDate.now();
+            yearHandle = now.getYear();
+            monthNumberHandle = now.getMonthValue();
+        }
+
+        final int year = yearHandle;
+        final int monthNumber = monthNumberHandle;
 
         // Build Revenues (sum per student)
         List<Revenue> revenues = byStudent.entrySet().stream()
@@ -240,6 +261,18 @@ public class RevenueService {
 
         }catch (Throwable t){
             log.error("Create revenues {}",t.getMessage());
+            throw new Exception(t);
+        }
+    }
+
+    public void reconcilePayments() throws Exception {
+        try{
+
+            List<CollectionFormDTO> collectionFormDTOS = fetchCollectionForm(null);
+            createRevenuesFromCollectionForm(new CreateRevenuesFromCollectionForm(collectionFormDTOS,null));
+
+        }catch (Throwable t){
+            log.error("Reconcile Payments {}",t.getMessage());
             throw new Exception(t);
         }
     }

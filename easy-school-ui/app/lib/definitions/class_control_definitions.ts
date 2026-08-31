@@ -1,6 +1,7 @@
 import { CourseClassModel } from "./course_class_definitions";
 import { StudentModel } from "./students_definitions";
 import { TeacherModel } from "./teacher_definitions";
+import { BookModel, ChapterModel } from "./books_definitions";
 
 export type ClassControlModel = {
     id?: number;
@@ -11,6 +12,10 @@ export type ClassControlModel = {
     content?: string;
     teacher_id?: number;
     course_class_id?: number;
+    book_id?: number;
+    chapter_id?: number;
+    book?: BookModel;
+    chapter?: ChapterModel;
     students?: number[];
     course_class?: CourseClassModel;
   };

@@ -31,20 +31,38 @@ public class CalendarRangeHourDayGateway {
     private final TeacherRepository teacherRepository;
 
     @GetMapping("teacher/available")
-    public List<CalendarRangeHourDay> fetchAvailabilityTeacher(@RequestParam(value = "calendar_week_day_ids", required = true) List<Integer> calendarWeekDayIds,
+    public ResponseEntity<List<CalendarRangeHourDay>> fetchAvailabilityTeacher(@RequestParam(value = "calendar_week_day_ids", required = true) List<Integer> calendarWeekDayIds,
                                                                @RequestParam(value = "language_id", required = true) Integer languageId,
                                                                @RequestParam(value = "start_hour", required = true) Integer startHour,
                                                                @RequestParam(value = "start_minute", required = true) Integer startMinute,
                                                                @RequestParam(value = "end_hour", required = true) Integer endHour,
                                                                @RequestParam(value = "end_minute", required = true) Integer endMinute) {
 
+        try{
 
-        return repository.findTeachersAvailableByClassCalendarNotInCourseClass(calendarWeekDayIds,
-                languageId,
-                startHour,
-                startMinute,
-                endHour,
-                endMinute);
+            List<CalendarRangeHourDay> response = repository.findTeachersAvailableByClassCalendarNotInCourseClass(calendarWeekDayIds,
+                    languageId,
+                    startHour,
+                    startMinute,
+                    endHour,
+                    endMinute);
+
+            response.forEach(calendarRangeHourDay -> {
+                var item = calendarRangeHourDay.getTeacher().getUser();
+                item.setRoles(null);
+                item.setTeacher(null);
+                item.setStudent(null);
+            });
+
+            return ResponseEntity.ok(response);
+
+        }catch (Throwable t) {
+
+            log.error(t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+
+
     }
 
 
@@ -53,23 +71,20 @@ public class CalendarRangeHourDayGateway {
 
         List<CalendarRangeHourDay> queryResult = new LinkedList<>();
 
-        List<CalendarRangeHourDay> result = new LinkedList<>();
 
         try {
             queryResult = repository.findCalendarRangeHourDayByTeacherId(teacherId);
 
-            for (CalendarRangeHourDay calendarRangeHourDay : queryResult) {
-                calendarRangeHourDay.getTeacher().setUser(null);
-                result.add(calendarRangeHourDay);
-            }
-
-            if(result.isEmpty())
-                return ResponseEntity.notFound().build();
+            queryResult.forEach(calendarRangeHourDay -> {
+                var item = calendarRangeHourDay.getTeacher().getUser();
+                item.setTeacher(null);
+                item.setStudent(null);
+            });
 
         }catch (Throwable t){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(queryResult);
     }
 
 

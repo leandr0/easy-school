@@ -36,6 +36,7 @@ export async function bearerHeaders(requiredRoles?: string | string[]) {
   // authorizes, but ignore its return value
   await requireAuth(requiredRoles);
   const token = getIncomingToken();
+  //console.log('bearerHeaders token:', token);
   if (!token) throw new UnauthorizedError();
   return { Authorization: `Bearer ${token}` } as Record<string, string>;
 }

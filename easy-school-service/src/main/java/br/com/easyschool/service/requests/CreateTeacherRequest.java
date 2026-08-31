@@ -3,7 +3,7 @@ package br.com.easyschool.service.requests;
 import br.com.easyschool.domain.entities.CalendarRangeHourDay;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Set;
 
 public class CreateTeacherRequest {
@@ -18,7 +18,7 @@ public class CreateTeacherRequest {
     private Double compensation;
 
     @JsonProperty("start_date")
-    private LocalDateTime startDate;
+    private OffsetDateTime startDate;
 
     @JsonProperty("language_ids")
     private Set<Integer> languagesId;
@@ -58,11 +58,11 @@ public class CreateTeacherRequest {
         this.compensation = compensation;
     }
 
-    public LocalDateTime getStartDate() {
+    public OffsetDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(OffsetDateTime startDate) {
         this.startDate = startDate;
     }
 

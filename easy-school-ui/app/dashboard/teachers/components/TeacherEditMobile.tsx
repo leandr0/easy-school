@@ -78,6 +78,7 @@ export default function TeacherEditMobile({
             handleInputChange={handleInputChange}
             onCompensationChange={handleCompensationChange}
             onSwitchStatus={onSwitchStatus}
+            hideCompensation
           />
     
 

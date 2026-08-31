@@ -1,106 +1,54 @@
 package br.com.easyschool.domain.dto;
 
 import br.com.easyschool.domain.entities.Student;
+import br.com.easyschool.domain.entities.security.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public class StudentDTO {
+
+    @Getter @Setter
     private Integer id;
 
+    @Getter @Setter
     private String name;
 
+    @Getter @Setter
     @JsonProperty("phone_number")
     private String phoneNumber;
 
+    @Getter @Setter
     private String email;
 
+    @Getter @Setter
     private Boolean status;
+
+    @Getter @Setter
     @JsonProperty("due_date")
     private Integer dueDate;
 
+    @Getter @Setter
     @JsonProperty("start_date")
-    private LocalDateTime startDate;
+    private OffsetDateTime startDate;
 
+    @Getter @Setter
     @JsonProperty("courses")
     private List<CoursePriceDTO> coursePrice;
 
+    @Getter @Setter
+    private User user;
 
     public StudentDTO setStudent(final Student student){
 
         this.id = student.getId();
-        this.name = student.getName();
-        this.status = student.getStatus();
         this.dueDate = student.getDueDate();
-        this.email = student.getEmail();
-        this.phoneNumber = student.getPhoneNumber();
-        this.startDate = student.getStartDate();
-
+        this.user = student.getUser();
+        this.user.setStudent(null);
+        this.user.setTeacher(null);
         return this;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Boolean getStatus() {
-        return status;
-    }
-
-    public void setStatus(Boolean status) {
-        this.status = status;
-    }
-
-    public Integer getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(Integer dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    public List<CoursePriceDTO> getCoursePrice() {
-        return coursePrice;
-    }
-
-    public void setCoursePrice(List<CoursePriceDTO> coursePrice) {
-        this.coursePrice = coursePrice;
     }
 }

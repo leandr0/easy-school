@@ -9,16 +9,22 @@ import java.util.List;
 
 public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
 
-    @Query("SELECT t FROM Teacher t WHERE t.status = true")
+    @Query("""
+            SELECT t FROM Teacher t
+            JOIN User u
+            ON t.user.id = user.id
+            WHERE u.status = true
+            """)
     List<Teacher> findAllTeachersAvailable();
 
 
     @Query("""
                 SELECT t
                 FROM Teacher t
+                JOIN User u ON t.user.id = u.id
                 JOIN TeacherSkill ts ON ts.teacher.id = t.id
                 JOIN Language l ON ts.language.id = l.id
-                WHERE t.status = true
+                WHERE u.status = true
                   AND l.id = :language_id
             """)
     List<Teacher> findAllTeachersAvailableByLanguage(@Param("language_id") Integer languageId);
@@ -39,8 +45,10 @@ public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
 
     @Query(value = """
                SELECT count(*)
-               FROM teacher
-               WHERE status = true
+               FROM teacher t
+               INNER JOIN users u
+               ON t.user_id = u.id
+               WHERE u.status = true
             """,nativeQuery = true)
     Integer totalTeacherAvailable();
 

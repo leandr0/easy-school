@@ -39,8 +39,34 @@ export async function createUser(user: UserModel): Promise<any> {
 
 export async function updateUser(user: UserModel): Promise<UserModel> {
   await requireAuth(['ADMIN']);
-  
+
   const data = await clientApi.put<UserModel>(user, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', } });
+
+  return data;
+}
+
+/**
+ * Self-service: returns only the caller's own user record. Any authenticated
+ * role can call this - the backend resolves "who am I" from the JWT, never
+ * from a client-supplied id, so there is no way to fetch someone else's data
+ * through this function.
+ */
+export async function getMyUser(): Promise<UserModel> {
+  await requireAuth();
+
+  const data = await clientApi.get<UserModel>('/me', { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', cache: 'no-store' } });
+
+  return data;
+}
+
+/**
+ * Self-service: updates only the caller's own username/password. Roles and
+ * status are not accepted here - see the /me endpoints on the backend.
+ */
+export async function updateMyUser(user: Pick<UserModel, 'username' | 'password_hash'>): Promise<UserModel> {
+  await requireAuth();
+
+  const data = await clientApi.put<UserModel>(`/me`, user, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', } });
 
   return data;
 }

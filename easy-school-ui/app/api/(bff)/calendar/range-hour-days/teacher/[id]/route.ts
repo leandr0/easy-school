@@ -39,7 +39,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const { id } = params;
     const json = await req.json();
 
-    await requireAuth(['ADMIN', "TEACHER"]);
+    await requireAuth(['ADMIN', 'TEACHER']);
 
     const pathParams = new URLPathParam();
     pathParams.append("teacher");

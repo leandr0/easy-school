@@ -17,6 +17,7 @@ import { CalendarRangeHourDayModel } from '@/app/lib/definitions/calendat_range_
 import { CalendarWeekDayModel } from '@/app/lib/definitions/calendar_week_day_definitions';
 
 import { CourseClassCompleteModel, CreateCourseClassModel } from '@/app/lib/definitions/course_class_definitions';
+import { fetchCalendarRangeHourDayByTeacher } from '@/bff/services/calendarRangeHourDay.server';
 
 
 
@@ -107,7 +108,18 @@ export default function EditCourseClassPage({ courseClass, onSave, searchTeacher
         setLanguageId(langId);
 
         if (courseClass.teacher) {
-          setCurrentTeacherData({ teacher: courseClass.teacher, calendars: [] });
+          // Load the currently assigned teacher's own schedule (Dia / Hora início / Hora fim).
+          // Without this, the schedule columns stay empty until a new availability
+          // search is run, even though a teacher is already assigned to this class.
+          let currentTeacherCalendars: CalendarRangeHourDayModel[] = [];
+          if (courseClass.teacher.id) {
+            try {
+              currentTeacherCalendars = (await fetchCalendarRangeHourDayByTeacher(courseClass.teacher.id)) || [];
+            } catch (calErr) {
+              console.error('Falha ao carregar horários do professor atual', calErr);
+            }
+          }
+          setCurrentTeacherData({ teacher: courseClass.teacher, calendars: currentTeacherCalendars });
           setSelectedTeacherId(courseClass.teacher.id ?? '');
         } else {
           setCurrentTeacherData(null);
@@ -204,7 +216,7 @@ export default function EditCourseClassPage({ courseClass, onSave, searchTeacher
       const aSel = String(a.teacher.id) === String(selectedTeacherId) ? -1 : 0;
       const bSel = String(b.teacher.id) === String(selectedTeacherId) ? -1 : 0;
       if (aSel !== bSel) return aSel - bSel; // selected first
-      return (a.teacher.name || '').localeCompare(b.teacher.name || '');
+      return (a.teacher.user?.name || '').localeCompare(b.teacher.user?.name || '');
     });
 
     return list;
@@ -214,9 +226,14 @@ export default function EditCourseClassPage({ courseClass, onSave, searchTeacher
     () => mergedTeachers.map(m => m.teacher),
     [mergedTeachers]
   );
+  // Only show schedule entries whose weekday is one of the class's selected
+  // "Dias da Semana" — a teacher's other, unrelated availability days are hidden.
   const calendarsProp = useMemo(
-    () => mergedTeachers.flatMap(m => m.calendars),
-    [mergedTeachers]
+    () =>
+      mergedTeachers
+        .flatMap(m => m.calendars)
+        .filter(c => weekDayIds.includes(String(c.week_day?.id ?? ''))),
+    [mergedTeachers, weekDayIds]
   );
 
   // ---- Weekday & time handlers
@@ -280,7 +297,7 @@ export default function EditCourseClassPage({ courseClass, onSave, searchTeacher
   );
   const availableTeachers = useMemo(
     () => teachersProp.filter(t => String(t.id ?? '') !== String(selectedTeacherId))
-      .sort((a, b) => (a.name || '').localeCompare(b.name || '')),
+      .sort((a, b) => (a.user?.name || '').localeCompare(b.user?.name || '')),
     [teachersProp, selectedTeacherId]
   );
 
@@ -364,7 +381,7 @@ export default function EditCourseClassPage({ courseClass, onSave, searchTeacher
         <div>
           <div className="mb-2 text-sm text-gray-600">
             {selectedTeacherId
-              ? `Selecionado: ${teachersProp.find(t => String(t.id) === String(selectedTeacherId))?.name ?? ''}`
+              ? `Selecionado: ${teachersProp.find(t => String(t.id) === String(selectedTeacherId))?.user?.name ?? ''}`
               : 'Nenhum professor selecionado'}
           </div>
 
@@ -437,15 +454,15 @@ export default function EditCourseClassPage({ courseClass, onSave, searchTeacher
               onClick={() => toggleSelect(String(selectedTeacher.id))}
             >
               <div className="flex items-center justify-between">
-                <div className="font-medium">{selectedTeacher.name}</div>
+                <div className="font-medium">{selectedTeacher.user?.name}</div>
                 <span className="text-xs text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
                   Selecionado
                 </span>
               </div>
               <div className="text-xs text-gray-500 mt-1">
-                {selectedTeacher.phone_number}
-                {selectedTeacher.phone_number && selectedTeacher.email ? ' • ' : ''}
-                {selectedTeacher.email}
+                {selectedTeacher.user?.phone_number}
+                {selectedTeacher.user?.phone_number && selectedTeacher.user?.username ? ' • ' : ''}
+                {selectedTeacher.user?.username}
               </div>
               {/* Schedules */}
               <div className="mt-2 flex flex-wrap gap-2">
@@ -473,11 +490,11 @@ export default function EditCourseClassPage({ courseClass, onSave, searchTeacher
                       className="w-full text-left px-4 py-3 active:bg-gray-50"
                       onClick={() => toggleSelect(tid)}
                     >
-                      <div className="font-medium">{t.name}</div>
+                      <div className="font-medium">{t.user?.name}</div>
                       <div className="text-xs text-gray-500 mt-1">
-                        {t.phone_number}
-                        {t.phone_number && t.email ? ' • ' : ''}
-                        {t.email}
+                        {t.user?.phone_number}
+                        {t.user?.phone_number && t.user?.username ? ' • ' : ''}
+                        {t.user?.username}
                       </div>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {cals.length > 0 ? (

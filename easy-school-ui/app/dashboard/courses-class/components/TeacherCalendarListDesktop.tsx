@@ -48,7 +48,7 @@ export default function TeacherCalendarListDesktop({
     const aSel = String(a[0]) === String(selectedTeacherId) ? -1 : 0;
     const bSel = String(b[0]) === String(selectedTeacherId) ? -1 : 0;
     if (aSel !== bSel) return aSel - bSel; // selected first
-    return (a[1].teacher.name || '').localeCompare(b[1].teacher.name || '');
+    return (a[1].teacher.user?.name || '').localeCompare(b[1].teacher.user?.name || '');
   });
 
   return (
@@ -107,7 +107,7 @@ export default function TeacherCalendarListDesktop({
                           readOnly
                           className="h-4 w-4 text-blue-600 border-gray-300 rounded pointer-events-none"
                         />
-                        <p className="font-medium">{teacher?.name}</p>
+                        <p className="font-medium">{teacher?.user?.name}</p>
                         {isSelected && (
                           <span className="text-xs text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
                             Selecionado
@@ -115,9 +115,9 @@ export default function TeacherCalendarListDesktop({
                         )}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
-                        {teacher?.phone_number}
-                        {teacher?.phone_number && teacher?.email ? ' • ' : ''}
-                        {teacher?.email}
+                        {teacher?.user?.phone_number}
+                        {teacher?.user?.phone_number && teacher?.user?.username ? ' • ' : ''}
+                        {teacher?.user?.username}
                       </div>
                     </td>
                   )}

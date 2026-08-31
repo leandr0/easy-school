@@ -30,11 +30,12 @@ public interface LanguageRepository extends JpaRepository<Language, Integer> {
                    l.image_url,
                    CAST(COUNT(DISTINCT s.id) AS int) AS total_students
                FROM student s
+               INNER JOIN users u ON s.user_id = u.id
                INNER JOIN course_class_students ccs ON s.id = ccs.student_id
                INNER JOIN course_class cc ON cc.id = ccs.course_class_id
                INNER JOIN course c ON c.id = cc.course_id
                INNER JOIN language l ON l.id = c.language_id
-               WHERE s.status = true
+               WHERE u.status = true
                GROUP BY l.id, l.name
                ORDER BY l.name;
             """,nativeQuery = true)

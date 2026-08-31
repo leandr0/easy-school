@@ -224,7 +224,7 @@ CREATE TABLE holiday (
   created_at   TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP),
   updated_at   TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP),
   CONSTRAINT uq_holiday_date_scope_region UNIQUE (date, scope, region_code)
-);  
+);
 
 DROP TRIGGER IF EXISTS trg_holiday_touch_updated_at;
 CREATE TRIGGER trg_holiday_touch_updated_at
@@ -233,3 +233,25 @@ FOR EACH ROW WHEN NEW.updated_at = OLD.updated_at
 BEGIN
   UPDATE holiday SET updated_at = strftime('%Y-%m-%d %H:%M:%f','now') WHERE id = NEW.id;
 END;
+
+
+-- Books & chapters
+CREATE TABLE IF NOT EXISTS book (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    status BOOL NOT NULL DEFAULT 1,
+    UNIQUE(name)
+);
+
+CREATE TABLE IF NOT EXISTS chapter (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    FOREIGN KEY (book_id) REFERENCES book (id),
+    UNIQUE(book_id, position)
+);
+
+-- Class control: reference the book/chapter taught in the class
+ALTER TABLE class_control ADD COLUMN book_id INTEGER REFERENCES book (id);
+ALTER TABLE class_control ADD COLUMN chapter_id INTEGER REFERENCES chapter (id);

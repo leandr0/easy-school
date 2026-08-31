@@ -53,6 +53,18 @@ export function CreateTeacher() {
   );
 }
 
+export function CreateBook() {
+  return (
+    <Link
+      href="/dashboard/books/create"
+      className="flex h-10 items-center rounded-lg bg-purple-400 px-4 text-sm font-medium text-white transition-colors hover:bg-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-400"
+    >
+      <span className="hidden md:block">Criar Livro</span>{' '}
+      <PlusIcon className="h-5 md:ml-4" />
+    </Link>
+  );
+}
+
 
 export function CreateInvoice() {
   return (
@@ -207,8 +219,8 @@ export default function DeleteStudantFromCourseClassList({id, disabled, onClick,
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className={disabled ?  'rounded-md border p-2 hover:bg-gray-100 read-only-select' : " rounded-md border p-2 hover:bg-gray-100"  } 
-      
+      className={disabled ?  'rounded-md border p-2 hover:bg-gray-100 read-only-select' : " rounded-md border p-2 hover:bg-gray-100"  }
+
     >
       <span className="sr-only">Delete</span>
       <TrashIcon className="w-4" color={disabled ?  '' : 'red'} />

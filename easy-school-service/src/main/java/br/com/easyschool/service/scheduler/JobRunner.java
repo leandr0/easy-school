@@ -1,6 +1,5 @@
 package br.com.easyschool.service.scheduler;
 
-import br.com.easyschool.domain.dto.CollectionFormDTO;
 import br.com.easyschool.domain.entities.ScheduledJob;
 import br.com.easyschool.service.implementations.RevenueService;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -9,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -34,8 +32,7 @@ public class JobRunner {
     private void reconcilePayments(ScheduledJob job) throws Exception {
         Map<String, Object> payload = parsePayload(job.getPayloadJson());
         log.info("Reconciling payments with payload: {}", payload);
-        List<CollectionFormDTO> collectionFormDTOS = revenueService.fetchCollectionForm();
-        revenueService.createRevenuesFromCollectionForm(collectionFormDTOS);
+        revenueService.reconcilePayments();
     }
 
     private void sendDunning(ScheduledJob job) throws Exception {

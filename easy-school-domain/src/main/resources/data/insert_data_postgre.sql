@@ -367,3 +367,17 @@ INSERT INTO roles (role, code) VALUES ('STUDENT',300);
 14	"Carmela Stellantis"	"39 351 382 4833"	"carmela@easyschool.com.br"	true	43.35	"2024-03-12 00:00:00"
 20	"Professor sem Availability"	"77 98765-1234"	"prof@availability.com.br"	true	23.54	"2013-11-10 23:00:00"
 **/
+
+/**
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- Create:
+INSERT INTO users (username, password_hash)
+VALUES ('leandro', crypt('plaintext', gen_salt('bf', 12)));
+
+-- Verify:
+SELECT id
+FROM users
+WHERE username = 'leandro'
+  AND password_hash = crypt('plaintext', password_hash);
+**/

@@ -355,12 +355,30 @@ export default function TeacherEditForm({ teacher, languages, calendars }: { tea
     }));
   };
 
+  // Fields that are actually stored on the linked User record. handleInputChange keeps
+  // both the flat TeacherModel key (what gets sent to PUT /teachers) and the nested
+  // `user` object (what the initial GET /teachers/:id response populates the form from,
+  // and what TeacherInfoComponent falls back to for its displayed value) in sync, so the
+  // input never appears to revert after a keystroke.
+  const USER_FIELD_MAP: Record<string, keyof NonNullable<TeacherModel['user']>> = {
+    name: 'name',
+    phone_number: 'phone_number',
+    email: 'username',
+    start_date: 'created_at',
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (checked as any) : value,
-    }));
+    const nextValue = type === 'checkbox' ? (checked as any) : value;
+
+    setFormData(prev => {
+      const updated: TeacherModel = { ...prev, [name]: nextValue };
+      const userField = USER_FIELD_MAP[name];
+      if (userField) {
+        updated.user = { ...(prev.user ?? {}), [userField]: nextValue } as TeacherModel['user'];
+      }
+      return updated;
+    });
   };
 
   const handleCompensationChange = (amount: number) => {
@@ -384,7 +402,11 @@ export default function TeacherEditForm({ teacher, languages, calendars }: { tea
           handleCompensationChange={handleCompensationChange}
           handleWeekDayChange={handleWeekDayChange}
           handleInputChange={handleInputChange}
-          onSwitchStatus={(checked) => setFormData(prev => ({ ...prev, status: checked }))}
+          onSwitchStatus={(checked) => setFormData(prev => ({
+            ...prev,
+            status: checked,
+            user: { ...(prev.user ?? {}), status: checked } as TeacherModel['user'],
+          }))}
           weekDays={weekDays}
           setSelectedWeekDayUddi={setSelectedWeekDayUddi}
           calendarRangeHour={calendarRangeHour!}
@@ -407,7 +429,11 @@ export default function TeacherEditForm({ teacher, languages, calendars }: { tea
           handleCompensationChange={handleCompensationChange}
           handleWeekDayChange={handleWeekDayChange}
           handleInputChange={handleInputChange}
-          onSwitchStatus={(checked) => setFormData(prev => ({ ...prev, status: checked }))}
+          onSwitchStatus={(checked) => setFormData(prev => ({
+            ...prev,
+            status: checked,
+            user: { ...(prev.user ?? {}), status: checked } as TeacherModel['user'],
+          }))}
           weekDays={weekDays}
           setSelectedWeekDayUddi={setSelectedWeekDayUddi}
           calendarRangeHour={calendarRangeHour!}

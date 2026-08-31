@@ -3,6 +3,7 @@ package br.com.easyschool.domain.entities.security;
 import br.com.easyschool.domain.dto.UserDTO;
 import br.com.easyschool.domain.entities.Student;
 import br.com.easyschool.domain.entities.Teacher;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -28,7 +29,8 @@ public class User {
     private  String username;
 
     @Column(name = "password_hash",nullable = false)
-    @JsonProperty("password_hash")
+    //@JsonProperty("password_hash")
+    @JsonIgnore
     @Getter @Setter
     private  String passwordHash;
 
@@ -42,22 +44,26 @@ public class User {
     private  OffsetDateTime createdAt;
 
     @Column(name = "updated_at",nullable = false,insertable = false)
-    @JsonProperty("updated_at")
+    //@JsonProperty("updated_at")
+    @JsonIgnore
     @Getter @Setter
     private  OffsetDateTime updatedAt;
 
     @Column(name = "last_login_at",insertable = false)
-    @JsonProperty("last_login_at")
+    //@JsonProperty("last_login_at")
+    @JsonIgnore
     @Getter @Setter
     private  OffsetDateTime lastLoginAt;
 
     @Column(name = "failed_attempts",nullable = false,insertable = false)
-    @JsonProperty("failed_attempts")
+    //@JsonProperty("failed_attempts")
+    @JsonIgnore
     @Getter @Setter
     private  int failedAttempts;
 
     @Column(name = "locked_until",insertable = false)
-    @JsonProperty("locked_until")
+    //@JsonProperty("locked_until")
+    @JsonIgnore
     @Getter @Setter
     private  OffsetDateTime lockedUntil;
 
@@ -80,10 +86,12 @@ public class User {
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     @Getter @Setter
+    @JsonIgnore
     private Student student;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     @Getter @Setter
+    @JsonIgnore
     private Teacher teacher;
 
 
@@ -98,4 +106,17 @@ public class User {
                 u.getRoles().stream().map(Role::getRole).collect(Collectors.toSet())
         );
     }
+/**
+    public static User fromLoginDto(LoginDTO login){
+        return new User();
+    }
+
+
+    private User (final UUID id, String username, String passwordHash,
+                  boolean status,OffsetDateTime createdAt,OffsetDateTime updatedAt,
+                  OffsetDateTime lastLoginAt,int failedAttempts,OffsetDateTime lockedUntil,
+                  String name,String phoneNumber){
+    }
+
+    public User(){}**/
 }

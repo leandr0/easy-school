@@ -51,7 +51,6 @@ export async function PUT(req: NextRequest) {
 
     await requireAuth(['ADMIN', 'TEACHER']);
 
-    console.log(`update teacher payload ${JSON.stringify(json)}`);
     const data = await clientApi.put(json, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json', } })
     return NextResponse.json(data);
 

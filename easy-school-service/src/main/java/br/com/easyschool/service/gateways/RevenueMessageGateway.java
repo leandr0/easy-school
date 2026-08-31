@@ -149,7 +149,7 @@ public class RevenueMessageGateway {
         final String PHONE_NUMBER = "{phone_number}";
         final String MESSAGE = "{message}";
 
-        link = link.replace(PHONE_NUMBER,student.getPhoneNumber().replaceAll("\\s", ""))
+        link = link.replace(PHONE_NUMBER,student.getUser().getPhoneNumber().replaceAll("\\s", ""))
                 .replace(MESSAGE, URLEncoder.encode(message, StandardCharsets.UTF_8));
 
         return link;
@@ -185,7 +185,7 @@ public class RevenueMessageGateway {
 
             String amount = String.format("%.2f", getCurrentRevenueAmount(student.getId()));
 
-            message = message.replace(NOME, student.getName())
+            message = message.replace(NOME, student.getUser().getName())
                     .replace(DATA, student.getDueDate().toString())
                     .replace(VALOR, amount);
 

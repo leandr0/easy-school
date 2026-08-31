@@ -205,10 +205,10 @@ export default function AttendenceClassControlTableDesktop({
                                 <h4 className="font-semibold text-gray-800">Professor</h4>
                               </div>
                               <div className="pl-7">
-                                {classControl.teacher?.name ? (
+                                {classControl.teacher?.user?.name ? (
                                   <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
                                     <div>
-                                      <p className="font-medium text-gray-900">{classControl.teacher.name}</p>
+                                      <p className="font-medium text-gray-900">{classControl.teacher.user?.name}</p>
                                     </div>
                                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                       Presente
@@ -241,16 +241,16 @@ export default function AttendenceClassControlTableDesktop({
                                         className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200"
                                       >
                                         <div className="flex-1 min-w-0">
-                                          <p className="font-medium text-gray-900 truncate">{student.name}</p>
+                                          <p className="font-medium text-gray-900 truncate">{student.user?.name}</p>
                                           <div className="flex flex-wrap gap-2 mt-1 text-xs text-gray-600">
-                                            {student.email && (
+                                            {student.user?.username && (
                                               <span className="bg-gray-100 px-2 py-1 rounded">
-                                                {student.email}
+                                                {student.user?.username}
                                               </span>
                                             )}
-                                            {student.phone_number && (
+                                            {student.user?.phone_number && (
                                               <span className="bg-gray-100 px-2 py-1 rounded">
-                                                {student.phone_number}
+                                                {student.user?.phone_number}
                                               </span>
                                             )}
                                           </div>
@@ -268,6 +268,24 @@ export default function AttendenceClassControlTableDesktop({
                                 )}
                               </div>
                             </div>
+
+                            {/* Book & Chapter */}
+                            {(classControl.class_control?.book || classControl.class_control?.chapter) && (
+                              <div className="bg-white rounded-lg p-4 border border-gray-200 mb-4">
+                                <div className="flex items-center mb-3">
+                                  <BookOpen className="w-5 h-5 text-gray-500 mr-2" />
+                                  <h4 className="font-semibold text-gray-800">Livro / Capítulo</h4>
+                                </div>
+                                <div className="pl-7 text-sm text-gray-700">
+                                  {classControl.class_control?.book?.name ?? (
+                                    <span className="text-gray-400 italic">Nenhum livro registrado</span>
+                                  )}
+                                  {classControl.class_control?.chapter?.name
+                                    ? ` · ${classControl.class_control.chapter.name}`
+                                    : ''}
+                                </div>
+                              </div>
+                            )}
 
                             {/* Class Content */}
                             <div className="bg-white rounded-lg p-4 border border-gray-200">

@@ -4,27 +4,23 @@ import { UpdateTeacher } from '../../components/ui_buttons';
 import TeacherStatus from './TeacherStatus';
 import { Pagination } from '../../components/Pagination';
 import { useEffect, useMemo, useState } from 'react';
+import SortToggle from '@/app/dashboard/components/SortToggle';
+import type { SortDirection } from '@/app/dashboard/components/tableUtils';
+import type { TeacherSortKey } from './TeacherTable';
 
 interface TeacherTableDesktopProps {
   teachers: TeacherModel[];
+  sortKey: TeacherSortKey;
+  sortDirection: SortDirection;
+  onSort: (key: TeacherSortKey) => void;
 }
 
 export default function TeacherTableDesktop({
-  teachers
+  teachers,
+  sortKey,
+  sortDirection,
+  onSort,
 }: TeacherTableDesktopProps) {
-
-
-  if (!teachers?.length) {
-    return (
-      <div className="rounded-lg bg-gray-50 p-8">
-        <div className="text-center">
-          <p className="text-gray-500">Nenhum professor encontrado</p>
-        </div>
-      </div>
-    );
-  }
-
-
 
   // 🔢 pagination state
   const [page, setPage] = useState<number>(1);        // 1-based
@@ -46,6 +42,18 @@ export default function TeacherTableDesktop({
     return teachers.slice(start, end);
   }, [teachers, page, pageSize]);
 
+  // Note: hooks above must run on every render, so the "no results" state
+  // is handled here, after the hooks, rather than with an early return.
+  if (!teachers?.length) {
+    return (
+      <div className="rounded-lg bg-gray-50 p-8">
+        <div className="text-center">
+          <p className="text-gray-500">Nenhum professor encontrado</p>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
@@ -53,10 +61,20 @@ export default function TeacherTableDesktop({
         <thead className="rounded-lg text-left text-sm font-normal">
           <tr>
             <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-              Nome
+              <SortToggle
+                label="Nome"
+                active={sortKey === "name"}
+                direction={sortDirection}
+                onClick={() => onSort("name")}
+              />
             </th>
             <th scope="col" className="px-3 py-5 font-medium">
-              Status
+              <SortToggle
+                label="Status"
+                active={sortKey === "status"}
+                direction={sortDirection}
+                onClick={() => onSort("status")}
+              />
             </th>
             <th scope="col" className="relative py-3 pl-6 pr-3">
               <span className="sr-only">Edit</span>

@@ -3,6 +3,7 @@
 import { format, addDays } from "date-fns";
 import { CourseClassCompleteModel } from "@/app/lib/definitions/course_class_definitions";
 import { ClassControlModel } from "@/app/lib/definitions/class_control_definitions";
+import { BookModel } from "@/app/lib/definitions/books_definitions";
 import { Switch } from "@/app/dashboard/components/switch";
 import { useState } from "react";
 import { Button, CancelButton } from "@/app/ui/button";
@@ -23,6 +24,11 @@ interface ClassControlTableMobileProps {
   setClassContent: (value: string) => void;
   replacement: boolean;
   setReplacement: (value: boolean) => void;
+  books: BookModel[];
+  bookId: string;
+  onBookChange: (value: string) => void;
+  chapterId: string;
+  onChapterChange: (value: string) => void;
   disabledDates: Set<string>;
   loading: boolean;
   existingRecords: ClassControlModel[];
@@ -33,6 +39,7 @@ export default function ClassControlTableMobile(props: ClassControlTableMobilePr
     classes, selectedClassId, participantList, currentWeekStart,
     onClassChange, onPrevWeek, onNextWeek, onToggleAttendance, onSaveAttendance,
     attendance, classContent, setClassContent, replacement, setReplacement,
+    books, bookId, onBookChange, chapterId, onChapterChange,
     disabledDates, loading, existingRecords, onCancel,
   } = props;
 
@@ -42,6 +49,9 @@ export default function ClassControlTableMobile(props: ClassControlTableMobilePr
   const weekDates = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
   const selectedDate = weekDates[selectedDateIndex];
   const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
+
+  const selectedBook = books.find((b) => String(b.id) === bookId);
+  const chapters = selectedBook?.chapters ?? [];
 
   const isDateDisabled = (dateStr: string) => disabledDates.has(dateStr);
   const getAttendanceCount = (dateStr: string) =>
@@ -254,6 +264,40 @@ export default function ClassControlTableMobile(props: ClassControlTableMobilePr
                       color="green"
                       disabled={loading}
                     />
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Livro
+                      </label>
+                      <select
+                        value={bookId}
+                        onChange={(e) => onBookChange(e.target.value)}
+                        disabled={loading}
+                        className="w-full max-w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                      >
+                        <option value="">Selecione um livro ...</option>
+                        {books.map((b) => (
+                          <option key={b.id} value={b.id}>{b.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Capítulo
+                      </label>
+                      <select
+                        value={chapterId}
+                        onChange={(e) => onChapterChange(e.target.value)}
+                        disabled={loading || !bookId}
+                        className="w-full max-w-full rounded-lg border border-gray-300 px-3 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                      >
+                        <option value="">Selecione um capítulo ...</option>
+                        {chapters.map((c) => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                      </select>
+                    </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">

@@ -7,11 +7,17 @@ import { CourseModel } from "@/app/lib/definitions/courses_definitions";
 import Image from 'next/image';
 import { Pagination } from "../../components/Pagination";
 import { Can } from "@/components/Can";
+import SortToggle from "@/app/dashboard/components/SortToggle";
+import type { SortDirection } from "@/app/dashboard/components/tableUtils";
+import type { CourseSortKey } from "./CoursesTable";
 type Props = {
   courses: CourseModel[];
+  sortKey: CourseSortKey;
+  sortDirection: SortDirection;
+  onSort: (key: CourseSortKey) => void;
 };
 
-export default function CoursesTableDesktop({ courses }: Props) {
+export default function CoursesTableDesktop({ courses, sortKey, sortDirection, onSort }: Props) {
 
 
 
@@ -41,10 +47,20 @@ export default function CoursesTableDesktop({ courses }: Props) {
         <thead className="rounded-lg text-left text-sm font-normal">
           <tr>
             <th scope="col" className="px-4 py-5 font-medium sm:pl-6">
-              Nome
+              <SortToggle
+                label="Nome"
+                active={sortKey === "name"}
+                direction={sortDirection}
+                onClick={() => onSort("name")}
+              />
             </th>
             <th scope="col" className="px-3 py-5 font-medium">
-              Status
+              <SortToggle
+                label="Status"
+                active={sortKey === "status"}
+                direction={sortDirection}
+                onClick={() => onSort("status")}
+              />
             </th>
             <th scope="col" className="relative py-3 pl-6 pr-3">
               <span className="sr-only">Edit</span>

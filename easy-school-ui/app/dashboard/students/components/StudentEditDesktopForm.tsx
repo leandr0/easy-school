@@ -53,7 +53,7 @@ export default function StudentEditDesktopForm({
                     id="name"
                     type="text"
                     name="name"
-                    value={formData.name || ""}
+                    value={formData.user?.name || ""}
                     onChange={onChange}
                     className="flex-1 rounded-md border border-gray-300 py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
@@ -68,7 +68,7 @@ export default function StudentEditDesktopForm({
                     id="phone_number"
                     type="text"
                     name="phone_number"
-                    value={formData.phone_number || ""}
+                    value={formData.user?.phone_number || ""}
                     onChange={onChange}
                     className="flex-1 rounded-md border border-gray-300 py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mr-4"
                   />
@@ -77,7 +77,7 @@ export default function StudentEditDesktopForm({
                     id="email"
                     type="email"
                     name="email"
-                    value={formData.email || ""}
+                    value={formData.user?.username || ""}
                     onChange={onChange}
                     className="flex-1 rounded-md border border-gray-300 py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
@@ -103,15 +103,15 @@ export default function StudentEditDesktopForm({
                   <label htmlFor="start_date" className="w-34 text-sm text-right pl-[65px]">Início:</label>
                   <DateInput
                     name="start_date"
-                    value={formData.start_date || ""}
+                    value={formData.user?.created_at || ""}
                     onChange={onChange}
                     className="text-center ml-[11px] rounded-md border border-gray-300 py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <div className="md:block mb-1 mt-4 pl-[71px]">
                     <Switch
-                      checked={Boolean(formData.status)}
+                      checked={Boolean(formData.user?.status)}
                       onChange={onSwitchStatus}
-                      label={formData.status ? 'Ativo' : 'Inativo'}
+                      label={formData.user?.status ? 'Ativo' : 'Inativo'}
                       color="green"
                     />
                   </div>

@@ -11,19 +11,21 @@ import {
   BookOpenIcon,
   ShoppingBagIcon,
   WrenchScrewdriverIcon,
+  LanguageIcon,
 } from '@heroicons/react/24/outline';
 import { Clock10Icon } from 'lucide-react';
 import type { NavLink, IconKey } from '@/lib/nav/menu';
 
 const iconMap: Record<IconKey, React.ComponentType<any>> = {
   home: HomeIcon,
-  courses: BookOpenIcon,
+  courses: LanguageIcon,
   classes: ShoppingBagIcon,
   students: UserGroupIcon,
   teachers: AcademicCapIcon,
   clock: Clock10Icon,
   dollar: CurrencyDollarIcon,
   wrench: WrenchScrewdriverIcon,
+  book: BookOpenIcon,
 };
 
 export default function NavLinks({ items }: { items: NavLink[] }) {

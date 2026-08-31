@@ -3,7 +3,6 @@ import { CalendarRangeHourDayModel } from "@/app/lib/definitions/calendat_range_
 import { URLPathParam } from "@/app/lib/url_path_param";
 import { bffApiClient } from "@/app/config/clientAPI";
 import { bearerHeaders } from "@/app/lib/authz.server";
-import { LanguageModel } from "@/app/lib/definitions/language_definitions";
 
 
 const clientApi = bffApiClient.resource('/calendar/range-hour-days');
@@ -45,7 +44,7 @@ export async function deleteRangeHourDayList(ids: string[],): Promise<void> {
   const queryParams = new URLSearchParams();
   queryParams.set("ids", ids.join(','));
 
-  await clientApi.delete("/resources?" + queryParams.toString());
+  await clientApi.delete("/resources?" + queryParams.toString(), { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json' } });
 }
 
 export async function createByTeacherId(teacher_id: any, payload: CalendarRangeHourDayModel[]): Promise<CalendarRangeHourDayModel[]> {

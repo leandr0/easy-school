@@ -5,24 +5,28 @@ import { TeacherModel } from '@/app/lib/definitions/teacher_definitions';
 import { UpdateTeacher } from '../../components/ui_buttons';
 import TeacherStatus from './TeacherStatus';
 import { Pagination } from "../../components/Pagination";
+import MobileSortBar from "@/app/dashboard/components/MobileSortBar";
+import type { SortDirection } from "@/app/dashboard/components/tableUtils";
+import type { TeacherSortKey } from "./TeacherTable";
 
 interface TeacherTableMobileProps {
   teachers: TeacherModel[];
+  sortKey: TeacherSortKey;
+  sortDirection: SortDirection;
+  onSort: (key: TeacherSortKey) => void;
 }
 
+const SORT_OPTIONS: { value: TeacherSortKey; label: string }[] = [
+  { value: "name", label: "Nome" },
+  { value: "status", label: "Status" },
+];
+
 export default function TeacherTableMobile({
-  teachers
+  teachers,
+  sortKey,
+  sortDirection,
+  onSort,
 }: TeacherTableMobileProps) {
-
-  if (!teachers?.length) {
-    return (
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-        <p className="text-gray-500">Nenhum professor encontrado</p>
-      </div>
-    );
-  }
-
-
 
   // 🔢 pagination state
   const [page, setPage] = useState<number>(1);        // 1-based
@@ -44,8 +48,25 @@ export default function TeacherTableMobile({
     return teachers.slice(start, end);
   }, [teachers, page, pageSize]);
 
+  // Note: hooks above must run on every render, so the "no results" state
+  // is handled here, after the hooks, rather than with an early return.
+  if (!teachers?.length) {
+    return (
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+        <p className="text-gray-500">Nenhum professor encontrado</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
+      <MobileSortBar
+        options={SORT_OPTIONS}
+        sortKey={sortKey}
+        direction={sortDirection}
+        onSortKeyChange={onSort}
+        onDirectionToggle={() => onSort(sortKey)}
+      />
       {currentItems.map((teacher) => (
         <div
           key={teacher.id}

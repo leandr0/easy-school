@@ -5,13 +5,16 @@ import br.com.easyschool.domain.entities.Revenue;
 import br.com.easyschool.domain.vo.DataParam;
 import br.com.easyschool.service.implementations.RevenueService;
 import br.com.easyschool.service.requests.CreateRevenueRequest;
+import br.com.easyschool.service.requests.CreateRevenuesFromCollectionForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +40,8 @@ public class RevenueGateway {
 
             result.forEach(rev -> {
                 if (rev.getStudent() != null && rev.getStudent().getCourseClasses() != null) {
+                    rev.getStudent().getUser().setStudent(null);
+                    rev.getStudent().getUser().setTeacher(null);
                     rev.getStudent().getCourseClasses().forEach(courseClass -> {
                         courseClass.setTeacher(null);
                         if (courseClass.getCourse() != null) {
@@ -68,10 +73,22 @@ public class RevenueGateway {
     }
     @PreAuthorize( "hasRole('ADMIN')")
     @GetMapping("/collection-form")
-    public ResponseEntity<List<CollectionFormDTO>> fetchCollectionForm() {
+    public ResponseEntity<CreateRevenuesFromCollectionForm> fetchCollectionForm(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         try {
 
-            return ResponseEntity.ok(service.fetchCollectionForm());
+            CreateRevenuesFromCollectionForm response = null;
+            List<CollectionFormDTO> collection = null;
+
+            if(date == null){
+                collection = service.fetchCollectionForm(null);
+            }else{
+                collection = service.fetchCollectionForm(date);
+            }
+
+            response = new CreateRevenuesFromCollectionForm(collection,date);
+
+
+            return ResponseEntity.ok(response);
 
         }catch (Throwable t){
             log.error("Fetch collection form {}",t.getMessage());
@@ -137,7 +154,7 @@ public class RevenueGateway {
     }
     @PreAuthorize( "hasRole('ADMIN')")
     @PostMapping("/collection-form")
-    public ResponseEntity<List<Revenue>> createRevenuesFromCollectionForm(@RequestBody @NonNull List<CollectionFormDTO> request) {
+    public ResponseEntity<List<Revenue>> createRevenuesFromCollectionForm(@RequestBody @NonNull CreateRevenuesFromCollectionForm  request) {
 
         try {
 
@@ -155,6 +172,20 @@ public class RevenueGateway {
 
         try {
             return ResponseEntity.ok(service.create(request));
+
+        }catch (Throwable t){
+            log.error("Create revenues from collection form {}",t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PreAuthorize( "hasRole('ADMIN')")
+    @PostMapping("/job")
+    public ResponseEntity<Revenue> jobRun() {
+
+        try {
+            service.reconcilePayments();
+            return ResponseEntity.ok().build();
 
         }catch (Throwable t){
             log.error("Create revenues from collection form {}",t.getMessage());

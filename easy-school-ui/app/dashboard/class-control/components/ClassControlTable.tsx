@@ -7,6 +7,7 @@ import { addDays, format, startOfWeek, addWeeks, subWeeks, endOfWeek } from "dat
 
 import { CourseClassCompleteModel } from "@/app/lib/definitions/course_class_definitions";
 import { ClassControlModel } from "@/app/lib/definitions/class_control_definitions";
+import { BookModel } from "@/app/lib/definitions/books_definitions";
 
 import ClassControlTableDesktop from "./ClassControlTableDesktop";
 import ClassControlTableMobile from "./ClassControleTableMobile";
@@ -15,6 +16,7 @@ import ClassControlTableMobile from "./ClassControleTableMobile";
 import { getAllCourseClassAvailable } from "@/bff/services/courseClass.server";
 import { getStudentsInCourseClass } from "@/bff/services/student.server";
 import { storeFrequencyClass, filteringDataRange } from "@/bff/services/classControl.server";
+import { getAllBooks } from "@/bff/services/book.server";
 
 
 
@@ -42,10 +44,18 @@ export default function ClassControlTable() {
   );
   const [classContent, setClassContent] = useState<string>("");
   const [replacement, setReplacement] = useState<boolean>(false);
+  const [books, setBooks] = useState<BookModel[]>([]);
+  const [bookId, setBookId] = useState<string>("");
+  const [chapterId, setChapterId] = useState<string>("");
   const [disabledDates, setDisabledDates] = useState<Set<string>>(new Set());
   const [existingRecords, setExistingRecords] = useState<ClassControlModel[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+
+  const handleBookChange = (value: string) => {
+    setBookId(value);
+    setChapterId("");
+  };
 
   // Function to load existing attendance records for the current week
   const loadExistingRecords = async (classId: string, weekStart: Date) => {
@@ -57,7 +67,7 @@ export default function ClassControlTable() {
       const startDate = format(weekStart, "yyyy-MM-dd");
       const endDate = format(weekEnd, "yyyy-MM-dd");
 
-      
+
 
       const records = await filteringDataRange(startDate, endDate, Number(classId));
       setExistingRecords(records);
@@ -74,7 +84,7 @@ export default function ClassControlTable() {
       });
 
       setDisabledDates(disabledDatesSet);
-      
+
 
       // Pre-populate attendance data from existing records
       populateAttendanceFromRecords(records);
@@ -127,6 +137,8 @@ export default function ClassControlTable() {
       setSelectedClassId("");
       setAttendance({});
       setClassContent("");
+      setBookId("");
+      setChapterId("");
       setDisabledDates(new Set());
       setExistingRecords([]);
       return;
@@ -137,6 +149,8 @@ export default function ClassControlTable() {
     setAttendance({});
     setClassContent("");
     setReplacement(false);
+    setBookId("");
+    setChapterId("");
 
     // Reset to current week when changing class
     const currentWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
@@ -144,36 +158,36 @@ export default function ClassControlTable() {
 
     const selectedClass = courseClassList.find((c) => String(c.id) === classId);
     if (!selectedClass) {
-      
+
       return;
     }
 
     const students = await getStudentsInCourseClass(classId);
     const participants: Participant[] = [];
 
-    if (selectedClass.teacher && selectedClass.teacher.id && selectedClass.teacher.name) {
+    if (selectedClass.teacher && selectedClass.teacher.id && selectedClass.teacher.user?.name) {
       participants.push({
         id: selectedClass.teacher.id,
-        name: selectedClass.teacher.name,
+        name: selectedClass.teacher.user?.name!,
         role: "Teacher",
-        phone_number: selectedClass.teacher.phone_number,
-        email: selectedClass.teacher.email,
+        phone_number: selectedClass.teacher.user?.phone_number,
+        email: selectedClass.teacher.user?.username,
       });
     }
 
     students.forEach((s) => {
-      if (s.id && s.name) {
+      if (s.id && s.user?.name) {
         participants.push({
           id: s.id,
-          name: s.name,
+          name: s.user?.name,
           role: "Student",
-          phone_number: s.phone_number,
-          email: s.email,
+          phone_number: s.user?.phone_number,
+          email: s.user?.username,
         });
       }
     });
 
-    
+
     setParticipantList(participants);
 
     // Load existing records for the current week (now reset to current date)
@@ -218,6 +232,8 @@ export default function ClassControlTable() {
   const onCancel = async () => {
     setClassContent("");
     setReplacement(false);
+    setBookId("");
+    setChapterId("");
     router.push('/dashboard');
   }
 
@@ -236,7 +252,7 @@ export default function ClassControlTable() {
 
       // Skip dates that are disabled (already have stored data)
       if (disabledDates.has(dateStr)) {
-        
+
         continue;
       }
 
@@ -257,18 +273,26 @@ export default function ClassControlTable() {
           students: studentsPresent,
           content: classContent,
           replacement: replacement,
+          book_id: bookId ? Number(bookId) : null,
+          chapter_id: chapterId ? Number(chapterId) : null,
         });
       }
     }
 
     if (records.length === 0) {
-      
+
       alert("Nenhuma presença nova foi marcada para salvar.");
       return;
     }
 
+    if (!bookId || !chapterId) {
+
+      alert("Selecione o livro e o capítulo da aula.");
+      return;
+    }
+
     if (!classContent) {
-      
+
       alert("O conteúdo da aula não foi preenchido.");
       return;
     }
@@ -279,11 +303,13 @@ export default function ClassControlTable() {
       // Reset class content after successful save
       setClassContent("");
       setReplacement(false);
+      setBookId("");
+      setChapterId("");
 
       // Reload existing records to update disabled dates
       await loadExistingRecords(selectedClassId, currentWeekStart);
     } catch (error) {
-      
+
       alert("Erro ao salvar presença. Tente novamente.");
     }
   };
@@ -301,6 +327,10 @@ export default function ClassControlTable() {
         };
         setCourseClassList([placeholder, ...classes]);
       })
+      .catch((err) => console.error(err));
+
+    getAllBooks()
+      .then((result) => setBooks(result))
       .catch((err) => console.error(err));
   }, []);
 
@@ -334,6 +364,11 @@ export default function ClassControlTable() {
               setClassContent={setClassContent}
               replacement={replacement}
               setReplacement={setReplacement}
+              books={books}
+              bookId={bookId}
+              onBookChange={handleBookChange}
+              chapterId={chapterId}
+              onChapterChange={setChapterId}
               disabledDates={disabledDates}
               loading={loading}
               existingRecords={existingRecords}
@@ -356,6 +391,11 @@ export default function ClassControlTable() {
               setClassContent={setClassContent}
               replacement={replacement}
               setReplacement={setReplacement}
+              books={books}
+              bookId={bookId}
+              onBookChange={handleBookChange}
+              chapterId={chapterId}
+              onChapterChange={setChapterId}
               disabledDates={disabledDates}
               loading={loading}
               existingRecords={existingRecords}

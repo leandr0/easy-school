@@ -25,12 +25,31 @@ export default function StudentEditForm({ student }: { student: StudentCoursePri
   const [showConfirmUpdateModal, setShowConfirmUpdateModal] = useState(false);
 
 
+  // Fields that live on the nested `user` object (student personal data lives on
+  // the User entity, not on the Student entity itself). Input names map to the
+  // corresponding UserModel field. Anything not listed here (e.g. due_date) is a
+  // flat Student field and is written directly on formData.
+  const USER_FIELD_MAP: Record<string, keyof NonNullable<StudentCoursePriceModel['user']>> = {
+    name: 'name',
+    phone_number: 'phone_number',
+    email: 'username',
+    start_date: 'created_at',
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'number' ? parseFloat(value) : value
-    }));
+    const nextValue = type === 'number' ? parseFloat(value) : value;
+
+    setFormData((prev) => {
+      const userField = USER_FIELD_MAP[name];
+      if (userField) {
+        return {
+          ...prev,
+          user: { ...(prev.user ?? {}), [userField]: nextValue } as StudentCoursePriceModel['user'],
+        };
+      }
+      return { ...prev, [name]: nextValue };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -109,7 +128,10 @@ export default function StudentEditForm({ student }: { student: StudentCoursePri
           onChange={handleChange}
           onSubmit={handleSubmit}
           onEditCourse={handleEditCourseClick}
-          onSwitchStatus={(checked) => setFormData(prev => ({ ...prev, status: checked }))}
+          onSwitchStatus={(checked) => setFormData(prev => ({
+            ...prev,
+            user: { ...(prev.user ?? {}), status: checked } as StudentCoursePriceModel['user'],
+          }))}
         />
       </div>
       <div className="block md:hidden px-4 space-y-6">
@@ -120,7 +142,10 @@ export default function StudentEditForm({ student }: { student: StudentCoursePri
           onChange={handleChange}
           onSubmit={handleSubmit}
           onEditCourse={handleEditCourseClick}
-          onSwitchStatus={(checked) => setFormData(prev => ({ ...prev, status: checked }))}
+          onSwitchStatus={(checked) => setFormData(prev => ({
+            ...prev,
+            user: { ...(prev.user ?? {}), status: checked } as StudentCoursePriceModel['user'],
+          }))}
         />
       </div>
 

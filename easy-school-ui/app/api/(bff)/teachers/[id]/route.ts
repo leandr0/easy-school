@@ -13,7 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
     const { id } = params;
     
-    await requireAuth('ADMIN');
+    await requireAuth(['ADMIN', 'TEACHER']);
     
     const data = await clientApi.get<TeacherModel>(id, {headers: await bearerHeaders() , cache: 'no-store' });
 

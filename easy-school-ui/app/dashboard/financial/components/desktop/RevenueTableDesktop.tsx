@@ -137,7 +137,7 @@ export default function RevenuesTableDesktop({
                 </div>
 
                 <div className="py-3 pr-3 col-span-2 flex items-center gap-2">
-                  <p className="truncate text-sm">{revenue.student?.name}</p>
+                  <p className="truncate text-sm">{revenue.student?.user?.name}</p>
                 </div>
 
                 <div className="py-1 col-span-1 text-center">

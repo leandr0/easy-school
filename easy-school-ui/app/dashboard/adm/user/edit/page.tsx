@@ -6,6 +6,7 @@ import { z } from 'zod';
 import EditUserForm from '../components/EditUserForm';
 import { findUser } from '@/bff/services/security/user.server';
 import { fetchRoles } from '@/bff/services/security/role.server';
+import { authorizePage } from '@/lib/authz/page-guard';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const EDIT_COOKIE = 'edit_user';
@@ -14,6 +15,11 @@ export const metadata = { title: 'Editar usuário' };
 export const dynamic = 'force-dynamic';
 
 export default async function Page() {
+  // This is the admin edit-any-user flow (id-based). TEACHER/STUDENT use
+  // /dashboard/adm/user/me/edit instead, which only ever touches their own
+  // account.
+  await authorizePage('admin.all');
+
   const token = cookies().get(EDIT_COOKIE)?.value;
 
   if (!token) redirect('/dashboard/adm/user?updated=1');

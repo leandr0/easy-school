@@ -80,10 +80,6 @@ public class ClassControlGateway {
 
             List<ClassControlResponse> result = service.fetchClassControlByCourseClassAndDateRange(startDay,startMonth,startYear,endDay,endMonth,endYear,courseClassId);
 
-            if (result == null || result.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-
             return ResponseEntity.ok(result);
 
         } catch (DateTimeException e) {

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -37,9 +36,29 @@ public class CourseClassGateway {
     private final JwtUtils jwtUtils;
 
     @GetMapping
-    public List<CourseClass> getAll() {
+    public ResponseEntity<List<CourseClass>> getAll() {
 
-        return repository.findAll();
+        try{
+
+            List<CourseClass> rawData = repository.findAllCourseClassesOrdered();
+
+            return ResponseEntity.ok(cleanCourseClassList(rawData));
+
+        }catch (Throwable t){
+            log.error(t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+
+    }
+
+    private List<CourseClass> cleanCourseClassList(List<CourseClass> rawData){
+
+        rawData.forEach(courseClass -> courseClass.getTeacher().getUser().setStudent(null));
+        rawData.forEach(courseClass -> courseClass.getTeacher().getUser().setTeacher(null));
+        rawData.forEach(courseClass -> courseClass.getTeacher().getUser().setRoles(null));
+        rawData.forEach(courseClass -> courseClass.getTeacher().setLanguages(null));
+
+        return rawData;
     }
 
     @GetMapping("/available")
@@ -53,9 +72,18 @@ public class CourseClassGateway {
                 queryResult = repository.findAllCourseClassesAvailable();
             } else if (user.hasRole("TEACHER")) {
                 queryResult = repository.findAllCourseClassesAvailableByTeacher(user.profileId());
+            } else if (user.hasRole("STUDENT")) {
+                queryResult = repository.findAllCourseClassesAvailableByStudent(user.profileId());
             }
 
-            return ResponseEntity.ok(queryResult);
+            queryResult.forEach(courseClass -> {
+                var item = courseClass.getTeacher().getUser();
+                item.setStudent(null);
+                item.setRoles(null);
+                item.setTeacher(null);
+            });
+
+            return ResponseEntity.ok(cleanCourseClassList(queryResult));
 
         } catch (Throwable t) {
             log.error(t.getMessage());
@@ -65,8 +93,23 @@ public class CourseClassGateway {
 
 
     @GetMapping("/{id}")
-    public Optional<CourseClass> getCourseClassById(@PathVariable final Integer id) {
-        return repository.findById(id);
+    public ResponseEntity<CourseClass> getCourseClassById(@PathVariable final Integer id) {
+
+        try {
+
+            CourseClass courseClass = repository.findById(id).orElseThrow();
+
+            courseClass.getTeacher().getUser().setTeacher(null);
+            courseClass.getTeacher().getUser().setStudent(null);
+            courseClass.getTeacher().getUser().setRoles(null);
+
+            return  ResponseEntity.ok(courseClass);
+
+        }catch (Throwable t){
+            log.error(t.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+
     }
 
 

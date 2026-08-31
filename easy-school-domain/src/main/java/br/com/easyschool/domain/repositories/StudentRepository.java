@@ -11,18 +11,25 @@ import java.util.List;
 
 public interface StudentRepository extends JpaRepository<Student, Integer> {
 
-    @Query("SELECT s FROM Student s WHERE s.startDate = :startDate")
+    @Query("""
+            SELECT s FROM Student s
+            INNER JOIN User u
+            ON s.user.id = u.id 
+            WHERE u.createdAt = :startDate
+    """)
     List<Student> findByStartDateEquals(@Param("startDate") LocalDateTime startDate);
 
     @Query("""
         SELECT s
         FROM Student s
+        INNER JOIN User u 
+        ON s.user.id = u.id
         WHERE s.id NOT IN (
                 SELECT ccs.student.id
                 FROM CourseClassStudent ccs
                 WHERE ccs.courseClass.id = :course_class_id
         ) 
-        AND s.status = true       
+        AND u.status = true       
           """)
     List<Student> findStudentsNotInCourseClass(@Param("course_class_id") Integer courseClassId);
 
@@ -39,19 +46,22 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     @Query(value = """
                SELECT count(*)
-               FROM student
+               FROM student s
+               INNER JOIN users u ON s.user_id = u.id
                WHERE status = true
             """,nativeQuery = true)
     Integer totalStudentAvailable();
 
     @Query(value = """
             SELECT s.* FROM student s
+            INNER JOIN users u
+            ON u.id = s.user_id
             INNER JOIN course_class_students ccs
             ON s.id = ccs.student_id
             INNER JOIN course_class cc
             ON ccs.course_class_id = cc.id
             WHERE cc.teacher_id = :teacher_id
-            ORDER BY s.name ASC
+            ORDER BY u.name ASC
             """,nativeQuery = true)
     List<Student> fetchStudentsByTeacher(@Param("teacher_id") Integer teacherId);
 

@@ -1,11 +1,9 @@
+import { UserModel } from "./user_definitions";
+
 export type StudentModel = {
-    id?: string;
-    name?: string;
-    phone_number?: string;
-    email?: string,
-    status?: boolean,
+    id?: string;    
     due_date?: string,
-    start_date?: string,
+    user?: UserModel | null;
   };
 
   export type CoursePriceModel = {

@@ -7,18 +7,41 @@ import CourseStatus from './CourseClassesStatus';
 import React, { useEffect, useMemo, useState } from "react";
 import { CourseClassTeacherModel } from '@/app/lib/definitions/course_class_definitions';
 import Image from 'next/image';
+import MobileSortBar from '@/app/dashboard/components/MobileSortBar';
+import type { SortDirection } from '@/app/dashboard/components/tableUtils';
+import type { CourseClassSortKey } from './CourseClassesTable';
+
 interface MobileCoursesClassTableProps {
   courseClasses: CourseClassTeacherModel[];
+  sortKey: CourseClassSortKey;
+  sortDirection: SortDirection;
+  onSort: (key: CourseClassSortKey) => void;
 }
+
+const SORT_OPTIONS: { value: CourseClassSortKey; label: string }[] = [
+  { value: "name", label: "Nome da Turma" },
+  { value: "status", label: "Status" },
+  { value: "teacher", label: "Professor" },
+];
 
 export default function MobileCoursesClassTable({
   courseClasses,
+  sortKey,
+  sortDirection,
+  onSort,
 }: MobileCoursesClassTableProps) {
 
-  
+
 
   return (
     <div className="mt-6">
+      <MobileSortBar
+        options={SORT_OPTIONS}
+        sortKey={sortKey}
+        direction={sortDirection}
+        onSortKeyChange={onSort}
+        onDirectionToggle={() => onSort(sortKey)}
+      />
       {courseClasses.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-lg shadow-sm">
           <div className="text-gray-500">
@@ -72,11 +95,11 @@ export default function MobileCoursesClassTable({
                     </div>
                     <div className="mt-1">
                       <p className="text-sm font-medium text-gray-900">
-                        {course_class.teacher?.name || 'Não atribuído'}
+                        {course_class.teacher?.user?.name || 'Não atribuído'}
                       </p>
-                      {course_class.teacher?.email && (
+                      {course_class.teacher?.user?.username && (
                         <p className="text-xs text-gray-500 mt-1">
-                          {course_class.teacher.email}
+                          {course_class.teacher.user?.username}
                         </p>
                       )}
                     </div>

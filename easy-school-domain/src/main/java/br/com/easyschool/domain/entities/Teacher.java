@@ -2,12 +2,10 @@ package br.com.easyschool.domain.entities;
 
 import br.com.easyschool.domain.entities.security.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -20,6 +18,7 @@ public class Teacher implements EntityBase{
     @Getter @Setter
     private Integer id;
 
+    /**
     @Column(nullable = false)
     @Getter @Setter
     private String name;
@@ -33,12 +32,13 @@ public class Teacher implements EntityBase{
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Getter @Setter
     private String email;
-
+**/
     @Column(nullable = false)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Getter @Setter
     private Double compensation;
 
+    /**
     @Column(nullable = false)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Getter @Setter
@@ -49,7 +49,7 @@ public class Teacher implements EntityBase{
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Getter @Setter
     private LocalDateTime startDate;
-
+**/
     @ManyToMany
     @JoinTable(
             name = "teacher_skill",
@@ -60,8 +60,8 @@ public class Teacher implements EntityBase{
     @Getter @Setter
     private List<Language> languages;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
     @Getter @Setter
     private User user;
 

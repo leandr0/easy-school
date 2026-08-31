@@ -41,7 +41,6 @@ export async function createTeacher(teacher: TeacherModel): Promise<void> {
 }
 
 export async function updateTeacher(teacher: TeacherModel): Promise<TeacherModel> {
-  console.log(`updateTeacher ${JSON.stringify(teacher)}`);
   return await clientApi.put(teacher, { headers: { ...(await bearerHeaders()), 'Content-Type': 'application/json'} });
 }
 

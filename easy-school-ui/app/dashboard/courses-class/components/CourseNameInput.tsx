@@ -18,7 +18,7 @@ export default function CourseNameInput({ courseName, onNameChange }: CourseName
       {/* Desktop view */}
       <div className="hidden md:block">
         <div className="w-full border-b py-3 text-sm">
-          <div className="font-medium mb-2">Nome do Curso:</div>
+          <div className="font-medium mb-2">Nome da Turma:</div>
           <div>
             <input
               type="text"

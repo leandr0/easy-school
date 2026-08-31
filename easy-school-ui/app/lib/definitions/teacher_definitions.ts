@@ -1,6 +1,7 @@
 import { CalendarWeekDayModel } from "./calendar_week_day_definitions";
 import { CalendarRangeHourDayModel } from "./calendat_range_hour_day_definitions";
 import { LanguageModel } from "./language_definitions";
+import { UserModel } from "./user_definitions";
 
 export type TeacherModel = {
     id?: string;
@@ -13,6 +14,7 @@ export type TeacherModel = {
     languages?:LanguageModel[];
     language_ids?:string[];
     calendar_range_hour_days?:CalendarRangeHourDayModel[];
+    user?: UserModel | null;
   };
 
 export type TeacherUpdateModel = {

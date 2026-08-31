@@ -30,4 +30,12 @@ public class ClassControlCreateDTO {
     @Getter @Setter
     @JsonProperty("course_class_id")
     private Integer courseClassId;
+
+    @Getter @Setter
+    @JsonProperty("book_id")
+    private Integer bookId;
+
+    @Getter @Setter
+    @JsonProperty("chapter_id")
+    private Integer chapterId;
 }

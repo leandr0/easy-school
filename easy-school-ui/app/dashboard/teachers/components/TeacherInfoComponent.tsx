@@ -6,13 +6,16 @@ import BRLCurrency from '@/app/dashboard/components/currency';
 import { Switch } from '@/app/dashboard/components/switch';
 
 import { Can } from '@/components/Can';
+import { TeacherModel } from '@/app/lib/definitions/teacher_definitions';
 
 
 type Props = {
-  formData: any;
+  formData: TeacherModel;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onCompensationChange: (amount: number) => void;
+  onCompensationChange?: (amount: number) => void;
   onSwitchStatus?: (checked: boolean) => void;
+  /** Hides the Hora/Aula (compensation) field. Used by the edit screens; the create flow keeps showing it. */
+  hideCompensation?: boolean;
 };
 
 export function TeacherInfoComponent({
@@ -20,6 +23,7 @@ export function TeacherInfoComponent({
   handleInputChange,
   onCompensationChange,
   onSwitchStatus,
+  hideCompensation = false,
 }: Props) {
   return (
     <section className="mx-auto w-full max-w-4xl">
@@ -29,12 +33,14 @@ export function TeacherInfoComponent({
           {formData.id &&
 
             <div className="shrink-0">
+               <Can perm="admin.all">
               <Switch
-                checked={Boolean(formData.status)}
+                checked={Boolean(formData.status ?? formData.user?.status)}
                 onChange={(checked) => onSwitchStatus?.(checked)}
-                label={formData.status ? 'Ativo' : 'Inativo'}
+                label={(formData.status ?? formData.user?.status) ? 'Ativo' : 'Inativo'}
                 color="green"
               />
+              </Can>
             </div>
           }
         </header>
@@ -48,7 +54,7 @@ export function TeacherInfoComponent({
             <input
               type="text"
               name="name"
-              value={formData.name || ''}
+              value={formData.name ?? formData.user?.name ?? ''}
               onChange={handleInputChange}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
               placeholder="Nome do professor"
@@ -63,7 +69,7 @@ export function TeacherInfoComponent({
             <input
               type="text"
               name="phone_number"
-              value={formData.phone_number || ''}
+              value={formData.phone_number ?? formData.user?.phone_number ?? ''}
               onChange={handleInputChange}
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
               placeholder="(00) 00000-0000"
@@ -76,7 +82,7 @@ export function TeacherInfoComponent({
               Email
             </label>
             <Can
-              perm="admin.all"
+              perm="teachers.write"
               fallback={
 
                 <Can perm="teachers.read">
@@ -84,7 +90,7 @@ export function TeacherInfoComponent({
                     type="email"
                     name="email"
                     readOnly={true}
-                    value={formData.email || ''}
+                    value={formData.email ?? formData.user?.username ?? ''}
                     onChange={handleInputChange}
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
                     placeholder="email@exemplo.com"
@@ -95,7 +101,7 @@ export function TeacherInfoComponent({
               <input
                 type="email"
                 name="email"
-                value={formData.email || ''}
+                value={formData.email ?? formData.user?.username ?? ''}
                 onChange={handleInputChange}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
                 placeholder="email@exemplo.com"
@@ -104,36 +110,38 @@ export function TeacherInfoComponent({
           </div>
 
           {/* Hora/Aula */}
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Hora/Aula
-            </label>
-            <Can
-              perm="admin.all"
-              fallback={
+          {!hideCompensation && (
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Hora/Aula
+              </label>
+              <Can
+                perm="admin.all"
+                fallback={
 
-                <Can perm="teachers.read">
-                  <BRLCurrency
-                    asInput
-                    name="compensation"
-                    readonly={true}
-                    value={formData.compensation ?? ''}
-                    onChange={onCompensationChange}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
-                  />
-                </Can>
-              }
-            >
-              <BRLCurrency
-                asInput
-                name="compensation"
-                value={formData.compensation ?? ''}
-                onChange={onCompensationChange}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
-              />
-            </Can>
+                  <Can perm="teachers.read">
+                    <BRLCurrency
+                      asInput
+                      name="compensation"
+                      readonly={true}
+                      value={formData.compensation ?? ''}
+                      onChange={onCompensationChange}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
+                    />
+                  </Can>
+                }
+              >
+                <BRLCurrency
+                  asInput
+                  name="compensation"
+                  value={formData.compensation ?? ''}
+                  onChange={onCompensationChange}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
+                />
+              </Can>
 
-          </div>
+            </div>
+          )}
 
           {/* Data de início */}
           <div>
@@ -141,14 +149,14 @@ export function TeacherInfoComponent({
               Data de início
             </label>
             <Can
-              perm="admin.all"
+              perm="teachers.write"
               fallback={
 
                 <Can perm="teachers.read">
                   <DateInput
                     name="start_date"
                     readonly={true}
-                    value={formData.start_date || ''}
+                    value={formData.start_date ?? formData.user?.created_at ?? ''}
                     onChange={handleInputChange}
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
                   />
@@ -157,7 +165,7 @@ export function TeacherInfoComponent({
             >
               <DateInput
                 name="start_date"
-                value={formData.start_date || ''}
+                value={formData.start_date ?? formData.user?.created_at ?? ''}
                 onChange={handleInputChange}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-purple-400"
               />

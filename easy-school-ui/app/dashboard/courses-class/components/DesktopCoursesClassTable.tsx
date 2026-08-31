@@ -4,15 +4,24 @@ import { AddStudents, UpdateCourseClass } from '../../components/ui_buttons';
 import CourseStatus from './CourseClassesStatus';
 import React from "react";
 import { CourseClassTeacherModel } from '@/app/lib/definitions/course_class_definitions';
+import SortToggle from '@/app/dashboard/components/SortToggle';
+import type { SortDirection } from '@/app/dashboard/components/tableUtils';
+import type { CourseClassSortKey } from './CourseClassesTable';
 
 import Image from 'next/image';
 
 interface DesktopCoursesClassTableProps {
   courseClasses: CourseClassTeacherModel[];
+  sortKey: CourseClassSortKey;
+  sortDirection: SortDirection;
+  onSort: (key: CourseClassSortKey) => void;
 }
 
 export default function DesktopCoursesClassTable({
-  courseClasses
+  courseClasses,
+  sortKey,
+  sortDirection,
+  onSort,
 }: DesktopCoursesClassTableProps) {
 
 
@@ -23,13 +32,28 @@ export default function DesktopCoursesClassTable({
           {/* Table Header */}
           <div className="grid grid-cols-6 text-left text-sm font-normal rounded-lg bg-gray-100 shadow-sm">
             <div className="px-4 py-4 font-semibold sm:pl-6 border-b col-span-2 text-gray-700">
-              Nome da Turma
+              <SortToggle
+                label="Nome da Turma"
+                active={sortKey === "name"}
+                direction={sortDirection}
+                onClick={() => onSort("name")}
+              />
             </div>
-            <div className="px-3 py-4 font-semibold border-b col-span-1 text-center text-gray-700">
-              Status
+            <div className="px-3 py-4 font-semibold border-b col-span-1 text-center text-gray-700 flex justify-center">
+              <SortToggle
+                label="Status"
+                active={sortKey === "status"}
+                direction={sortDirection}
+                onClick={() => onSort("status")}
+              />
             </div>
             <div className="px-3 py-4 font-semibold border-b col-span-2 text-gray-700">
-              Professor Responsável
+              <SortToggle
+                label="Professor Responsável"
+                active={sortKey === "teacher"}
+                direction={sortDirection}
+                onClick={() => onSort("teacher")}
+              />
             </div>
             <div className="px-3 py-4 font-semibold border-b col-span-1 text-center text-gray-700">
               Ações
@@ -79,11 +103,11 @@ export default function DesktopCoursesClassTable({
                   <div className="px-3 py-4 col-span-2 flex items-center">
                     <div>
                       <p className="font-medium text-gray-900 truncate text-sm">
-                        {course_class.teacher?.name || 'Não atribuído'}
+                        {course_class.teacher?.user?.name || 'Não atribuído'}
                       </p>
-                      {course_class.teacher?.email && (
+                      {course_class.teacher?.user?.username && (
                         <p className="text-xs text-gray-500 truncate">
-                          {course_class.teacher.email}
+                          {course_class.teacher.user?.username}
                         </p>
                       )}
                     </div>

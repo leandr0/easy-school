@@ -6,12 +6,23 @@ import { UpdateBase } from "../../components/ui_buttons";
 import { CourseModel } from "@/app/lib/definitions/courses_definitions";
 import Image from 'next/image';
 import { Pagination } from "@/app/dashboard/components/Pagination";
+import MobileSortBar from "@/app/dashboard/components/MobileSortBar";
+import type { SortDirection } from "@/app/dashboard/components/tableUtils";
+import type { CourseSortKey } from "./CoursesTable";
 
 type Props = {
   courses: CourseModel[];
+  sortKey: CourseSortKey;
+  sortDirection: SortDirection;
+  onSort: (key: CourseSortKey) => void;
 };
 
-export default function CoursesTableMobile({ courses }: Props) {
+const SORT_OPTIONS: { value: CourseSortKey; label: string }[] = [
+  { value: "name", label: "Nome" },
+  { value: "status", label: "Status" },
+];
+
+export default function CoursesTableMobile({ courses, sortKey, sortDirection, onSort }: Props) {
 
 
   // 🔢 pagination state
@@ -36,6 +47,13 @@ export default function CoursesTableMobile({ courses }: Props) {
 
   return (
     <div className="md:hidden">
+      <MobileSortBar
+        options={SORT_OPTIONS}
+        sortKey={sortKey}
+        direction={sortDirection}
+        onSortKeyChange={onSort}
+        onDirectionToggle={() => onSort(sortKey)}
+      />
       {currentItems?.map((course) => (
         <div key={course.id} className="mb-2 w-full rounded-md bg-white p-4">
           <div className="flex items-center justify-between border-b pb-3">

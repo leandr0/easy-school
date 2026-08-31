@@ -16,7 +16,7 @@ export default async function SideNav() {
   return (
     <div className="flex h-full flex-col px-3 py-4 md:px-2">
       {/* Header / Logo */}
-      <Link className="mb-2 flex h-16 items-end justify-start rounded-md bg-purple-400 p-4 md:h-40" href="/">
+      <Link className="mb-2 flex h-16 items-end justify-start rounded-md bg-purple-400 p-4 md:h-40" href="/dashboard">
         <div className="w-32 text-white md:w-40">
           <AcmeLogo />
         </div>
@@ -37,9 +37,11 @@ export default async function SideNav() {
         <div className="h-auto grow rounded-md bg-gray-50" />
         
         <SignOutButton full />
+        {/*
         <p>{ability?.username}</p>
         <p>{JSON.stringify(ability?.list)}</p>
         <p>{ability?.roles}</p>
+        */}
       </div>
     </div>
   );

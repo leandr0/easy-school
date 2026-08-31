@@ -25,7 +25,7 @@ public interface CourseClassRepository extends JpaRepository<CourseClass, Intege
 
     @Query("""
             SELECT cc FROM CourseClass cc
-            WHERE cc.status = true
+            ORDER BY cc.name ASC
             """)
     List<CourseClass> findAllCourseClassesAvailable();
 
@@ -34,8 +34,19 @@ public interface CourseClassRepository extends JpaRepository<CourseClass, Intege
             SELECT cc FROM CourseClass cc
             WHERE cc.status = true
             AND cc.teacher.id = :teacher_id
+            ORDER BY cc.name ASC
             """)
     List<CourseClass> findAllCourseClassesAvailableByTeacher(@Param("teacher_id") Integer teacherId);
+
+    @Query("""
+            SELECT cc FROM CourseClass cc
+            INNER JOIN CourseClassStudent ccs
+            ON cc.id = ccs.courseClass.id
+            WHERE cc.status = true
+            AND ccs.student.id = :student_id
+            ORDER BY cc.name ASC
+            """)
+    List<CourseClass> findAllCourseClassesAvailableByStudent(@Param("student_id") Integer studentId);
 
     @Query(value = """
             SELECT
@@ -60,4 +71,12 @@ public interface CourseClassRepository extends JpaRepository<CourseClass, Intege
 
     @Query("SELECT count(*) FROM CourseClass WHERE status = true")
     Integer totalCourseClassesAvailable();
+
+
+    @Query("""
+            SELECT cc FROM CourseClass cc
+            ORDER BY cc.name ASC
+            """)
+    List<CourseClass> findAllCourseClassesOrdered();
+
 }

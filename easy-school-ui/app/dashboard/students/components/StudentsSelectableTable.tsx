@@ -1,22 +1,32 @@
 'use client';
 
-import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import React, { forwardRef, useImperativeHandle } from "react";
 import { StudentModel } from '@/app/lib/definitions/students_definitions';
-import { Pagination } from "../../components/Pagination";
+import SortToggle from '@/app/dashboard/components/SortToggle';
+import type { SortDirection } from '@/app/dashboard/components/tableUtils';
 
 export type SelectableStudentsTableRef = {
   // If you need any methods to be called from parent, define them here
   // For now, we don't need refreshStudents since data comes from parent
 };
 
+export type SelectableStudentsSortKey = 'name' | 'phone' | 'email';
+
 interface SelectableStudentsTableProps {
   students: StudentModel[];
   selectedStudentIds: string[];
   onSelectionChange: (selectedIds: string[]) => void;
+  // Optional: when provided, the desktop table's headers become clickable
+  // sort toggles. Omitted entirely, the headers render as plain labels
+  // (kept optional so this component still works for any caller that
+  // doesn't need sorting).
+  sortKey?: SelectableStudentsSortKey;
+  sortDirection?: SortDirection;
+  onSortChange?: (key: SelectableStudentsSortKey) => void;
 }
 
 const SelectableStudentsTable = forwardRef<SelectableStudentsTableRef, SelectableStudentsTableProps>(
-  ({ students, selectedStudentIds, onSelectionChange }, ref) => {
+  ({ students, selectedStudentIds, onSelectionChange, sortKey, sortDirection, onSortChange }, ref) => {
 
     useImperativeHandle(ref, () => ({
       // Add any methods here that parent might need to call
@@ -56,9 +66,9 @@ const SelectableStudentsTable = forwardRef<SelectableStudentsTableRef, Selectabl
                       className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 mr-3"
                     />
                     <div className="flex flex-col">
-                      <span className="text-sm font-semibold">{student.name}</span>
-                      <span className="text-xs text-gray-600">{student.phone_number}</span>
-                      <span className="text-xs text-gray-600">{student.email}</span>
+                      <span className="text-sm font-semibold">{student.user?.name}</span>
+                      <span className="text-xs text-gray-600">{student.user?.phone_number}</span>
+                      <span className="text-xs text-gray-600">{student.user?.username}</span>
                     </div>
                   </label>
                 ))}
@@ -67,9 +77,42 @@ const SelectableStudentsTable = forwardRef<SelectableStudentsTableRef, Selectabl
               <table className="hidden min-w-full text-gray-900 md:table">
                 <thead className="text-left text-sm font-normal">
                   <tr>
-                    <th className="px-4 py-5 font-medium sm:pl-6">Nome</th>
-                    <th className="px-3 py-5 font-medium">Telefone</th>
-                    <th className="px-3 py-5 font-medium">Email</th>
+                    <th className="px-4 py-5 font-medium sm:pl-6">
+                      {onSortChange ? (
+                        <SortToggle
+                          label="Nome"
+                          active={sortKey === 'name'}
+                          direction={sortDirection ?? 'asc'}
+                          onClick={() => onSortChange('name')}
+                        />
+                      ) : (
+                        'Nome'
+                      )}
+                    </th>
+                    <th className="px-3 py-5 font-medium">
+                      {onSortChange ? (
+                        <SortToggle
+                          label="Telefone"
+                          active={sortKey === 'phone'}
+                          direction={sortDirection ?? 'asc'}
+                          onClick={() => onSortChange('phone')}
+                        />
+                      ) : (
+                        'Telefone'
+                      )}
+                    </th>
+                    <th className="px-3 py-5 font-medium">
+                      {onSortChange ? (
+                        <SortToggle
+                          label="Email"
+                          active={sortKey === 'email'}
+                          direction={sortDirection ?? 'asc'}
+                          onClick={() => onSortChange('email')}
+                        />
+                      ) : (
+                        'Email'
+                      )}
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white">
@@ -94,10 +137,10 @@ const SelectableStudentsTable = forwardRef<SelectableStudentsTableRef, Selectabl
                             onChange={() => { }}
                             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                           />
-                          <p>{student.name}</p>
+                          <p>{student.user?.name}</p>
                         </td>
-                        <td className="whitespace-nowrap px-3 py-3">{student.phone_number}</td>
-                        <td className="whitespace-nowrap px-3 py-3">{student.email}</td>
+                        <td className="whitespace-nowrap px-3 py-3">{student.user?.phone_number}</td>
+                        <td className="whitespace-nowrap px-3 py-3">{student.user?.username}</td>
                       </tr>
                     );
                   })}
@@ -106,7 +149,7 @@ const SelectableStudentsTable = forwardRef<SelectableStudentsTableRef, Selectabl
 
             </div>
           </div>
-        </div>        
+        </div>
       </div>
     );
   });

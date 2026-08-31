@@ -3,6 +3,7 @@
 import { format, addDays, addWeeks } from "date-fns";
 import { CourseClassCompleteModel } from "@/app/lib/definitions/course_class_definitions";
 import { ClassControlModel } from "@/app/lib/definitions/class_control_definitions";
+import { BookModel } from "@/app/lib/definitions/books_definitions";
 import { Switch } from "@/app/dashboard/components/switch";
 import { Button, CancelButton } from "@/app/ui/button";
 
@@ -30,6 +31,11 @@ interface ClassControlTableDesktopProps {
   setClassContent: (value: string) => void;
   replacement: boolean;
   setReplacement: (value: boolean) => void;
+  books: BookModel[];
+  bookId: string;
+  onBookChange: (value: string) => void;
+  chapterId: string;
+  onChapterChange: (value: string) => void;
   disabledDates: Set<string>;
   loading: boolean;
   existingRecords: ClassControlModel[];
@@ -51,12 +57,20 @@ export default function ClassControlTableDesktop({
   setClassContent,
   replacement,
   setReplacement,
+  books,
+  bookId,
+  onBookChange,
+  chapterId,
+  onChapterChange,
   disabledDates,
   loading,
   existingRecords,
 }: ClassControlTableDesktopProps) {
   const weekDates = Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
   const isNextWeekDisabled = addWeeks(currentWeekStart, 1) > new Date();
+
+  const selectedBook = books.find((b) => String(b.id) === bookId);
+  const chapters = selectedBook?.chapters ?? [];
 
   const isDateDisabled = (dateStr: string) => {
     return disabledDates.has(dateStr);
@@ -246,6 +260,46 @@ export default function ClassControlTableDesktop({
               color="green"
               disabled={loading}
             />
+          </div>
+
+          <div className="mt-6 grid grid-cols-2 gap-6">
+            <div>
+              <label className="block font-medium mb-1 text-sm text-gray-700">
+                Livro
+              </label>
+              <select
+                value={bookId}
+                onChange={(e) => onBookChange(e.target.value)}
+                disabled={loading}
+                className="w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              >
+                <option value="">Selecione um livro ...</option>
+                {books.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-medium mb-1 text-sm text-gray-700">
+                Capítulo
+              </label>
+              <select
+                value={chapterId}
+                onChange={(e) => onChapterChange(e.target.value)}
+                disabled={loading || !bookId}
+                className="w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              >
+                <option value="">Selecione um capítulo ...</option>
+                {chapters.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="mt-6">

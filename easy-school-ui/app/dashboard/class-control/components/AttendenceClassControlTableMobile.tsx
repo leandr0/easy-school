@@ -300,6 +300,24 @@ export default function AttendenceClassControlTableMobile({
                             )}
                           </div>
 
+                          {/* Book & Chapter Section */}
+                          {(classControl.class_control?.book || classControl.class_control?.chapter) && (
+                            <div className="mb-3">
+                              <div className="flex items-center mb-2">
+                                <BookOpen className="w-4 h-4 text-gray-500 mr-2" />
+                                <h4 className="font-medium text-gray-800">Livro / Capítulo</h4>
+                              </div>
+                              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm text-gray-700">
+                                {classControl.class_control?.book?.name ?? (
+                                  <span className="text-gray-400 italic">Nenhum livro registrado</span>
+                                )}
+                                {classControl.class_control?.chapter?.name
+                                  ? ` · ${classControl.class_control.chapter.name}`
+                                  : ''}
+                              </div>
+                            </div>
+                          )}
+
                           {/* Content Section */}
                           <div>
                             <div className="flex items-center mb-2">

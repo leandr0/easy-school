@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @CrossOrigin(origins = "*")
@@ -24,7 +25,16 @@ public class RevenueCourseClassStudentGateway {
 
         try{
 
-            List<RevenueCourseClassStudent> result = repository.fetchByStudentAndRevenue(revenueId,studentId);
+            List<RevenueCourseClassStudent> rawData = repository.fetchByStudentAndRevenue(revenueId,studentId);
+
+            List<RevenueCourseClassStudent> result = new LinkedList<>();
+
+            for (RevenueCourseClassStudent revenueCourseClassStudent : rawData) {
+                revenueCourseClassStudent.getStudent().getUser().setTeacher(null);
+                revenueCourseClassStudent.getStudent().getUser().setStudent(null);
+
+                result.add(revenueCourseClassStudent);
+            }
 
             if (result.isEmpty()) {
                 return ResponseEntity.notFound().build();

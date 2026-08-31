@@ -7,6 +7,8 @@ export const bffApiClient = new ApiClient({
 });
 
 // Server (route handlers) -> External API (server-only env var)
+// Fallback assumes the Spring backend runs alongside this app (e.g. same
+// Docker container/host) rather than pointing at a specific remote server.
 export const externalApiClient = new ApiClient({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_EXT_URL || 'http://129.148.62.1:8080'
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_EXT_URL || 'http://localhost:8080'
 });

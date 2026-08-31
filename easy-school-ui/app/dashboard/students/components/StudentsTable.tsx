@@ -6,6 +6,9 @@ import { StudentModel } from '@/app/lib/definitions/students_definitions';
 import React, { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { Pagination } from '../../components/Pagination';
 import { Can } from '@/components/Can';
+import SortToggle from '@/app/dashboard/components/SortToggle';
+import MobileSortBar from '@/app/dashboard/components/MobileSortBar';
+import { matchesQuery, sortItems, nextSort, SortDirection } from '@/app/dashboard/components/tableUtils';
 
 /** SSR-safe media query hook */
 function useMediaQuery(query: string) {
@@ -28,6 +31,33 @@ function useMediaQuery(query: string) {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
+export type StudentSortKey = "name" | "phone" | "email" | "status" | "due_date" | "created_at";
+
+const SORT_OPTIONS: { value: StudentSortKey; label: string }[] = [
+  { value: "name", label: "Nome" },
+  { value: "phone", label: "Telefone" },
+  { value: "email", label: "Email" },
+  { value: "status", label: "Status" },
+  { value: "due_date", label: "Vencimento" },
+  { value: "created_at", label: "Inscrição" },
+];
+
+function sortValue(student: StudentModel, key: StudentSortKey) {
+  switch (key) {
+    case "phone":
+      return student.user?.phone_number;
+    case "email":
+      return student.user?.username;
+    case "status":
+      return student.user?.status;
+    case "due_date":
+      return student.due_date;
+    case "created_at":
+      return student.user?.created_at;
+    default:
+      return student.user?.name;
+  }
+}
 
 export default function StudentsTable({
   query,
@@ -38,8 +68,6 @@ export default function StudentsTable({
   currentPage: number;
   students: StudentModel[];
 }) {
-
-
 
   // Breakpoint (SSR-safe)
   const isMdUp = useMediaQuery("(min-width: 768px)");
@@ -54,6 +82,15 @@ export default function StudentsTable({
   // Never read matchMedia in the initializer — that causes client-first diff.
   const [page, setPage] = useState<number>(currentPage || 1); // 1-based
   const [pageSize, setPageSize] = useState<number>(3);        // <-- SSR-stable default
+
+  const [sortKey, setSortKey] = useState<StudentSortKey>("name");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+
+  const handleSort = (key: StudentSortKey) => {
+    const next = nextSort(sortKey, sortDirection, key);
+    setSortKey(next.key);
+    setSortDirection(next.direction);
+  };
 
   // After hydration, reconcile pageSize with breakpoint/options
   useEffect(() => {
@@ -71,7 +108,15 @@ export default function StudentsTable({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMdUp, pageSizeOptions]);
 
-  const totalCount = students.length;
+  // Filter (search) + sort the incoming list before paginating it
+  const visibleStudents = useMemo(() => {
+    const filtered = (students ?? []).filter((student) =>
+      matchesQuery(query, student.user?.name, student.user?.username, student.user?.phone_number)
+    );
+    return sortItems(filtered, (student) => sortValue(student, sortKey), sortDirection);
+  }, [students, query, sortKey, sortDirection]);
+
+  const totalCount = visibleStudents.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / Math.max(1, pageSize)));
 
   // Clamp page when data/size changes (after hydration)
@@ -81,10 +126,10 @@ export default function StudentsTable({
 
   // Current slice
   const currentItems = useMemo(() => {
-    if (!students.length) return [];
+    if (!visibleStudents.length) return [];
     const start = (page - 1) * pageSize;
-    return students.slice(start, start + pageSize);
-  }, [students, page, pageSize]);
+    return visibleStudents.slice(start, start + pageSize);
+  }, [visibleStudents, page, pageSize]);
 
 
 
@@ -94,16 +139,23 @@ export default function StudentsTable({
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
           {/* Mobile View */}
           <div className="md:hidden">
+            <MobileSortBar
+              options={SORT_OPTIONS}
+              sortKey={sortKey}
+              direction={sortDirection}
+              onSortKeyChange={handleSort}
+              onDirectionToggle={() => handleSort(sortKey)}
+            />
             {currentItems?.map((student) => (
               <div key={student.id} className="mb-2 w-full rounded-md bg-white p-4">
                 <div className="flex items-center justify-between border-b pb-4">
                   <div className="max-w-[70%]">
                     <div className="mb-2">
-                      <p className="font-medium truncate">{student.name}</p>
+                      <p className="font-medium truncate">{student.user?.name}</p>
                     </div>
                     <p className="text-sm text-gray-500">Vencimento: <span className="font-bold">{student.due_date}</span></p>
                   </div>
-                  <StudentStatus status={student.status ? "Ativo" : "Inativo"} />
+                  <StudentStatus status={student.user?.status ? "Ativo" : "Inativo"} />
                 </div>
 
                 <div className="flex flex-col w-full justify-between pt-4">
@@ -111,7 +163,7 @@ export default function StudentsTable({
                     <div className="flex flex-row justify-between items-center">
                       <div className="flex items-center gap-2">
                         <span className="text-gray-500 text-sm font-medium">Tel:</span>
-                        <p className="text-sm">{student.phone_number}</p>
+                        <p className="text-sm">{student.user?.phone_number}</p>
                       </div>
                       <div className="flex justify-end">
                         <Can perm='admin.all'>
@@ -121,11 +173,11 @@ export default function StudentsTable({
                     </div>
                     <div className="flex flex-col">
                       <span className="text-gray-500 text-sm font-medium">Email:</span>
-                      <p className="text-sm break-words">{student.email}</p>
+                      <p className="text-sm break-words">{student.user?.username}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-gray-500 text-sm font-medium">Inscrição:</span>
-                      <p className="text-sm">{student.start_date ? formatDateToLocal(student.start_date) : 'Não disponível'}</p>
+                      <p className="text-sm">{student.user?.created_at ? formatDateToLocal(student.user?.created_at) : 'Não disponível'}</p>
                     </div>
                   </div>
                 </div>
@@ -138,22 +190,22 @@ export default function StudentsTable({
             {/* Table Header */}
             <div className="grid grid-cols-13 text-left text-sm font-normal rounded-lg bg-gray-50 text-center">
               <div className="px-4 py-3 font-medium sm:pl-6 border-b col-span-3">
-                Nome
+                <SortToggle label="Nome" active={sortKey === 'name'} direction={sortDirection} onClick={() => handleSort('name')} />
               </div>
               <div className="px-3 py-3 font-medium border-b col-span-2">
-                Telefone
+                <SortToggle label="Telefone" active={sortKey === 'phone'} direction={sortDirection} onClick={() => handleSort('phone')} />
               </div>
               <div className="px-3 py-3 font-medium border-b col-span-3">
-                Email
+                <SortToggle label="Email" active={sortKey === 'email'} direction={sortDirection} onClick={() => handleSort('email')} />
               </div>
               <div className="px-3 py-3 font-medium border-b col-span-1">
-                Status
+                <SortToggle label="Status" active={sortKey === 'status'} direction={sortDirection} onClick={() => handleSort('status')} />
               </div>
               <div className="px-3 py-3 font-medium border-b col-span-1 text-center">
-                Vencimento
+                <SortToggle label="Vencimento" active={sortKey === 'due_date'} direction={sortDirection} onClick={() => handleSort('due_date')} />
               </div>
               <div className="px-3 py-3 font-medium border-b col-span-2">
-                Inscrição
+                <SortToggle label="Inscrição" active={sortKey === 'created_at'} direction={sortDirection} onClick={() => handleSort('created_at')} />
               </div>
               <div className="px-3 py-3 font-medium border-b col-span-1">
                 <span className="sr-only">Edit</span>
@@ -169,25 +221,25 @@ export default function StudentsTable({
 
                   <div className="py-3 pl-6 pr-3 col-span-3">
                     <div className="flex items-center gap-3">
-                      <p className="truncate text-sm">{student.name}</p>
+                      <p className="truncate text-sm">{student.user?.name}</p>
                     </div>
                   </div>
 
                   <div className="px-3 py-3 col-span-2">
-                    <p className="truncate text-xs md:text-sm">{student.phone_number}</p>
+                    <p className="truncate text-xs md:text-sm">{student.user?.phone_number}</p>
                   </div>
 
                   <div className="px-3 py-3 col-span-3">
-                    <p className="truncate text-xs md:text-sm">{student.email}</p>
+                    <p className="truncate text-xs md:text-sm">{student.user?.username}</p>
                   </div>
                   <div className="px-3 py-3 col-span-1">
-                    <StudentStatus status={student.status ? "Ativo" : "Inativo"} />
+                    <StudentStatus status={student.user?.status ? "Ativo" : "Inativo"} />
                   </div>
                   <div className="text-center py-3 col-span-1 text-center ml-[23px]">
                     <p className="text-xs md:text-sm">{student.due_date}</p>
                   </div>
                   <div className="px-3 py-3 col-span-2 text-center">
-                    <p className="truncate text-xs md:text-sm">{student.start_date ? formatDateToLocal(student.start_date) : 'Não disponível'}</p>
+                    <p className="truncate text-xs md:text-sm">{student.user?.created_at ? formatDateToLocal(student.user?.created_at) : 'Não disponível'}</p>
                   </div>
                   <div className="py-3 pr-3 col-span-1 flex justify-center">
                     <div className="flex justify-center">
