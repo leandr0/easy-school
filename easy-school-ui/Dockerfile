@@ -22,8 +22,9 @@ RUN npm run build
 # For Yarn, use:
 # RUN yarn build
 
-# Your app binds to port 3000, expose this port
-EXPOSE 3000
+# Your app binds to port 80 by default (override at runtime with -e PORT=xxxx)
+ENV PORT=80
+EXPOSE 80
 
 # Define the command to run the app (using npm or yarn)
 CMD ["npm", "start"]
